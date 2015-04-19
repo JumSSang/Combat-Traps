@@ -19,7 +19,7 @@ public float m_y;
 
         }
 
-class ActiveCollusion
+public class ActiveCollusion
 {
     public ArrayList<Pos> PointSpot;
 
@@ -35,7 +35,7 @@ class ActiveCollusion
 
 
 
-    ActiveCollusion()
+    public ActiveCollusion()
     {
         PointSpot=new ArrayList<Pos>();
         Gradiant =new float[4];

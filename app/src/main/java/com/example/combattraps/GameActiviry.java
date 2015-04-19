@@ -7,7 +7,8 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.combattraps.Game.St_Battle;
+import com.example.combattraps.View.Ready_Room;
+import com.example.combattraps.View.St_Battle;
 
 import com.example.combattraps.immortal.GameView;
 
@@ -21,7 +22,7 @@ public class GameActiviry extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        GameView w =new GameView(this, new St_Battle());
+        GameView w =new GameView(this, new Ready_Room());
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();

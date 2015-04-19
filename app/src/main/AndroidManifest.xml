@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".GameActiviry"
+            android:name=".StartActivity"
             android:screenOrientation="landscape"
             android:label="@string/app_name" >
 
@@ -23,6 +23,11 @@
             android:label="회원가입"
             android:name=".ReigisterActivity"
             android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".GameActiviry"
+            android:screenOrientation="landscape">
+            android:label="TrapCombat" >
+            ></activity>
 
 
 

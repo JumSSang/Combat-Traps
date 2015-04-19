@@ -72,8 +72,4 @@ public class Graphic_image {
 
 
 
-
-
-
-
 }

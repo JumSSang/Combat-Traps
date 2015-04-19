@@ -14,6 +14,7 @@ public class SpriteControl extends Graphic_image {
     public Rect[][] Move;
     public Rect[][] Attack;
     public Rect[][] Death;
+    public Rect[]m_ButtonRect;
     static final int MOVE=1;
     static final int ATTACK=2;
     static final int DEATH=3;
@@ -67,6 +68,19 @@ public class SpriteControl extends Graphic_image {
         mNoOfFrames=0;
     }
 
+    public void ButtonInit(int Width,int Height)
+    {
+        int left=0;
+        int top=0;
+        int right=left+Width;
+        int bottom=top+Height;
+        m_ButtonRect=new Rect[2];
+         m_ButtonRect[0] = new Rect(left, top, right, bottom);
+         left+=Width;
+            right+=Width;
+        m_ButtonRect[1] = new Rect(left, top, right, bottom);
+
+    }
     public void ElsaTower(int FPS)
     {
         int height=8;
@@ -146,7 +160,7 @@ public class SpriteControl extends Graphic_image {
             }
         }
 
-    public void PatrolUpdate(long GameTime)
+    public void PatrolUpdate(long GameTime) //엘사 타워의 랜덤 에니메이션 출력 업데이트 부분이다.
     {
         if (!mbEnd) {
 
@@ -158,7 +172,7 @@ public class SpriteControl extends Graphic_image {
         }
     }
 
-    public void Update(long GameTime) {
+    public void Update(long GameTime) {  //일반적인 애니메이션의 업데이트 부분이다.
         if (!mbEnd) {
 
             if (GameTime > mFrameTimer + mFPS) {
@@ -177,6 +191,21 @@ public class SpriteControl extends Graphic_image {
 
 
 
+    public void ButtonDraw(Canvas canvas,boolean click,float x,float y)
+    {
+        if(click==true)
+        {
+            RectF dest = new  RectF(x, y,x +(m_ButtonRect[0].right),
+                    y + m_ButtonRect[0].bottom);
+            canvas.drawBitmap(m_bitmap,m_ButtonRect[1],dest,null);
+        }
+        else
+        {
+            RectF dest = new  RectF(x, y,x +(m_ButtonRect[0].right),
+                    y + m_ButtonRect[0].bottom);
+            canvas.drawBitmap(m_bitmap,m_ButtonRect[0],dest,null);
+        }
+    }
 
 
     public void Draw(Canvas canvas,int statenumber,float x,float y){
@@ -194,6 +223,7 @@ public class SpriteControl extends Graphic_image {
                 canvas.drawBitmap(m_bitmap, Attack[mDirection][mCurrentFrame], adest, null);
                 break;
             case DEATH:
+
                 RectF ddest = new  RectF(m_x, m_y,m_x +(Death[0][0].right),
                         m_y + Move[0][0].bottom);
                 canvas.drawBitmap(m_bitmap, Death[mDirection][mCurrentFrame], ddest, null);

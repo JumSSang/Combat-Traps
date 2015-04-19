@@ -30,7 +30,7 @@ public class UnitManager {
     public int range=190;
     public float distance;
 
-    UnitManager(Unit myUnitObject,int hp,int mSpeed,int type) {
+    public UnitManager(Unit myUnitObject, int hp, int mSpeed, int type) {
             myPath=new PathFinder();
             this.mHp=hp;
             this.mSpeed=mSpeed;
@@ -46,6 +46,7 @@ public class UnitManager {
     public void InitEffect()
     {
         m_effect=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
+
         m_effect.ResizeBitmapRate(3,3);
     }
     public void minus(Vec2 a,Vec2 b)
