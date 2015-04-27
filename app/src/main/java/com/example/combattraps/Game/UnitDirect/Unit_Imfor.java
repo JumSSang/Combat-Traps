@@ -11,6 +11,38 @@ import com.example.combattraps.immortal.Vec2;
 /**
  * Created by GyungMin on 2015-03-29.
  */
+class BoundingSpear
+{
+    private float m_radius;
+    private float m_x;
+    private float m_y;
+    private int m_middlePosition;
+
+    BoundingSpear(float x,float y,float r)
+    {
+        m_radius=r*100;
+        m_x=x;
+        m_y=y;
+    }
+
+    public float GetX()
+    {
+        return m_x;
+    }
+    public float GetY()
+    {
+        return m_y;
+    }
+    public float GetRadius()
+    {
+        return m_radius;
+    }
+    public boolean collision(int x,int y)
+    {
+
+     return false;
+    }
+}
 public class Unit_Imfor {
     public PathFinder myPath;
     public Unit myUnitObject;
@@ -22,12 +54,16 @@ public class Unit_Imfor {
     public int mType=0;
     public Rect originHP;
     public Vec2 DrawPosition;
+    public Unit_Imfor my_enemy;
+    public double myAttackDelayTime=0;
     public SpriteControl m_effect;
     public Vec2 mVSpeed;
     public boolean mThisMove=false;
     public Vec2 m_moveVector;
     public int count=0;
-    public Vec2 m_BoundingSpear;
+    private int range=2;
+    public BoundingSpear m_BoundingSpear;
+    public int state=1; //0은 평화 1은 이동 2는 전투
 
 
     public Unit_Imfor(Unit myUnitObject, int hp, int mSpeed, int type) {
@@ -40,8 +76,16 @@ public class Unit_Imfor {
         float tempy=(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x));
         DrawPosition=new Vec2((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)) ,(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x)));
         m_moveVector=new Vec2((float)0,(float)0);
-        m_BoundingSpear=new Vec2(tempx+40,tempy+40);
+        //m_BoundingSpear=new Vec2(tempx+40,tempy+40);
             this.mType=type;
+    }
+    public void SetRange(int r)
+    {
+        this.range=r;
+    }
+    public void IniteBouningSpear(float x,float y)
+    {
+        this.m_BoundingSpear=new BoundingSpear(x,y,this.range);
     }
     public void InitEffect()
     {
@@ -64,7 +108,7 @@ public class Unit_Imfor {
     }
     public void Targeting()
     {
-        findedPath=myPath.find(mMyTarget,myUnitObject);
+        findedPath=myPath.find(mMyTarget.Postion,myUnitObject.Postion);
     }
 
     //750 + 50 / 2 * (y - x)

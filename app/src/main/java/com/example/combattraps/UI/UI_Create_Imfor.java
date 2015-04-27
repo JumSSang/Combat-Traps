@@ -46,10 +46,14 @@ public class UI_Create_Imfor {
     {
         ScreenHeight=y;
         ScreenWidth=x;
+        sumLogo=new SumInfo((int)ScreenWidth,(int)ScreenHeight);
+
 
     }
     public void  Draw(Canvas canvas)
     {
+        sumLogo.Draw(canvas);
+        sumLogo.EnemyDraw(canvas);
         Paint paint=new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(20);
@@ -61,6 +65,7 @@ public class UI_Create_Imfor {
         5. 나의 골드
         6. 적군 골드인데 생략 예정
          */
+        m_myGold=1000;
         canvas.drawText(""+ DBManager.getInstance().GetID(), (int) ScreenWidth / 30, (int) (ScreenHeight / 20), paint); //나의 아이디
         canvas.drawText(""+DBManager.getInstance().getGuild(),(int)ScreenWidth/30,(int)(ScreenHeight/20)*2,paint);  //나의 소속길드
 

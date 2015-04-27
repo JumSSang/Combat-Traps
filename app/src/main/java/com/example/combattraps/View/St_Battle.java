@@ -153,8 +153,8 @@ public class St_Battle implements IState {
         Mtemp = new Unit(GraphicManager.getInstance().mTownHall.m_bitmap);
         Mtemp.SetPos(49, 0);
         CreateHall(1, 48, Mtemp,0);
-        CreateHall(1, 1, Mtemp,0);
-        Unit aTemp;
+        CreateHall(1, 1, Mtemp,1);
+        LoadEnemy();
     }
 
     public void UnitAdd() {
@@ -252,7 +252,7 @@ public class St_Battle implements IState {
             }
         }
 
-
+        Units.RenderUnit(canvas);
         /*
 
         디버깅용 터치 좌표 확인을 위해 하얀색 원형 그려주는 부분이다.
@@ -266,7 +266,7 @@ public class St_Battle implements IState {
         GraphicManager.getInstance().ButtonView_Image.Draw(canvas, 0, (int) m_Height - (int) m_Height / 6);
 
 
-        Units.RenderUnit(canvas);
+
         //유저 정보를 뿌려주는 인스턴스의 Draw
         UI_imfor.Draw(canvas);
         //UI 버튼위치마다 번호를 매겨서 글자 출력 해준다.
@@ -374,13 +374,12 @@ public class St_Battle implements IState {
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_elsatower && UI_imfor.GetGold() >= 200) {
                                     temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
 
-                                    CreateMagicTower(i, j, temp);
+                                    CreateMagicTower(i, j, temp,false);
 
                                     ///안나 생산
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_anna && UI_imfor.GetGold() >= 10) {
                                     temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
                                     temp.Anna(1);
-
                                     CreateAnna(i, j, temp,0);
                                 }
 
@@ -484,25 +483,44 @@ public class St_Battle implements IState {
         return FloatMath.sqrt(x * x + y * y);
     }
 
-    public void CreateMagicTower(int i, int j, Unit temp) {
-        if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
-            m_bmap[i][j] = f_elsatower;
-            UI_imfor.BuyUnit(300);
 
-            Sound.getInstance().play(1);
-            m_map[i][j] = 3;//원 위치
-            m_map[i][j + 1] = 3; //y값 증가
-            m_map[i + 1][j] = 3; //left값 증가 +1
-            m_map[i + 1][j + 1] = 3; //y left값 증가 +1
-            m_UI_Touch_Postion = 0;
-            temp.SetPos(i, j);
-            temp.ElsaTower(1);
 
-            //temp.resizebitmap(100-100/3,60);
-            Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
-            stemp.InitEffect();
-            Units.MyUnits.add(stemp);
-
+    public void CreateMagicTower(int i, int j, Unit temp,boolean enemy) {
+        if(enemy==true)
+        {
+            if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
+                m_bmap[i][j] = f_elsatower;
+                Sound.getInstance().play(1);
+                m_map[i][j] = 3;//원 위치
+                m_map[i][j + 1] = 3; //y값 증가
+                m_map[i + 1][j] = 3; //left값 증가 +1
+                m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+                m_UI_Touch_Postion = 0;
+                temp.SetPos(i, j);
+                temp.ElsaTower(1);
+                //temp.resizebitmap(100-100/3,60);
+                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
+                stemp.InitEffect();
+                Units.EnemyUnits.add(stemp);
+            }
+        }
+        else {
+            if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
+                m_bmap[i][j] = f_elsatower;
+                UI_imfor.BuyUnit(300);
+                Sound.getInstance().play(1);
+                m_map[i][j] = 3;//원 위치
+                m_map[i][j + 1] = 3; //y값 증가
+                m_map[i + 1][j] = 3; //left값 증가 +1
+                m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+                m_UI_Touch_Postion = 0;
+                temp.SetPos(i, j);
+                temp.ElsaTower(1);
+                //temp.resizebitmap(100-100/3,60);
+                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
+                stemp.InitEffect();
+                Units.MyUnits.add(stemp);
+            }
         }
     }
 
@@ -541,22 +559,35 @@ public class St_Battle implements IState {
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
 
-        Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
+
         //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
         //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
         if(whounit==0) {
+
+            Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
             Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
-            Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
+          //  Units.MyUnits.get(Units.MyUnits.size() - 1).m_BoundingSpear
+           Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
         }
         else
         {
+            Units.EnemyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
             Units.EnemyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
             Units.EnemyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
         }
 
     }
-
+    public void LoadEnemy()
+    {
+        Unit temp,temp1,temp2;
+        temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+        CreateMagicTower(10,10,temp,true);
+        temp1 = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+        CreateMagicTower(10,15,temp1,true);
+        temp2 = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+        CreateMagicTower(20,20,temp2,true);
+    }
     //타운홀 생성 부분
     public void CreateHall(int i, int j, Unit temp,int whounit) {
         m_map[i][j] = 3;//원 위치
@@ -567,7 +598,7 @@ public class St_Battle implements IState {
         {
             Units.MyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
         }
-        else
+        else if(whounit==1)
             Units.EnemyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
 
     }
@@ -597,30 +628,6 @@ public class St_Battle implements IState {
     }
 
 
-
-
-
-    public boolean AABB(Vec2 A, Vec2 B, float range) {
-
-        /*bool isCollision(Sphere* m1,Sphere *m2)
-        {
-            중점사이의거리= sqrt((float)((m2->x-m1->x)*(m2->x-m1->x))
-                    +((m2->y-m1->y)*(m2->y-m1->y))
-                    +((m2->z-m1->z)*(m2->z-m1->z)));
-            if(m1->r+m2->r>=중점사이의거리)
-                return TRUE;66666666666
-            else
-                return FALSE;
-        }*/
-        float distance = (float) Math.sqrt((B.fx - A.fx) * (B.fx - A.fx) + (B.fy - A.fy) * (B.fy - A.fy));
-        // A.distance=distance;
-        if (range >= distance) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
 
 }
 

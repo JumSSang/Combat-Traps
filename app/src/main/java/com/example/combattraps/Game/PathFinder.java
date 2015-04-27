@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PathFinder {
-    private Unit m_dest;
+    private Vec2 m_dest;
     private final ArrayList<Node> openNodeList = new ArrayList<Node>();
     private int map[][]; //걸을수있는 맵인지 판정
     private Node nodeMap[][];
@@ -17,12 +17,12 @@ public class PathFinder {
     public PathFinder() {
     }
 
-    public Node find(Unit origin, Unit dest) //나의 오브젝트,목표 오브젝트
+    public Node find(Vec2 origin, Vec2 dest) //나의 오브젝트,목표 오브젝트
     {
         m_dest = dest;
 
-        Node firstNode = new Node(origin.Postion);
-        nodeMap[origin.Postion.x][origin.Postion.y] = firstNode;
+        Node firstNode = new Node(origin);
+        nodeMap[origin.x][origin.y] = firstNode;
 
         for(int i=0;i<height;i++)
         {
@@ -36,7 +36,7 @@ public class PathFinder {
             if (openNodeList.isEmpty()) return null;
             Node best = getBestNode();
             //Log.i("msg", best.m_pos+" -> "+dest.Postion);
-            if (best.m_pos.equals(m_dest.Postion)) return best;
+            if (best.m_pos.equals(m_dest)) return best;
             openNode(best);
         }
     }
@@ -118,7 +118,7 @@ public class PathFinder {
         public Node(Vec2 pos, int Gplus, Node parentNode) {
             this.m_pos = new Vec2(pos);
             this.G = parentNode.G + Gplus;
-            this.fast = this.G + m_dest.Postion.getDistance(pos) * 10;
+            this.fast = this.G + m_dest.getDistance(pos) * 10;
             this.parentNode = parentNode;
         }
 

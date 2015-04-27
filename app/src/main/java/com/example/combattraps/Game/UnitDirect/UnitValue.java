@@ -11,6 +11,7 @@ public class UnitValue {
     static final int F_ELSATOWER = 5;
     static final int F_ANNA = 6;
     static final int F_TOWNHALL = 7;
+    private boolean m_GameStart=false;
     private static UnitValue s_instance;
 
     public static UnitValue getInstance()
@@ -20,6 +21,14 @@ public class UnitValue {
             s_instance =new UnitValue();
         }
         return s_instance;
+    }
+    public void setGameStart()
+    {
+        m_GameStart=true;
+    }
+    public boolean getGameStart()
+    {
+        return m_GameStart;
     }
 
 }
