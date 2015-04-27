@@ -16,8 +16,9 @@ import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.GraphicManager;
 import com.example.combattraps.Game.Map_analysis;
 import com.example.combattraps.Game.PathFinder;
-import com.example.combattraps.Game.Unit;
-import com.example.combattraps.Game.UnitManager;
+import com.example.combattraps.Game.UnitDirect.Unit;
+import com.example.combattraps.Game.UnitDirect.UnitManager;
+import com.example.combattraps.Game.UnitDirect.Unit_Imfor;
 import com.example.combattraps.Game_NetWork.GameNet;
 import com.example.combattraps.Game_NetWork.ListItem;
 import com.example.combattraps.R;
@@ -30,27 +31,24 @@ import com.example.combattraps.immortal.Graphic_image;
 import com.example.combattraps.immortal.IState;
 import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.Vec2;
-import com.example.combattraps.Game.ActiveCollusion;
 
 import java.util.ArrayList;
 
 public class St_Battle implements IState {
 
     private final PathFinder finderOjbect = new PathFinder();
-    private PathFinder.Node findedPath;
-
     GameNet St_Network;
-    ArrayList<ListItem> MyListImmforList = new ArrayList();
-    Map_analysis AnaMap;
     Matrix matrix = new Matrix();
-    private GameThread m_thread;
-    private ArrayList<Graphic_image> MapTile;
     private ArrayList<ActiveCollusion> tileColl;
     private ArrayList<UnitList> UnitDataList;
-    private VelocityTracker m_Velocity;
     private UI_Create_Bottom UI;
     private UI_Create_Imfor UI_imfor;
-    private ArrayList<UnitManager> PlayerUnit;
+
+
+    private ArrayList<Unit_Imfor> PlayerUnit; //플레이어의 유닛 리스트트
+    private ArrayList<Unit_Imfor>enemyList; //적 리스트
+
+
     public int m_UI_Touch_Postion = 0;
     float m_click_x = 0; //첫번째 터치좌표 x
     float m_click_y = 0; //첫번째 터치좌표 y
@@ -99,9 +97,12 @@ public class St_Battle implements IState {
     double m_thread_tiem = 0;
     double m_OpenServerTime = 0;
     double m_checkLoader = 0;
+    UnitManager Units;
 
     @Override
     public void Init() {
+        AppManager.getInstance().state=AppManager.game;
+        GraphicManager.getInstance().Init();
         Sound.getInstance().addList(1, R.raw.buildingsaw);
         Sound.getInstance().backgroundPlay(R.raw.thetruth);
         Sound.getInstance().addList(2, R.raw.smallchain);
@@ -113,10 +114,12 @@ public class St_Battle implements IState {
         St_Network = new GameNet();
         tileColl = new ArrayList<ActiveCollusion>();
         UnitDataList = new ArrayList<UnitList>();
-        PlayerUnit = new ArrayList<UnitManager>();
+        PlayerUnit = new ArrayList<Unit_Imfor>();
+
         DisplayMetrics metrics = AppManager.getInstance().getResources().getDisplayMetrics();
         m_Width = metrics.widthPixels;
         m_Height = metrics.heightPixels;
+        Units=new UnitManager();
         matrix.setScale(m_matrix_x, m_matrix_y);
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
@@ -133,6 +136,11 @@ public class St_Battle implements IState {
                 } else {
                     m_map[i][j] = 2;
                 }
+                if(i==0 || i==49||j==0||j==49)
+                {
+                    m_map[i][j]=4;
+                }
+
             }
         }
         finderOjbect.LoadMap(m_map);
@@ -140,12 +148,12 @@ public class St_Battle implements IState {
         UnitAdd(); //데이터 베이스로 부터 유닛 목록 받아온다.
         UI = new UI_Create_Bottom(m_Width, m_Height, UnitDataList.size(), 0, UnitDataList);
         //id,gold,gname,log,glogo
-        UI_imfor = new UI_Create_Imfor(m_Width, m_Height, "go7072", 100000000, "NLIP", 1, 1, "JJUMSANG", 100000000, "한강정모", 1, 1);
+        UI_imfor = new UI_Create_Imfor(m_Width, m_Height);
         Unit Mtemp;
         Mtemp = new Unit(GraphicManager.getInstance().mTownHall.m_bitmap);
         Mtemp.SetPos(49, 0);
-
-        CreateHall(1, 48, Mtemp);
+        CreateHall(1, 48, Mtemp,0);
+        CreateHall(1, 1, Mtemp,0);
         Unit aTemp;
     }
 
@@ -192,31 +200,14 @@ public class St_Battle implements IState {
         if (m_checkLoader == 0) {
             m_OpenServerTime += timeDelta;
         }
-        MoveUpdate(timeDelta);
+        Units.Update(timeDelta);
 
         if (m_OpenServerTime > 10) {
 
             m_OpenServerTime = 0;
             m_checkLoader++;
         }
-        for (int i = 0; i < PlayerUnit.size(); i++) {
-            if (PlayerUnit.get(i).mType == f_elsatower) {
-                PlayerUnit.get(i).myUnitObject.PatrolUpdate(System.currentTimeMillis());
-                PlayerUnit.get(i).m_effect.Update(System.currentTimeMillis());
-                for (int j = 0; j < PlayerUnit.size(); j++) {
-                    if (AABB(PlayerUnit.get(i).DrawPosition, PlayerUnit.get(j).DrawPosition, PlayerUnit.get(i).range) && PlayerUnit.get(j).mType == f_anna) {
-                        PlayerUnit.remove(j);
-                        if (PlayerUnit.get(i).mHp > 0) {
-                            PlayerUnit.get(i).mHp -= 1;
-                        } else {
-                            PlayerUnit.remove(i);
-                        }
-                    }
-                }
-                //if(AABB(PlayerUnit.get(i).DrawPosition,))
-                //PlayerUnit.get(i).AABB(PlayerUnit.get(i).DrawPosition,)
-            }
-        }
+
         //GraphicManager.getInstance().m_effect.Update(System.currentTimeMillis());
 
     }
@@ -249,47 +240,23 @@ public class St_Battle implements IState {
                 }
             }
         }
-        for (int i = 0; i < PlayerUnit.size(); i++) {
-
-            int x = PlayerUnit.get(i).myUnitObject.Postion.x;
-            int y = PlayerUnit.get(i).myUnitObject.Postion.y;
-            //750 + 50 / 2 * (y - x), -300 + 30 / 2 * (y+ x)
-            if (PlayerUnit.get(i).mType == f_elsatower) {
-                paint.setARGB(50, 255, 0, 0);
-                canvas.drawCircle(PlayerUnit.get(i).m_BoundingSpear.fx, PlayerUnit.get(i).m_BoundingSpear.fy, 200, paint);
-                PlayerUnit.get(i).myUnitObject.Draw(canvas, 1, PlayerUnit.get(i).DrawPosition.fx, PlayerUnit.get(i).DrawPosition.fy - 100);
-                PlayerUnit.get(i).Hpbar();
-                PlayerUnit.get(i).originHP.top -= 110;
-                PlayerUnit.get(i).originHP.bottom -= 110;
-                PlayerUnit.get(i).m_effect.Effect(30);
-                PlayerUnit.get(i).m_effect.Draw(canvas, 1, PlayerUnit.get(i).DrawPosition.fx - 30, PlayerUnit.get(i).DrawPosition.fy - 50);
-                paint.setColor(Color.GREEN);
-                canvas.drawRect(PlayerUnit.get(i).originHP, paint);
-                paint.setColor(Color.WHITE);
-
-            } else if (PlayerUnit.get(i).mType == f_townhall) {
-                PlayerUnit.get(i).myUnitObject.Draw(canvas, PlayerUnit.get(i).DrawPosition.x + 60, PlayerUnit.get(i).DrawPosition.y - 160);
-            } else if (PlayerUnit.get(i).mType == f_anna) {
-                PlayerUnit.get(i).myUnitObject.Draw(canvas, 1, PlayerUnit.get(i).DrawPosition.fx, PlayerUnit.get(i).DrawPosition.fy - 30);
-                paint.setColor(Color.GREEN);
-                PlayerUnit.get(i).Hpbar();
-                PlayerUnit.get(i).originHP.top -= 50;
-                PlayerUnit.get(i).originHP.bottom -= 50;
-                canvas.drawRect(PlayerUnit.get(i).originHP, paint);
-                paint.setColor(Color.WHITE);
-            } else {
-
-
-                PlayerUnit.get(i).myUnitObject.Draw(canvas, PlayerUnit.get(i).DrawPosition.x, PlayerUnit.get(i).DrawPosition.y);
-
-                PlayerUnit.get(i).Hpbar();
-                paint.setColor(Color.GREEN);
-                canvas.drawRect(PlayerUnit.get(i).originHP, paint);
-                paint.setColor(Color.WHITE);
+        for(int i=0;i<50;i++)
+        {
+            for(int j=0;j<50;j++)
+            {
+             if(m_map[i][j]==4)
+            {
+                GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
+                GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i) -25);
             }
-
+            }
         }
 
+
+        /*
+
+        디버깅용 터치 좌표 확인을 위해 하얀색 원형 그려주는 부분이다.
+         */
         paint.setColor(Color.WHITE);
 
         canvas.drawCircle((m_click_x / m_matrix_x - m_diffX), (m_click_y / m_matrix_y - m_diffY), 5, paint);
@@ -297,38 +264,40 @@ public class St_Battle implements IState {
         canvas.drawCircle(m_click2_x - m_diffX, m_click2_y - m_diffY, 5, paint);
         canvas.restore();
         GraphicManager.getInstance().ButtonView_Image.Draw(canvas, 0, (int) m_Height - (int) m_Height / 6);
+
+
+        Units.RenderUnit(canvas);
+        //유저 정보를 뿌려주는 인스턴스의 Draw
         UI_imfor.Draw(canvas);
+        //UI 버튼위치마다 번호를 매겨서 글자 출력 해준다.
         for (int i = 0; i < UI.Button.size(); i++) {
             UI.Button.get(i).Draw(canvas);
             canvas.drawText("" + i, (int) (UI.Button.get(i).GetX()), (int) (UI.Button.get(i).GetY()), paint);
         }
-        //
-        //  TowerButton.Draw(canvas,100,((int)m_Height-(int)m_Height/7));
-        // Store_button.Draw(canvas, 0, (int) m_Height - (int) m_Height / 4);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
         paint.setColor(Color.RED);
-
+        //클릭 위치마다 사각형을 그려준다 오브젝트에 사각형
         canvas.drawRect((m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12, m_Height - m_Height / 6, (m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12 + m_Width / 12, m_Height - m_Height / 18, paint);
 
+
+        //시간 출력 부분
         paint.setStrokeWidth(0);
         paint.setColor(Color.WHITE);
         canvas.drawText("", 100, 100, paint);
         canvas.drawText("" + m_time, 500, 500, paint);
         if (PlayerUnit.size() > 2) {
-           /* canvas.drawText("타워 x의값 : " + PlayerUnit.get(1).DrawPosition.fy, 800,200, paint);
-            canvas.drawText("타워 y의값 : " + PlayerUnit.get(1).DrawPosition.fy, 800, 250, paint);*/
+
             float srcx = PlayerUnit.get(1).DrawPosition.fx;
             float srcy = PlayerUnit.get(1).DrawPosition.fy;
             float destx = PlayerUnit.get(PlayerUnit.size() - 1).DrawPosition.fx;
             float desty = PlayerUnit.get(PlayerUnit.size() - 1).DrawPosition.fy;
 
             float distance = (float) Math.sqrt(Math.pow((destx - srcx), 2) + Math.pow(desty - srcy, 2));
-        /*    canvas.drawText("distance: " +distance,800,300,paint);*/
-        }/*
-        canvas.drawText("x의값 : "+PlayerUnit.get(PlayerUnit.size()-1).DrawPosition.fx,800,100,paint);
-        canvas.drawText("y의값 : "+PlayerUnit.get(PlayerUnit.size()-1).DrawPosition.fy,800,150,paint);
-*/
+
+        }
+
+
     }
 
     @Override
@@ -346,16 +315,9 @@ public class St_Battle implements IState {
 
         String strMsg = "";
         Log.i("액션" + strMsg, "" + strMsg);
-        //Sound.getInstance().play(1);
-        //Sound.getInstance().backgroundPlay(R.raw.zombie_background);
-        // LoadMap(); DB로 부터 맵 정보 불러오기
-        //Sound.getInstance().loopplay(1);
         boolean statetimeer = false;
         float x = event.getX();
         float y = event.getY();
-        // m_MediaPlayer.start();
-
-
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN: {
@@ -380,6 +342,7 @@ public class St_Battle implements IState {
                             Unit temp;
                             if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true) {
                                 // m_map[i][j]=3;
+                                //점핑 트랩 생산
                                 if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_jumpingtrap && UI_imfor.GetGold() >= 10) {
                                     if (m_map[i][j] != 3) {
                                         temp = new Unit(AppManager.getInstance().getBitmap(R.drawable.trap));
@@ -390,26 +353,35 @@ public class St_Battle implements IState {
                                         }
                                         m_UI_Touch_Postion = 0;
                                     }
+                                    //아처 타워 생산
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_tower && UI_imfor.GetGold() >= 100) {
                                     temp = new Unit(AppManager.getInstance().getBitmap(R.drawable.archortower));
-                                    CreateArchorTower(i, j, temp);
+                                    CreateArchorTower(i, j, temp,0);
+
+                                    //좀비 생산
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_zombie && UI_imfor.GetGold() >= 50) {
                                     temp = new Unit(AppManager.getInstance().getBitmap(R.drawable.zombie));
                                     temp.resizebitmap(25, 25);
                                     CreateZombie(i, j, temp);
+
+                                    //골드 전사 생산
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_goldrun && UI_imfor.GetGold() >= 50) {
                                     temp = new Unit(AppManager.getInstance().getBitmap(R.drawable.zombie));
                                     temp.resizebitmap(25, 25);
                                     CreateZombie(i, j, temp);
+
+                                    //엘사 타워생산
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_elsatower && UI_imfor.GetGold() >= 200) {
                                     temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-                                    // temp.resizebitmap(25,25);
+
                                     CreateMagicTower(i, j, temp);
+
+                                    ///안나 생산
                                 } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_anna && UI_imfor.GetGold() >= 10) {
                                     temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
                                     temp.Anna(1);
-                                    // temp.resizebitmap(25,25);
-                                    CreateAnna(i, j, temp);
+
+                                    CreateAnna(i, j, temp,0);
                                 }
 
                             } else {
@@ -527,9 +499,9 @@ public class St_Battle implements IState {
             temp.ElsaTower(1);
 
             //temp.resizebitmap(100-100/3,60);
-            UnitManager stemp = new UnitManager(temp, 50, 0, f_elsatower);
+            Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
             stemp.InitEffect();
-            PlayerUnit.add(stemp);
+            Units.MyUnits.add(stemp);
 
         }
     }
@@ -542,15 +514,13 @@ public class St_Battle implements IState {
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
 
-        PlayerUnit.add(new UnitManager(temp, 10, 1, f_zombie));
-        //Unit lastUnit = PlayerUnit.get(PlayerUnit.size()-1);
-        //findedPath = finderOjbect.find(PlayerUnit.get(0), lastUnit); // 찾기
+        Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_zombie));
+        //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
+        //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
-        PlayerUnit.get(PlayerUnit.size() - 1).myPath.LoadMap(m_map);
-        PlayerUnit.get(PlayerUnit.size() - 1).WhoEnemy(PlayerUnit.get(0).myUnitObject);
-        if (findedPath == null) {
-            Log.i("aaa", "못찾음");
-        }
+        Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
+        Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
+
     }
 
     public void CreateJumoingTrap(int i, int j, Unit temp) {
@@ -558,12 +528,12 @@ public class St_Battle implements IState {
         m_bmap[i][j] = f_jumpingtrap;
         m_map[i][j] = 3;
         UI_imfor.BuyUnit(10);
-
         temp.SetPos(i, j);
-        PlayerUnit.add(new UnitManager(temp, 0, 0, f_jumpingtrap));
+        Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, f_jumpingtrap));
     }
 
-    public void CreateAnna(int i, int j, Unit temp) {
+    //안나생성 부분
+    public void CreateAnna(int i, int j, Unit temp,int whounit) {
         Sound.getInstance().play(4);
         m_bmap[i][j] = f_anna;
 
@@ -571,27 +541,39 @@ public class St_Battle implements IState {
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
 
-        PlayerUnit.add(new UnitManager(temp, 10, 1, f_anna));
-        //Unit lastUnit = PlayerUnit.get(PlayerUnit.size()-1);
-        //findedPath = finderOjbect.find(PlayerUnit.get(0), lastUnit); // 찾기
+        Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
+        //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
+        //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
-        PlayerUnit.get(PlayerUnit.size() - 1).myPath.LoadMap(m_map);
-        PlayerUnit.get(PlayerUnit.size() - 1).WhoEnemy(PlayerUnit.get(0).myUnitObject);
-        if (findedPath == null) {
-            Log.i("aaa", "못찾음");
+        if(whounit==0) {
+            Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
+            Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
         }
+        else
+        {
+            Units.EnemyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
+            Units.EnemyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
+        }
+
     }
 
-    public void CreateHall(int i, int j, Unit temp) {
+    //타운홀 생성 부분
+    public void CreateHall(int i, int j, Unit temp,int whounit) {
         m_map[i][j] = 3;//원 위치
         m_map[i][j + 1] = 3; //y값 증가
         m_map[i + 1][j] = 3; //left값 증가 +1
         m_map[i + 1][j + 1] = 3; //y left값 증가 +1
-        PlayerUnit.add(new UnitManager(temp, 300, 1, f_townhall));
+        if(whounit==0)
+        {
+            Units.MyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
+        }
+        else
+            Units.EnemyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
 
     }
 
-    public void CreateArchorTower(int i, int j, Unit temp) {
+    //아처 타워 생성 부분 추후 수정 예정 부분
+    public void CreateArchorTower(int i, int j, Unit temp,int whounit) {
         if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
             m_bmap[i][j] = f_tower;
             UI_imfor.BuyUnit(100);
@@ -604,104 +586,19 @@ public class St_Battle implements IState {
             m_UI_Touch_Postion = 0;
             temp.SetPos(i, j);
             temp.resizebitmap(100 - 100 / 3, 60);
-            PlayerUnit.add(new UnitManager(temp, 30, 0, f_tower));
-        }
-    }
-
-    public void MoveUpdate(double dt) {
-
-
-        //PlayerUnit.get(0).SetX(finderOjbect.closeNode.get(m_findnubmer).m_x);
-        //PlayerUnit.get(0).SetY(finderOjbect.closeNode.get(m_findnubmer).m_y);
-        // if(findedPath.parentNode!=null) {
-        //int x = findedPath.m_pos.x - findedPath.parentNode.m_pos.x;
-        //int y = findedPath.m_pos.y - findedPath.parentNode.m_pos.y;
-        for (int i = 1; i < PlayerUnit.size(); i++) {
-            PlayerUnit.get(i).myTime += dt; //유닛의 움직임 타임을 더해준다.
-            if (PlayerUnit.get(i).myTime > 0.05f) {  //유닛의 움직임 타임이 0.5보다 커지면 타일을 하나씩 움직인다.
-                if (PlayerUnit.get(i).findedPath != null)  //목표타겟이 되는 부분이 Null값이 아니면 다음 문장  실행
-                    if (PlayerUnit.get(i).findedPath.parentNode != null) {  //부모노드가 비지않았다면 다음 으로
-
-                        if (PlayerUnit.get(i).mType == f_anna && PlayerUnit.get(i).mThisMove == false) {
-                            int x = PlayerUnit.get(i).findedPath.m_pos.x - PlayerUnit.get(i).findedPath.parentNode.m_pos.x;
-                            int y = PlayerUnit.get(i).findedPath.m_pos.y - PlayerUnit.get(i).findedPath.parentNode.m_pos.y;
-                            DirectionUpdate(x, y, PlayerUnit.get(i), f_anna);
-                            PlayerUnit.get(i).minus(PlayerUnit.get(i).DrawPosition,
-                                    new Vec2((float) (750 + 50 / 2 * (PlayerUnit.get(i).findedPath.parentNode.m_pos.y - PlayerUnit.get(i).findedPath.parentNode.m_pos.x)) - (float) Math.random() * 10, (float) (-300 + 25 / 2 * (PlayerUnit.get(i).findedPath.parentNode.m_pos.y + PlayerUnit.get(i).findedPath.parentNode.m_pos.x)) - (float) Math.random() * 10));
-                            PlayerUnit.get(i).mThisMove = true;
-
-                            PlayerUnit.get(i).m_moveVector.Normalize();
-                            PlayerUnit.get(i).Speed(PlayerUnit.get(i).m_moveVector.fx / 6, PlayerUnit.get(i).m_moveVector.fy / 6);
-                            PlayerUnit.get(i).count = 0;
-                        }
-                        if (PlayerUnit.get(i).mThisMove == true) {
-                            if (PlayerUnit.get(i).count == 6) {
-                                PlayerUnit.get(i).mThisMove = false;
-                                PlayerUnit.get(i).count = 0;
-                            } else {
-                                PlayerUnit.get(i).count += 1;
-                                PlayerUnit.get(i).DrawPosition.fx += PlayerUnit.get(i).mVSpeed.fx;
-                                PlayerUnit.get(i).DrawPosition.fy += PlayerUnit.get(i).mVSpeed.fy;
-                            }
-                        }
-                        if (PlayerUnit.get(i).mThisMove == false) {
-                            PlayerUnit.get(i).findedPath = PlayerUnit.get(i).findedPath.parentNode;
-                        }
-                        PlayerUnit.get(i).myTime = 0;
-                    }
+            if(whounit==0) {
+                Units.MyUnits.add(new Unit_Imfor(temp, 30, 0, f_tower));
             }
-
-        }
-
-
-    }
-
-    public void DirectionUpdate(int x, int y, UnitManager a, int type) {
-
-        if (type == f_anna) {
-            if (x == -1 && y == 1)//left
+            else
             {
-                a.myUnitObject.mDirection = 1;
-
-
-            } else if (x == 1 && y == 1)//top
-            {
-                a.myUnitObject.mDirection = 4;
-
-
-            } else if (x == 1 && y == -1)//right
-            {
-                a.myUnitObject.mDirection = 5;
-
-
-            } else if (x == -1 && y == -1)//bottom
-            {
-                a.myUnitObject.mDirection = 7;
-
-            } else if (x == 0 && y == 1)//lefttop
-            {
-                a.myUnitObject.mDirection = 2;
-
-            } else if (x == -1 && y == 0)//leftbottom
-            {
-                a.myUnitObject.mDirection = 0;
-
-            } else if (x == 1 && y == 0)//righttop
-            {
-                a.myUnitObject.mDirection = 4;
-
-            } else if (x == 0 && y == -1)//rightbottom
-            {
-                a.myUnitObject.mDirection = 6;
-
+                Units.EnemyUnits.add(new Unit_Imfor(temp,30,0,f_tower));
             }
-
-            a.mThisMove = true;
-        }
-        if (type == f_elsatower) {
-
         }
     }
+
+
+
+
 
     public boolean AABB(Vec2 A, Vec2 B, float range) {
 

@@ -38,18 +38,10 @@ public class NetConnect extends AsyncTask<Void, Void, Void> {
 
                 int a=0;
                 a+=1;
-                if(DBManager.getInstance().go_robby==1 )
-                {
-                   // soc.setSoTimeout(3000);
+                DBManager.getInstance().SetResponse(ois.readUTF());
 
-                    DBManager.getInstance().SetID(ois.readUTF());
-                    DBManager.getInstance().nextlobby=true;
-                }
-                else if(DBManager.getInstance().go_robby==2)
-                {
-                    DBManager.getInstance().SetResponse(ois.readUTF());
-                }
-                System.out.println(  DBManager.getInstance().getResponse());
+
+                //System.out.println(  DBManager.getInstance().getResponse());
             }
         } catch (StreamCorruptedException e1) {
             e1.printStackTrace();

@@ -1,7 +1,8 @@
-package com.example.combattraps.Game;
+package com.example.combattraps.Game.UnitDirect;
 
 import android.graphics.Rect;
 
+import com.example.combattraps.Game.PathFinder;
 import com.example.combattraps.R;
 import com.example.combattraps.immortal.AppManager;
 import com.example.combattraps.immortal.SpriteControl;
@@ -10,7 +11,7 @@ import com.example.combattraps.immortal.Vec2;
 /**
  * Created by GyungMin on 2015-03-29.
  */
-public class UnitManager {
+public class Unit_Imfor {
     public PathFinder myPath;
     public Unit myUnitObject;
     public Unit mMyTarget;
@@ -27,10 +28,9 @@ public class UnitManager {
     public Vec2 m_moveVector;
     public int count=0;
     public Vec2 m_BoundingSpear;
-    public int range=190;
-    public float distance;
 
-    public UnitManager(Unit myUnitObject, int hp, int mSpeed, int type) {
+
+    public Unit_Imfor(Unit myUnitObject, int hp, int mSpeed, int type) {
             myPath=new PathFinder();
             this.mHp=hp;
             this.mSpeed=mSpeed;

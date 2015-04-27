@@ -5,8 +5,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.example.combattraps.R;
-
+import com.example.combattraps.View.Ready_Room_Dir.SumInfo;
 import com.example.combattraps.immortal.AppManager;
+import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.Graphic_image;
 
 /**
@@ -25,7 +26,7 @@ public class UI_Create_Imfor {
     private String m_enemyGuildID;
     private int m_enemyLogo;
     private int m_enemyGuildLogo;
-
+    SumInfo sumLogo;
 
 
     ///
@@ -41,47 +42,10 @@ public class UI_Create_Imfor {
     private Graphic_image Enemy_Guild_Logo;
 
 
-
-//id,gold,gname,log,glogo
-    public UI_Create_Imfor(float x, float y,String myID,int myGold,String guildname,int Logonumber,int GuildLogo,
-                                            String enemyID,int enemyGold,String enemyGuildname,int enemyLogo,int enemyGuildLogo)
+    public UI_Create_Imfor(float x, float y)
     {
         ScreenHeight=y;
         ScreenWidth=x;
-        m_ID=myID;
-        m_enemyID=enemyID;
-        m_myGold=9999999;
-        GoldBar= new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.gold_icon));
-        enemyGoldBar=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.gold_icon));
-
-        m_GuildID=guildname;
-        ////
-        m_enemyID=enemyID;
-        m_enemyGold=enemyGold;
-        m_enemyGuildID=enemyGuildname;
-        m_enemyLogo=enemyLogo;
-        m_enemyGuildLogo=enemyGuildLogo;
-
-        My_Logo=SetUserLogo(Logonumber);
-        Guild_Logo=SetGuildLogo(GuildLogo);
-        Enemy_Logo=SetUserLogo(enemyLogo);
-        Enemy_Guild_Logo=SetGuildLogo(enemyGuildLogo);
-
-
-        GoldBar.resizebitmap((int)x/7,(int)y/12);
-        GoldBar.SetPosition((int)(0),(int)(y/10));
-        enemyGoldBar.resizebitmap((int)x/7,(int)y/12);
-        enemyGoldBar.SetPosition((int)(ScreenWidth-ScreenWidth/5),(int)(y/10));
-
-        /////////////////////////
-        Guild_Logo.resizebitmap((int)50,(int)50);
-        Guild_Logo.SetPosition((int)(0),(int)(y/18));
-        My_Logo.resizebitmap((int)50,(int)50);
-        /////////////////////////////
-        Enemy_Logo.resizebitmap((int)50,(int)50);
-        Enemy_Guild_Logo.resizebitmap((int)50,(int)50);
-        Enemy_Guild_Logo.SetPosition((int)(ScreenWidth-ScreenWidth/5),(int)(y/18));
-        Enemy_Logo.SetPosition((int)(ScreenWidth-ScreenWidth/5),0);
 
     }
     public void  Draw(Canvas canvas)
@@ -89,25 +53,23 @@ public class UI_Create_Imfor {
         Paint paint=new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(20);
-        GoldBar.Draw(canvas);
-        enemyGoldBar.Draw(canvas);
-        My_Logo.Draw(canvas);
-        Guild_Logo.Draw(canvas);
+        /*
+        1. 아이디
+        2. 길드
+        3. 적의 아아디
+        4. 적의 길드
+        5. 나의 골드
+        6. 적군 골드인데 생략 예정
+         */
+        canvas.drawText(""+ DBManager.getInstance().GetID(), (int) ScreenWidth / 30, (int) (ScreenHeight / 20), paint); //나의 아이디
+        canvas.drawText(""+DBManager.getInstance().getGuild(),(int)ScreenWidth/30,(int)(ScreenHeight/20)*2,paint);  //나의 소속길드
 
-        Enemy_Logo.Draw(canvas);
-        Enemy_Guild_Logo.Draw(canvas);
 
-        canvas.drawText(""+m_ID, (int) ScreenWidth / 30, (int) (ScreenHeight / 20), paint);
-        canvas.drawText(""+m_GuildID,(int)ScreenWidth/30,(int)(ScreenHeight/20)*2,paint);
-
-
-        canvas.drawText(""+m_enemyID, (int) ScreenWidth-ScreenWidth/6, (int) (ScreenHeight / 20), paint);
-        canvas.drawText(""+m_enemyGuildID,(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*2,paint);
+        canvas.drawText(""+DBManager.getInstance().GetEnemy(), (int) ScreenWidth-ScreenWidth/6, (int) (ScreenHeight / 20), paint);//적의 아이디
+        canvas.drawText("?????????",(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*2,paint); //적의 길드
         paint.setColor(Color.BLACK);
-        canvas.drawText("1000/"+m_enemyGold,(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*3,paint);
-        canvas.drawText("1000/"+m_myGold,(int)ScreenWidth/30,(int)(ScreenHeight/20)*3,paint);
-
-
+        canvas.drawText(""+DBManager.getInstance().GetGold(),(int)ScreenWidth/30,(int)(ScreenHeight/20)*3,paint);
+        canvas.drawText("???????"+m_enemyGold,(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*3,paint);
 
     }
     public int GetGold()

@@ -10,7 +10,10 @@ import android.view.MenuItem;
 import com.example.combattraps.View.Ready_Room;
 import com.example.combattraps.View.St_Battle;
 
+import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.GameView;
+
+import java.io.IOException;
 
 /**
  * Created by GyungMin on 2015-02-03.
@@ -21,8 +24,20 @@ public class GameActiviry extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        DBManager.getInstance().go_robby=1;
+        try {
+            DBManager.getInstance().connection.oos.writeObject("uid_request");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            DBManager.getInstance().connection.oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        GameView w =new GameView(this, new Ready_Room());
+
+        GameView w =new GameView(this, new St_Battle());
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();

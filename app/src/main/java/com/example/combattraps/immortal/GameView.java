@@ -99,6 +99,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         return super.onKeyDown(keyCode, event);
     }
 
+    public IState getState()
+    {
+        return m_state;
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event)
@@ -110,6 +115,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void ChangeGameState(IState _state){
 
         if(m_state!=null)
+        {
+            m_state.Destroy();
+        }
+        if(AppManager.getInstance().state==AppManager.game)
         {
             m_state.Destroy();
         }

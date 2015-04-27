@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import java.io.IOException;
+
 public interface IState {
     public void Init();
 

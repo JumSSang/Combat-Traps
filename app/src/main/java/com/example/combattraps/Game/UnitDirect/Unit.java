@@ -1,4 +1,4 @@
-package com.example.combattraps.Game;
+package com.example.combattraps.Game.UnitDirect;
 
 import android.graphics.Bitmap;
 

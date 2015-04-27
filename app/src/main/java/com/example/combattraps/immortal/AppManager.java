@@ -16,6 +16,10 @@ public class AppManager {
     public float height;
     //public NetManager NetWork;
     public double m_time=0;
+    public int state=1;
+    public static final int robby=1;
+    public static final int game=2;
+
 
   public Bitmap getBitmap(int r)
     {

@@ -20,6 +20,9 @@ public class SpriteControl extends Graphic_image {
     static final int DEATH=3;
     public int mDirection=0;
 
+
+
+    public boolean state_click=false;
     private int mFPS;
     private int mNoOfFrames;
     private int mCurrentFrame;
@@ -28,13 +31,6 @@ public class SpriteControl extends Graphic_image {
     protected boolean mbReply =true;
     protected boolean mbEnd = false;
     public Vec2 Postion;
-
-
-
-
-
-
-
 
     public SpriteControl(Bitmap bitmap) {
 
@@ -126,6 +122,8 @@ public class SpriteControl extends Graphic_image {
 
 
 
+    //애니메이션을 출력하는 부분이다.
+    //방향성을 가지고있는 케릭터 애니메이션 처리를 담당한다.
     public void Animation(int height,int width,int Width,int Height,int state)
     {
 
@@ -160,6 +158,7 @@ public class SpriteControl extends Graphic_image {
             }
         }
 
+    // 정찰 하는 애니메이션을 담당하는 부분이다.,
     public void PatrolUpdate(long GameTime) //엘사 타워의 랜덤 에니메이션 출력 업데이트 부분이다.
     {
         if (!mbEnd) {
@@ -171,6 +170,7 @@ public class SpriteControl extends Graphic_image {
             }
         }
     }
+
 
     public void Update(long GameTime) {  //일반적인 애니메이션의 업데이트 부분이다.
         if (!mbEnd) {
@@ -191,6 +191,7 @@ public class SpriteControl extends Graphic_image {
 
 
 
+    //버튼을 그려주는 부분이다.
     public void ButtonDraw(Canvas canvas,boolean click,float x,float y)
     {
         if(click==true)

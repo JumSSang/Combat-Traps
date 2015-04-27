@@ -53,6 +53,7 @@ public class StartActivity extends Activity implements View.OnClickListener {
                     while (connect) {
                         if (DBManager.getInstance().getResponse().equals("접속성공")) {
                             DBManager.getInstance().go_robby=1;
+
                             connect = false;
                             final Intent i = new Intent(this, GameActiviry.class);
                             AlertDialog.Builder alert_confirm = new AlertDialog.Builder(StartActivity.this);
@@ -60,45 +61,15 @@ public class StartActivity extends Activity implements View.OnClickListener {
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            try {
 
-
-                                                DBManager.getInstance().connection.oos.writeObject("uid_request");
-
-                                                DBManager.getInstance().connection.oos.flush();
-
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-
-                                                boolean state=true;
-
-
-                                            while(true) {
-
-                                                if (DBManager.getInstance().nextlobby == false) {
                                                     startActivity(i);
-                                                    return;
-                                                }
-                                                state = false;
-                                            }
 
 
-
-
-
-
-
-                                            // DBManager.getInstance().SetID( connection.ois.readObject().toString());
-
-
-
-                                            // 'YES'
                                         }
                                     });
                             AlertDialog alert = alert_confirm.create();
                             alert.show();
-                            DBManager.getInstance().SetResponse("");
+                          //  DBManager.getInstance().SetResponse("");
                         }else if (DBManager.getInstance().getResponse().equals("중복로그인")) {
                             connect = false;
                             AlertDialog.Builder alert_confirm = new AlertDialog.Builder(StartActivity.this);
@@ -111,7 +82,7 @@ public class StartActivity extends Activity implements View.OnClickListener {
                                     });
                             AlertDialog alert = alert_confirm.create();
                             alert.show();
-                            DBManager.getInstance().SetResponse("");
+                           // DBManager.getInstance().SetResponse("");
                         }
 
                         else if (DBManager.getInstance().getResponse().equals("접속실패")) {
@@ -126,12 +97,12 @@ public class StartActivity extends Activity implements View.OnClickListener {
                                     });
                             AlertDialog alert = alert_confirm.create();
                             alert.show();
-                            DBManager.getInstance().SetResponse("");
+                         //   DBManager.getInstance().SetResponse("");
                         }
                         else
                         {
                             connect=false;
-                            DBManager.getInstance().SetResponse("");
+                          //  DBManager.getInstance().SetResponse("");
                         }
                     }
                     //한번에 4kb쓰는게 빠르다. 한번에 패킷을 크게 보내는게 오버헤드가 적다
