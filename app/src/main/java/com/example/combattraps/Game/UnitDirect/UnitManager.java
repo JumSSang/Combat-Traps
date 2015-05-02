@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.Vec2;
 
 import java.util.ArrayList;
@@ -59,7 +60,6 @@ public class UnitManager {
                 case UnitValue.F_ELSATOWER:
                    // paint.setARGB(50, 255, 0, 0);
                    // canvas.drawCircle(UnitList.get(i).m_BoundingSpear.fx, UnitList.get(i).m_BoundingSpear.fy, 200, paint);
-
                     UnitList.get(i).myUnitObject.Draw(canvas, 1, UnitList.get(i).DrawPosition.fx, UnitList.get(i).DrawPosition.fy - 100);
                     UnitList.get(i).IniteBouningSpear(750 + 50 / 2 * (UnitList.get(i).myUnitObject.Postion.y - UnitList.get(i).myUnitObject.Postion.x) + 25,
                             -300 + 25 / 2 * (UnitList.get(i).myUnitObject.Postion.y + UnitList.get(i).myUnitObject.Postion.x) + 25);
@@ -148,13 +148,8 @@ public class UnitManager {
         unitSort();//유닛의 출력순서 정렬 부분
         for (int i = 0; i < MyUnits.size(); i++) {
             add();//아군 유닛 추가 상태 체크 부분
-
-
-
             //unitSort(MyUnits);//유닛의 출력순서 정렬 부분
-
             animationUpdate(MyUnits.get(i)); //유닛 애니메이션 업데이트 구현부분
-
             UnitMonitor(MyUnits.get(i),dt);
             remove(MyUnits, MyUnits.get(i));//유닛 제거 체크 부분
         }
@@ -247,6 +242,7 @@ public class UnitManager {
                         }
                         if (UnitList.get(i).mThisMove == false) {
                             UnitList.get(i).findedPath = UnitList.get(i).findedPath.parentNode;
+                            UnitList.get(i).myUnitObject.SetPos(UnitList.get(i).findedPath.m_pos.x,UnitList.get(i).findedPath.m_pos.y);
                         }
                         UnitList.get(i).myTime = 0;
                     }
@@ -288,14 +284,20 @@ public class UnitManager {
             case UnitValue.F_ELSATOWER:
                 break;
             case UnitValue.F_ANNA:
-
+                if(a.state==3 &&a.my_enemy.mHp<=0)
+                {
+                    a.my_enemy=EnemyUnits.get(0);
+                    a.state=1;
+                   a.myPath.LoadMap(UnitValue.m_map);
+                    a.findedPath=a.myPath.find(EnemyUnits.get(0).myUnitObject.Postion,a.myUnitObject.Postion);
+                }
 
                 if( a.state!=3) {
                     for (int i = 0; i < EnemyUnits.size(); i++) {
                         if (AABB(a.DrawPosition, EnemyUnits.get(i).DrawPosition, a.m_BoundingSpear.GetRadius()) && a.state != 2) {
                             a.state = 2;
                             a.my_enemy=EnemyUnits.get(i);
-                            a.findedPath = a.myPath.find(EnemyUnits.get(i).myUnitObject.Postion, a.findedPath.parentNode.m_pos);
+                            a.findedPath = a.myPath.find(EnemyUnits.get(i).myUnitObject.Postion, a.myUnitObject.Postion);
                         }
 
                     }
@@ -322,6 +324,7 @@ public class UnitManager {
     {
         if(a.myAttackDelayTime>2.0f) {
             if (a.my_enemy.mHp > 0) {
+                Sound.getInstance().play(5);
                 a.my_enemy.mHp -= 1;
                 a.myAttackDelayTime=0;
             }
@@ -330,10 +333,7 @@ public class UnitManager {
         {
             a.myAttackDelayTime+=dt;
         }
-        if(a.my_enemy.mHp<=0)
-        {
-            a.state=1;
-        }
+
 
     }
     //유닛을 제거하는 역할을 한다.

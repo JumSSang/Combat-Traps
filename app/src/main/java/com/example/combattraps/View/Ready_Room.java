@@ -1,8 +1,6 @@
 package com.example.combattraps.View;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -15,6 +13,8 @@ import com.example.combattraps.immortal.AppManager;
 import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.Graphic_image;
 import com.example.combattraps.immortal.IState;
+import com.example.combattraps.immortal.ScreenAnimation;
+import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.SpriteControl;
 
 import java.io.IOException;
@@ -30,16 +30,22 @@ public class Ready_Room implements IState {
     Rect btb_startRect;
     Rect btn_sotreRect;
     Rect btn_partbattleRect;
+    Rect btn_storyRect;
     Graphic_image gear;
     SpriteControl btn_Store;
     SpriteControl btn_partbattle;
+    SpriteControl btn_story;
     UserInfo m_myImfoRender;
     SumInfo m_SumImfoRender;
+    ScreenAnimation m_fadein;
+    double currentTime;
     @Override
     public void Init() {
-        AppManager.getInstance().state = AppManager.robby;
+        currentTime = System.currentTimeMillis() / 1000;
+        AppManager.getInstance().state = AppManager.S_ROBBY;
         GraphicManager.getInstance().Init();
-
+       // Sound.getInstance().backgroundPlay(R.raw.intro_bgm);
+        Sound.getInstance().addList(6,R.raw.ready_tictok);
         m_Width = (int) GraphicManager.getInstance().m_Width;
         m_Height = (int) GraphicManager.getInstance().m_Height;
 
@@ -48,6 +54,11 @@ public class Ready_Room implements IState {
         int btn_top = m_Height / 20 * 15;
         btb_startRect = new Rect(btn_left, btn_top, btn_left + m_Width / 20 * 5, btn_top + (int) m_Width / 20 * 2);
 
+        int btn_story_left= m_Width / 20;
+        int btn_story_top= m_Height /20*15;
+         btn_storyRect=new Rect(btn_story_left/40, btn_story_top, btn_story_left+btn_story_left+m_Width/20*5,btn_top+(int)m_Width/20*2 );
+
+        btn_story=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.btn_story));
 
         int inven_left = m_Width / 20 * 11;
         int inven_top = m_Height / 20 * 15;
@@ -60,6 +71,8 @@ public class Ready_Room implements IState {
         gear = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.gear));
         gear.resizebitmap(100, 100);
 
+        btn_story.resizebitmap((int) m_Width / 20* 8, (int) m_Width / 20 * 2);//button을 화면 크기의 20/10으로 초기화.
+        btn_story.ButtonInit((int) m_Width / 20 * 4, (int) m_Width / 20 * 2); //ButtonSprite 만들기 위한 함수
         btn_partbattle.resizebitmap((int) m_Width / 20 * 10, (int) m_Width / 20 * 2);//button을 화면 크기의 20/10으로 초기화.
         btn_partbattle.ButtonInit((int) m_Width / 20 * 5, (int) m_Width / 20 * 2); //ButtonSprite 만들기 위한 함수
 
@@ -76,6 +89,12 @@ public class Ready_Room implements IState {
         m_myImfoRender=new UserInfo(m_Width,m_Height);
         m_SumImfoRender=new SumInfo(m_Width,m_Height);
 
+
+        m_fadein=new ScreenAnimation(m_Width,m_Height);
+        m_fadein.InitFadeIn();
+
+
+
     }
 
     @Override
@@ -85,6 +104,23 @@ public class Ready_Room implements IState {
 
     @Override
     public void Update() {
+        double newTime = System.currentTimeMillis() / 1000.0;
+        double timeDelta = newTime - currentTime;
+        currentTime = newTime;
+        double dt=timeDelta;
+        m_fadein.fadeInUpdate(timeDelta);
+        if(!DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") && !DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") &&!DBManager.getInstance().GetEnemy().equals("검색취소"))
+        {
+            GraphicManager.getInstance().btn_start.state_click=false;
+            AppManager.getInstance().getGameView().ChangeGameState(new St_Battle());
+        }
+        if( btn_story.state_click==true)
+        {
+            Sound.getInstance().backgroundRelease();
+            AppManager.getInstance().state=AppManager.S_STORY1;
+            AppManager.getInstance().getGameView().ChangeGameState(new StoryView());
+        }
+
 
     }
 
@@ -92,7 +128,7 @@ public class Ready_Room implements IState {
     public void Render(Canvas canvas) {
 
 
-        if(AppManager.getInstance().state==AppManager.robby) {
+        if(AppManager.getInstance().state==AppManager.S_ROBBY) {
 
             int logo_left = 0;
             int logo_top = m_Height / 20 * 2 + 5; //사실 로고 탑임
@@ -100,6 +136,7 @@ public class Ready_Room implements IState {
             GraphicManager.getInstance().btn_start.ButtonDraw(canvas, GraphicManager.getInstance().btn_start.state_click, btb_startRect.left, btb_startRect.top);
             btn_Store.ButtonDraw(canvas, btn_Store.state_click, btn_sotreRect.left, btn_sotreRect.top);
             btn_partbattle.ButtonDraw(canvas, btn_partbattle.state_click, btn_partbattleRect.left, btn_partbattleRect.top);
+            btn_story.ButtonDraw(canvas,btn_story.state_click,btn_storyRect.left,btn_storyRect.top);
             GraphicManager.getInstance().m_UserView.Draw(canvas, m_Width / 20 * 2, m_Height / 20 * 2); //유저 정보 뷰 출력
             GraphicManager.getInstance().m_Top_Bar.Draw(canvas, 0, 0);
             gear.Draw(canvas, m_Width / 20 * 18, 0);
@@ -118,13 +155,9 @@ public class Ready_Room implements IState {
 
             }
 
-            if(!DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") && !DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") &&!DBManager.getInstance().GetEnemy().equals("검색취소"))
-            {
-                AppManager.getInstance().getGameView().ChangeGameState(new St_Battle());
-            }
 
         }
-
+        m_fadein.fadeDraw(canvas);
 
 
         // canvas.drawText("승리 : 0 ",(int)GraphicManager.getInstance().m_Width/20*8,(int)GraphicManager.getInstance().m_Height/40*33,paint);
@@ -158,6 +191,14 @@ public class Ready_Room implements IState {
             case MotionEvent.ACTION_DOWN: {
                 if (Collusion((int) x, (int) y, btb_startRect)) {
                     GraphicManager.getInstance().btn_start.state_click = !GraphicManager.getInstance().btn_start.state_click;
+                    if(GraphicManager.getInstance().btn_start.state_click==true)
+                    {
+                        Sound.getInstance().play(6);
+                    }
+                    else if(GraphicManager.getInstance().btn_start.state_click==false)
+                    {
+                        Sound.getInstance().stop(6);
+                    }
                     Search();
 
 
@@ -166,6 +207,10 @@ public class Ready_Room implements IState {
                     btn_partbattle.state_click = !btn_partbattle.state_click;
 
 
+                }
+                if((Collusion((int) x, (int) y, btn_storyRect)) )
+                {
+                    btn_story.state_click = !btn_story.state_click;
                 }
                 if (Collusion((int) x, (int) y, btn_sotreRect)) {
                     btn_Store.state_click = !btn_Store.state_click;

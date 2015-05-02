@@ -42,7 +42,7 @@ public class SumInfo {
         sum[8] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_8));
         sum[9] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_9));
 
-        if(AppManager.getInstance().state==AppManager.game)
+        if(AppManager.getInstance().state==AppManager.S_GAME)
         {
             logo_left = 5;
             logo_top =  m_Height / 40*1; //사실 로고 탑임

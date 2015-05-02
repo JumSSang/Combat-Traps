@@ -17,8 +17,10 @@ public class AppManager {
     //public NetManager NetWork;
     public double m_time=0;
     public int state=1;
-    public static final int robby=1;
-    public static final int game=2;
+    public static final int S_ROBBY=1;
+    public static final int S_GAME=2;
+    public static final int S_STORY1=3;
+    public static final int S_LOADING=3;
 
 
   public Bitmap getBitmap(int r)

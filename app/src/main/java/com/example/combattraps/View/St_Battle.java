@@ -18,6 +18,7 @@ import com.example.combattraps.Game.Map_analysis;
 import com.example.combattraps.Game.PathFinder;
 import com.example.combattraps.Game.UnitDirect.Unit;
 import com.example.combattraps.Game.UnitDirect.UnitManager;
+import com.example.combattraps.Game.UnitDirect.UnitValue;
 import com.example.combattraps.Game.UnitDirect.Unit_Imfor;
 import com.example.combattraps.Game_NetWork.GameNet;
 import com.example.combattraps.Game_NetWork.ListItem;
@@ -72,7 +73,7 @@ public class St_Battle implements IState {
     public float m_Width;
     public float m_Height;
 
-    int[][] m_map = new int[50][50];
+
     int[][] m_bmap = new int[50][50];
     float m_movex = 0;
     float m_movey = 0;
@@ -101,13 +102,14 @@ public class St_Battle implements IState {
 
     @Override
     public void Init() {
-        AppManager.getInstance().state=AppManager.game;
+        AppManager.getInstance().state=AppManager.S_GAME;
         GraphicManager.getInstance().Init();
         Sound.getInstance().addList(1, R.raw.buildingsaw);
         Sound.getInstance().backgroundPlay(R.raw.thetruth);
         Sound.getInstance().addList(2, R.raw.smallchain);
         Sound.getInstance().addList(3, R.raw.zombie_create_sound);
         Sound.getInstance().addList(4, R.raw.hello);
+        Sound.getInstance().addList(5,R.raw.smash);
         GraphicManager.getInstance().background.resizebitmap(3000, 2000);
        // GraphicManager.getInstance().Init();
         currentTime = System.currentTimeMillis() / 1000;
@@ -132,19 +134,18 @@ public class St_Battle implements IState {
                 tileColl.add(temp);
                 m_bmap[i][j] = 0;
                 if ((i + j) % 2 == 0) {
-                    m_map[i][j] = 1;
+                    UnitValue.m_map[i][j] = 1;
                 } else {
-                    m_map[i][j] = 2;
+                     UnitValue.m_map[i][j] = 2;
                 }
                 if(i==0 || i==49||j==0||j==49)
                 {
-                    m_map[i][j]=4;
+                     UnitValue.m_map[i][j]=4;
                 }
 
             }
         }
-        finderOjbect.LoadMap(m_map);
-
+        finderOjbect.LoadMap( UnitValue.m_map);
         UnitAdd(); //데이터 베이스로 부터 유닛 목록 받아온다.
         UI = new UI_Create_Bottom(m_Width, m_Height, UnitDataList.size(), 0, UnitDataList);
         //id,gold,gname,log,glogo
@@ -230,12 +231,12 @@ public class St_Battle implements IState {
         for (int i = 0; i < 50; i++) {
 
             for (int j = 0; j < 50; j++) {
-                if (m_map[i][j] == 1) {
+                if ( UnitValue.m_map[i][j] == 1) {
                     GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
 
-                } else if (m_map[i][j] == 2) {
+                } else if ( UnitValue.m_map[i][j] == 2) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (m_map[i][j] == 3) {
+                } else if ( UnitValue.m_map[i][j] == 3) {
                     GraphicManager.getInstance().temptitle3.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 }
             }
@@ -244,7 +245,7 @@ public class St_Battle implements IState {
         {
             for(int j=0;j<50;j++)
             {
-             if(m_map[i][j]==4)
+             if( UnitValue.m_map[i][j]==4)
             {
                 GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i) -25);
@@ -341,10 +342,10 @@ public class St_Battle implements IState {
                         for (int j = 0; j < 50; j++) {
                             Unit temp;
                             if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true) {
-                                // m_map[i][j]=3;
+                                //  UnitValue.m_map[i][j]=3;
                                 //점핑 트랩 생산
                                 if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == f_jumpingtrap && UI_imfor.GetGold() >= 10) {
-                                    if (m_map[i][j] != 3) {
+                                    if ( UnitValue.m_map[i][j] != 3) {
                                         temp = new Unit(AppManager.getInstance().getBitmap(R.drawable.trap));
                                         temp.resizebitmap(25, 25);
                                         CreateJumoingTrap(i, j, temp);
@@ -384,7 +385,7 @@ public class St_Battle implements IState {
                                 }
 
                             } else {
-                                // m_map[i][j]=3;
+                                //  UnitValue.m_map[i][j]=3;
                             }
                             count++;
                         }
@@ -488,13 +489,13 @@ public class St_Battle implements IState {
     public void CreateMagicTower(int i, int j, Unit temp,boolean enemy) {
         if(enemy==true)
         {
-            if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
+            if ( UnitValue.m_map[i][j] != 3 &&  UnitValue.m_map[i][j + 1] != 3 &&  UnitValue.m_map[i + 1][j + 1] != 3 &&  UnitValue.m_map[i + 1][j] != 3) {
                 m_bmap[i][j] = f_elsatower;
                 Sound.getInstance().play(1);
-                m_map[i][j] = 3;//원 위치
-                m_map[i][j + 1] = 3; //y값 증가
-                m_map[i + 1][j] = 3; //left값 증가 +1
-                m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+                 UnitValue.m_map[i][j] = 3;//원 위치
+                 UnitValue.m_map[i][j + 1] = 3; //y값 증가
+                 UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+                 UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
                 m_UI_Touch_Postion = 0;
                 temp.SetPos(i, j);
                 temp.ElsaTower(1);
@@ -505,14 +506,14 @@ public class St_Battle implements IState {
             }
         }
         else {
-            if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
+            if ( UnitValue.m_map[i][j] != 3 &&  UnitValue.m_map[i][j + 1] != 3 &&  UnitValue.m_map[i + 1][j + 1] != 3 &&  UnitValue.m_map[i + 1][j] != 3) {
                 m_bmap[i][j] = f_elsatower;
                 UI_imfor.BuyUnit(300);
                 Sound.getInstance().play(1);
-                m_map[i][j] = 3;//원 위치
-                m_map[i][j + 1] = 3; //y값 증가
-                m_map[i + 1][j] = 3; //left값 증가 +1
-                m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+                 UnitValue.m_map[i][j] = 3;//원 위치
+                 UnitValue.m_map[i][j + 1] = 3; //y값 증가
+                 UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+                 UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
                 m_UI_Touch_Postion = 0;
                 temp.SetPos(i, j);
                 temp.ElsaTower(1);
@@ -527,7 +528,7 @@ public class St_Battle implements IState {
     public void CreateZombie(int i, int j, Unit temp) {
         Sound.getInstance().play(3);
         m_bmap[i][j] = f_zombie;
-        m_map[i][j] = 3;
+         UnitValue.m_map[i][j] = 3;
         UI_imfor.BuyUnit(30);
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
@@ -536,7 +537,7 @@ public class St_Battle implements IState {
         //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
         //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
-        Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
+        Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap( UnitValue.m_map);
         Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
 
     }
@@ -544,7 +545,7 @@ public class St_Battle implements IState {
     public void CreateJumoingTrap(int i, int j, Unit temp) {
         Sound.getInstance().play(2);
         m_bmap[i][j] = f_jumpingtrap;
-        m_map[i][j] = 3;
+         UnitValue.m_map[i][j] = 3;
         UI_imfor.BuyUnit(10);
         temp.SetPos(i, j);
         Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, f_jumpingtrap));
@@ -566,14 +567,14 @@ public class St_Battle implements IState {
         if(whounit==0) {
 
             Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
-            Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
+            Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap( UnitValue.m_map);
           //  Units.MyUnits.get(Units.MyUnits.size() - 1).m_BoundingSpear
            Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
         }
         else
         {
             Units.EnemyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
-            Units.EnemyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(m_map);
+            Units.EnemyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap( UnitValue.m_map);
             Units.EnemyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
         }
 
@@ -590,10 +591,10 @@ public class St_Battle implements IState {
     }
     //타운홀 생성 부분
     public void CreateHall(int i, int j, Unit temp,int whounit) {
-        m_map[i][j] = 3;//원 위치
-        m_map[i][j + 1] = 3; //y값 증가
-        m_map[i + 1][j] = 3; //left값 증가 +1
-        m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+         UnitValue.m_map[i][j] = 3;//원 위치
+         UnitValue.m_map[i][j + 1] = 3; //y값 증가
+         UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+         UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
         if(whounit==0)
         {
             Units.MyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
@@ -605,15 +606,15 @@ public class St_Battle implements IState {
 
     //아처 타워 생성 부분 추후 수정 예정 부분
     public void CreateArchorTower(int i, int j, Unit temp,int whounit) {
-        if (m_map[i][j] != 3 && m_map[i][j + 1] != 3 && m_map[i + 1][j + 1] != 3 && m_map[i + 1][j] != 3) {
+        if ( UnitValue.m_map[i][j] != 3 &&  UnitValue.m_map[i][j + 1] != 3 &&  UnitValue.m_map[i + 1][j + 1] != 3 &&  UnitValue.m_map[i + 1][j] != 3) {
             m_bmap[i][j] = f_tower;
             UI_imfor.BuyUnit(100);
             Sound.getInstance().play(1);
-            m_map[i][j] = 3;//원 위치
+             UnitValue.m_map[i][j] = 3;//원 위치
 
-            m_map[i][j - 1] = 3; //y값 증가
-            m_map[i + 1][j] = 3; //left값 증가 +1
-            m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+             UnitValue.m_map[i][j - 1] = 3; //y값 증가
+             UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+             UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
             m_UI_Touch_Postion = 0;
             temp.SetPos(i, j);
             temp.resizebitmap(100 - 100 / 3, 60);

@@ -10,6 +10,7 @@ public class DBManager {
     private static DBManager s_instance;
     private String response;
 
+    public static double readyroomtime=0;
     private String enemy="매칭을 시작하기전입니다.."; //잠시 적군의 아이디 보내줄 곳
     private String id="로딩중..";//유저의 닉네임
     private int cash; //유저의 캐시정보

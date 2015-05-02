@@ -13,7 +13,7 @@ public class UnitValue {
     static final int F_TOWNHALL = 7;
     private boolean m_GameStart=false;
     private static UnitValue s_instance;
-
+    public static int[][] m_map = new int[50][50];
     public static UnitValue getInstance()
     {
         if(s_instance==null)
@@ -30,5 +30,6 @@ public class UnitValue {
     {
         return m_GameStart;
     }
+
 
 }

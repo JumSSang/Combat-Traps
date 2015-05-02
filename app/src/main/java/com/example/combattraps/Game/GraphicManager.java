@@ -64,6 +64,16 @@ public class GraphicManager {
     public Graphic_image background1;
 
 
+
+    /*
+    미션임무 관련 리소스
+
+*/
+
+
+
+
+
     public float m_Width;
     public float m_Height;
 
@@ -78,8 +88,9 @@ public class GraphicManager {
         DisplayMetrics metrics = AppManager.getInstance().getResources().getDisplayMetrics();
         m_Width = metrics.widthPixels;
         m_Height = metrics.heightPixels;
-        if(AppManager.getInstance().state==AppManager.game)
+        if(AppManager.getInstance().state==AppManager.S_GAME)
         {
+            //추후 모든 변수는 ArrayList로 관리 상수를 이용해서 이미지를 처리하게 한다.
             mElsa_Tower = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.elsa_tower));
             ButtonView_Image = new Graphic_image((AppManager.getInstance().getBitmap(R.drawable.button_view)));
             TowerButton = new Graphic_image(((AppManager.getInstance().getBitmap(R.drawable.towersum))));
@@ -111,8 +122,10 @@ public class GraphicManager {
 
         }
 
-        else if(AppManager.getInstance().state==AppManager.robby)
+        else if(AppManager.getInstance().state==AppManager.S_ROBBY)
         {
+
+            //추후 모든 변수는 ArrayList로 관리 상수를 이용해서 이미지를 처리하게 한다.
             background1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.background_lobby));
             background1.resizebitmap((int) m_Width, (int) m_Height);
             view_roby_bar=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.bar_btn_view));
@@ -126,6 +139,42 @@ public class GraphicManager {
             m_UserView.resizebitmap((int)m_Width/20*6,(int)m_Height/20*4);
             m_Top_Bar=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.robby_top_bar));
             m_Top_Bar.resizebitmap((int)m_Width/20*16,(int)m_Height/20*2);
+
+
+        }
+        else if(AppManager.getInstance().state==AppManager.S_STORY1)
+        {
+            //추후 모든 변수는 ArrayList로 관리 상수를 이용해서 이미지를 처리하게 한다.
+            mElsa_Tower = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.elsa_tower));
+            ButtonView_Image = new Graphic_image((AppManager.getInstance().getBitmap(R.drawable.button_view)));
+            TowerButton = new Graphic_image(((AppManager.getInstance().getBitmap(R.drawable.towersum))));
+            mElsa_Tower.resizebitmap(1534, 318);
+            mElsa_Tower.ResizeBitmapRate(2, 2);
+            TowerButton.resizebitmap((int) m_Width / 12, (int) m_Height / 9);
+            ButtonView_Image.resizebitmap((int) m_Width, (int) m_Height / 6);
+            m_effect = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
+            m_effect.ResizeBitmapRate(3, 3);
+            m_effect.Effect(1);
+            m_elsatower = new SpriteControl(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+            m_elsatower.ElsaTower(30);
+            m_anna = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna));
+            m_anna.resizebitmap(384, 60);
+            m_anna.Anna(30);
+            m_elsatower.SetPosition(750 + 50 / 2 * (33 - 15), -300 + 30 / 2 * (33 + 15) + 15);
+            mTownHall = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.hall));
+            mTownHall.ResizeBitmapRate(2, 2);
+            m_anna.SetPosition(750 + 50 / 2 * (15 - 15), -300 + 30 / 2 * (15 + 15) + 15);
+            temptile1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile1));
+            temptile1.resizebitmap(51, 26);
+            temptile2 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile2));
+            temptile2.resizebitmap(51, 26);
+            background = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.back_sky2));
+            temptitle3 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile_coll));
+            temptitle4=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tree_sprite));
+            temptitle4.resizebitmap(51,51);
+            temptitle3.resizebitmap(51, 26);
+
+
         }
 
 
@@ -150,7 +199,7 @@ public class GraphicManager {
     }
     public void deleteImage()
     {
-        if(AppManager.getInstance().state==AppManager.game)
+        if(AppManager.getInstance().state==AppManager.S_GAME)
         {
               m_Top_Bar=null;
               m_UserView=null;
@@ -159,6 +208,15 @@ public class GraphicManager {
               view_roby_bar=null;
               background1=null;
         }
+       if(AppManager.getInstance().state==AppManager.S_STORY1)
+       {
+           m_Top_Bar=null;
+           m_UserView=null;
+           m_Gold_image=null;
+           btn_start=null;
+           view_roby_bar=null;
+           background1=null;
+       }
 
     }
 

@@ -17,6 +17,7 @@ public class Sound {
     private HashMap m_SoundPoolMap;
     private HashMap m_backgroundMap;
     public MediaPlayer m_MediaPlayer;
+    public float m_match_time=0;
     public void Init(Context context)
     {
 
@@ -36,7 +37,17 @@ public class Sound {
         m_MediaPlayer.setLooping(true);
         m_MediaPlayer.setVolume(0.4f,0.4f);
         m_MediaPlayer.start();
+    }
+    public void backgroundRelease()
+    {
+        m_MediaPlayer.release();
+    }
 
+
+
+    public void stop(int index)
+    {
+        m_Soundpool.stop((Integer)m_SoundPoolMap.get(index));
     }
 
     public void play(int index)

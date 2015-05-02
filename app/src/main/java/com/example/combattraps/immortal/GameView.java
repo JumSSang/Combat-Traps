@@ -118,7 +118,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         {
             m_state.Destroy();
         }
-        if(AppManager.getInstance().state==AppManager.game)
+        if(AppManager.getInstance().state==AppManager.S_GAME)
+        {
+            m_state.Destroy();
+        }
+        if(AppManager.getInstance().state==AppManager.S_STORY1)
         {
             m_state.Destroy();
         }
