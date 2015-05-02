@@ -24,6 +24,7 @@ import java.util.Comparator;
 
 public class UnitManager {
 
+    private boolean m_roundStart=false;
 
     public ArrayList<Unit_Imfor> MyUnits;
     public ArrayList<Unit_Imfor> EnemyUnits;
@@ -121,7 +122,6 @@ public class UnitManager {
             case UnitValue.F_ELSATOWER:
                 a.myUnitObject.PatrolUpdate(System.currentTimeMillis());
                 a.m_effect.Update(System.currentTimeMillis());
-
                 break;
             case UnitValue.F_ANNA:
                 a.IniteBouningSpear(a.DrawPosition.fx,a.DrawPosition.fy);
@@ -138,6 +138,10 @@ public class UnitManager {
                 break;
         }
     }
+    public void setRound()
+    {
+        m_roundStart=!m_roundStart;
+    }
 
     //유닛에 관환 업데이트 부분
     public void Update(double dt) {
@@ -146,11 +150,16 @@ public class UnitManager {
         UnitList.addAll(MyUnits);
         UnitList.addAll(EnemyUnits);
         unitSort();//유닛의 출력순서 정렬 부분
+
+
+
         for (int i = 0; i < MyUnits.size(); i++) {
             add();//아군 유닛 추가 상태 체크 부분
             //unitSort(MyUnits);//유닛의 출력순서 정렬 부분
             animationUpdate(MyUnits.get(i)); //유닛 애니메이션 업데이트 구현부분
-            UnitMonitor(MyUnits.get(i),dt);
+            if(m_roundStart==true) {
+                UnitMonitor(MyUnits.get(i), dt);
+            }
             remove(MyUnits, MyUnits.get(i));//유닛 제거 체크 부분
         }
         for (int i = 0; i < EnemyUnits.size(); i++) {
@@ -158,11 +167,16 @@ public class UnitManager {
            // unitSort(EnemyUnits);//적유닛의 출력순서 정렬 부분
 
             animationUpdate(EnemyUnits.get(i));//적 에니메이션 구현 부분
-            UnitMonitor(EnemyUnits.get(i),dt);
+            if(m_roundStart==true) {
+                UnitMonitor(EnemyUnits.get(i), dt);
+            }
             remove(EnemyUnits, EnemyUnits.get(i));//적 유닛 제거 체크 부분
         }
         //if(UnitValue.getInstance().getGameStart()==true)
+
+        if(m_roundStart==true) {
             MoveUpdate(dt);
+        }
     }
 
     public void DirectionUpdate(int x, int y, Unit_Imfor a, int type) {

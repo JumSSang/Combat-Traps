@@ -85,6 +85,14 @@ public class SpriteControl extends Graphic_image {
         noAnimation(100, 159, MOVE);
         mNoOfFrames=8;
     }
+    public void Air(int FPS)
+    {
+        int height;
+        int start_width=9;
+        mFPS=1000/FPS;
+        Animation(1,2,150,150,1);
+        mNoOfFrames=2;
+    }
 
     public void Effect(int FPS)
     {

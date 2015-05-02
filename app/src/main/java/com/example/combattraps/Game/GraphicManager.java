@@ -68,7 +68,11 @@ public class GraphicManager {
     /*
     미션임무 관련 리소스
 
+
 */
+    public Graphic_image m_Chat_View;
+    public Graphic_image m_Sara;
+    public SpriteControl m_airplane;
 
 
 
@@ -173,6 +177,16 @@ public class GraphicManager {
             temptitle4=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tree_sprite));
             temptitle4.resizebitmap(51,51);
             temptitle3.resizebitmap(51, 26);
+            m_Chat_View=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.bar_btn_view));
+            m_Chat_View.resizebitmap((int)m_Width/20*15,(int)m_Height/4);
+            m_Sara=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sara));
+            m_Sara.resizebitmap((int)m_Width/20*7,(int)m_Height/20*12);
+            m_airplane=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.air_go));
+            m_airplane.resizebitmap(300,150);
+            m_airplane.Air(30);
+          //  m_airplane.ButtonInit(250,500);
+
+
 
 
         }
