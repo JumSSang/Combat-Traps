@@ -1,4 +1,4 @@
-package com.example.combattraps.View;
+package com.example.combattraps.View.Story_room;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,41 +10,41 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 
 import com.example.combattraps.Game.ActiveCollusion;
-import com.example.combattraps.Game.GraphicManager;
-import com.example.combattraps.Game.Map_analysis;
+import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
+import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.Game.PathFinder;
 import com.example.combattraps.Game.UnitDirect.Unit;
 import com.example.combattraps.Game.UnitDirect.UnitManager;
 import com.example.combattraps.Game.UnitDirect.UnitValue;
 import com.example.combattraps.Game.UnitDirect.Unit_Imfor;
-import com.example.combattraps.Game_NetWork.GameNet;
-import com.example.combattraps.Game_NetWork.ListItem;
 import com.example.combattraps.R;
 import com.example.combattraps.UI.UI_Create_Bottom;
 import com.example.combattraps.UI.UI_Create_Imfor;
 import com.example.combattraps.UI.UnitList;
-import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.AppManager;
-import com.example.combattraps.immortal.GameThread;
-import com.example.combattraps.immortal.Graphic_image;
 import com.example.combattraps.immortal.IState;
 import com.example.combattraps.immortal.ScreenAnimation;
 import com.example.combattraps.immortal.Sound;
-import com.example.combattraps.immortal.Vec2;
+import com.example.combattraps.immortal.TextEffect;
 
 import java.util.ArrayList;
 
 public class StoryView implements IState {
 
     private final PathFinder finderOjbect = new PathFinder();
-    private int m_SaraSay=0;
+    private int m_SaraSay = 0;
+    private int m_timer = 0;
+    private double m_batch_gameTime = 5;
+    private final int GAMESTART = 0;
+    private final int SINARIO = 1;
+    private int m_WhoWIn=0;
 
-    private final int GAMESTART=0;
-    private final int SINARIO=1;
-    private int my_view=SINARIO;
+    private int my_view = SINARIO;
+    private int m_plot = 0;
+
+
     Matrix matrix = new Matrix();
     private ArrayList<ActiveCollusion> tileColl;
     private ArrayList<UnitList> UnitDataList;
@@ -55,7 +55,9 @@ public class StoryView implements IState {
     private ScreenAnimation fade_in;
     private ScreenAnimation fade_out;
     private double timeDelta;
-
+    Paint paint;
+    float x;
+    float y;
     float m_click_x = 0; //첫번째 터치좌표 x
     float m_click_y = 0; //첫번째 터치좌표 y
     float m_click2_x = 0; //2번째 터치 좌표 x
@@ -92,14 +94,16 @@ public class StoryView implements IState {
     double m_thread_tiem = 0;
     double m_OpenServerTime = 0;
     double m_checkLoader = 0;
+    double fade_endTime = 0;
     UnitManager Units;
+
+    TextEffect m_airtext, m_airtext1,m_airtextVic,m_airTextFebe;
 
     @Override
     public void Init() {
 
 
-
-        m_talk=new Story_String();
+        m_talk = new Story_String();
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
         Sound.getInstance().addList(1, R.raw.buildingsaw);
@@ -108,6 +112,7 @@ public class StoryView implements IState {
         Sound.getInstance().addList(3, R.raw.zombie_create_sound);
         Sound.getInstance().addList(4, R.raw.hello);
         Sound.getInstance().addList(5, R.raw.smash);
+        Sound.getInstance().addList(6, R.raw.text_call);
 
         currentTime = System.currentTimeMillis() / 1000;
         tileColl = new ArrayList<ActiveCollusion>();
@@ -118,23 +123,27 @@ public class StoryView implements IState {
         Units = new UnitManager();
         matrix.setScale(m_matrix_x, m_matrix_y);
         InitMap();
-        GraphicManager.getInstance().background.resizebitmap((int)(m_Width*2),(int)( m_Height*2));
+        GraphicManager.getInstance().background.resizebitmap((int) (m_Width * 2), (int) (m_Height * 2));
         UnitAdd(); //데이터 베이스로 부터 유닛 목록 받아온다.
         UI = new UI_Create_Bottom(m_Width, m_Height, UnitDataList.size(), 0, UnitDataList);
         //id,gold,gname,log,glogo
         UI_imfor = new UI_Create_Imfor(m_Width, m_Height);
         Unit Mtemp;
         Mtemp = new Unit(GraphicManager.getInstance().mTownHall.m_bitmap);
-        Mtemp.SetPos(49, 0);
-        CreateHall(1, 48, Mtemp, 0);
-        CreateHall(1, 1, Mtemp, 1);
-        GraphicManager.getInstance().m_airplane.Air(5);
-        fade_in=new ScreenAnimation((int)m_Width,(int)m_Height);
-        fade_out=new ScreenAnimation((int)m_Width,(int)m_Height);
 
+        CreateHall(49, 1, Mtemp, 0);
+
+        CreateHall(1, 49, Mtemp, 1);
+        GraphicManager.getInstance().m_airplane.Air(5);
+        fade_in = new ScreenAnimation((int) m_Width, (int) m_Height);
+        fade_out = new ScreenAnimation((int) m_Width, (int) m_Height);
         fade_out.InitFadeOut();
         fade_in.InitFadeIn();
-        //LoadEnemy();
+        m_airtext = new TextEffect("배치시작!");
+        m_airtext1 = new TextEffect("전투시작!");
+        m_airtextVic=new TextEffect("전투 승리!",0);
+        m_airTextFebe=new TextEffect("전투 패배...",0);
+       // LoadEnemy();
     }
 
     public void InitMap() {
@@ -161,20 +170,19 @@ public class StoryView implements IState {
         }
     }
 
+    //덱 창안에 유닛을 더하는 역할을 한다.
     public void UnitAdd() {
-
-        //덱 창안에 유닛을 더하는 역할을 한다.
         UnitList temp = new UnitList();
         UnitList temp1 = new UnitList();
         UnitList temp2 = new UnitList();
         UnitList temp3 = new UnitList();
-        UnitList temp4 = new UnitList();
-        UnitList temp5 = new UnitList();
-        UnitList temp6 = new UnitList();
-        temp.set(6, 1, 0);
-        UnitDataList.add(temp);//1
-        temp1.set(5, 1, 0);
-        UnitDataList.add(temp1);//2
+
+        temp1.set(UnitValue.F_JUMPINGTRAP, 1, 0);
+        UnitDataList.add(temp1);
+        temp2.set(UnitValue.F_ELSATOWER, 1, 0);
+        UnitDataList.add(temp2);//2
+        temp3.set(UnitValue.F_ANNA, 1, 0);
+        UnitDataList.add(temp3);//2
 
 
     }
@@ -186,63 +194,64 @@ public class StoryView implements IState {
     @Override
     public void Update() {
 
+        if(AppManager.getInstance().state!=AppManager.S_LOADING) {
+            // long frameEndTime = System.currentTimeMillis();
+            //long delta = frameEndTime - frameStartTime;
+            double newTime = System.currentTimeMillis() / 1000.0;
+            timeDelta = newTime - currentTime;
+            currentTime = newTime;
+            m_time += timeDelta;
+            m_thread_tiem += timeDelta;
 
-        // long frameEndTime = System.currentTimeMillis();
-        //long delta = frameEndTime - frameStartTime;
-        double newTime = System.currentTimeMillis() / 1000.0;
-         timeDelta = newTime - currentTime;
-        currentTime = newTime;
-        m_time += timeDelta;
-        m_thread_tiem += timeDelta;
-        if (m_checkLoader == 0) {
-            m_OpenServerTime += timeDelta;
+            if (my_view == SINARIO) {
+                GraphicManager.getInstance().m_airplane.Update(System.currentTimeMillis());
+                if (m_SaraSay > 11) {
+                    fade_out.fadeOutUpdate(timeDelta);
+                }
+            }
+            if (my_view == GAMESTART) {
+
+                if (fade_endTime > 2)
+                    fade_in.fadeInUpdate(timeDelta);
+                else {
+                    fade_endTime += timeDelta;
+                }
+                Units.Update(timeDelta);
+
+            }
+            // fade_in.fadeOutUpdate(timeDelta);
+
+            //GraphicManager.getInstance().m_effect.Update(System.currentTimeMillis());
+            if (m_airtext.getState() == true) {
+                m_batch_gameTime -= timeDelta;
+            }
+
         }
-        if(m_SaraSay>11) {
-
-            fade_out.fadeOutUpdate(timeDelta);
-        }
-
-        if(my_view==GAMESTART)
-        {
-            fade_in.fadeInUpdate(timeDelta);
-        }
-       // fade_in.fadeOutUpdate(timeDelta);
-
-        Units.Update(timeDelta);
-        GraphicManager.getInstance().m_airplane.Update(System.currentTimeMillis());
-        if (m_OpenServerTime > 10) {
-
-            m_OpenServerTime = 0;
-            m_checkLoader++;
-        }
-
-        //GraphicManager.getInstance().m_effect.Update(System.currentTimeMillis());
-
-
     }
 
     //m_time=m_time*1000;
 
     public void SenariDraw(Canvas canvas) {
-        Paint paint=new Paint();
+        Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(40);
         GraphicManager.getInstance().background.Draw(canvas, -750, -450);
-        GraphicManager.getInstance().m_Chat_View.Draw(canvas,0,(int)m_Height/20*15);
-        GraphicManager.getInstance().m_Sara.Draw(canvas,(int)m_Width/20*14,(int)m_Height/20*10);
+        GraphicManager.getInstance().m_Chat_View.Draw(canvas, 0, (int) m_Height / 20 * 15);
+        GraphicManager.getInstance().m_Sara.Draw(canvas, (int) m_Width / 20 * 14, (int) m_Height / 20 * 10);
 
-        if(m_SaraSay>11)
-        {
+        if (m_SaraSay > 11) {
             //canvas.drawRect(0,0,m_Width,m_Height,paint);
             fade_out.fadeDraw(canvas);
 
-          if(!fade_out.getAnimationState()) {
+            if (!fade_out.getAnimationState()) {
                 my_view = GAMESTART;
+                Sound.getInstance().backgroundRelease();
+                Sound.getInstance().backgroundPlay(R.raw.battle_bgm);
+                m_SaraSay = 0;
                 return;
             }
-        }
-        else {
-            String temp = m_talk.getSara(m_SaraSay);
+        } else {
+            String temp = m_talk.getSara1(m_SaraSay);
             String[] result = temp.split("#");
             for (int i = 0; i < result.length; i++) {
                 if (i == 0)
@@ -254,9 +263,6 @@ public class StoryView implements IState {
                 }
             }
         }
-
-
-
 
 
     }
@@ -307,28 +313,133 @@ public class StoryView implements IState {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
         paint.setColor(Color.RED);
+        talkUnit(canvas);
         //클릭 위치마다 사각형을 그려준다 오브젝트에 사각형
         canvas.drawRect((m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12, m_Height - m_Height / 6, (m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12 + m_Width / 12, m_Height - m_Height / 18, paint);
 
     }
 
-    @Override
-    public void Render(Canvas canvas) {
+    public void talkUnit(Canvas canvas) {
 
+        paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(25);
 
-        switch(my_view)
-        {
-            case GAMESTART:
-
-                    GraphicManager.getInstance().background.Draw(canvas, -750, -450);
-                    GameDraw(canvas);
-                   fade_in.fadeDraw(canvas);
-
+        switch (m_plot) {
+            case 0: //처음으로 간단한 설명을 하는 장면의 대화 시뮬 부분이다.
+                GraphicManager.getInstance().m_Sara.Draw(canvas, (int) m_Width / 20 * 14, (int) m_Height / 20 * 10);
+                GraphicManager.getInstance().ballon_talk.Draw(canvas, (int) m_Width / 20 * 12, (int) m_Height / 20 * 2);
+                String temp = m_talk.getSara2(m_SaraSay);
+                String[] result = temp.split("#");
+                for (int i = 0; i < result.length; i++) {
+                    if (i == 0)
+                        canvas.drawText(result[i], m_Width / 20 * 12, (int) m_Height / 20 * 3, paint);
+                    else if (i == 1) {
+                        canvas.drawText(result[i], m_Width / 20 * 12, (int) m_Height / 20 * 4, paint);
+                    } else if (i == 2) {
+                        canvas.drawText(result[i], m_Width / 20 * 12, (int) m_Height / 20 * 5, paint);
+                    }
+                }
+                if(m_SaraSay >6) {
+                    setEnviroMent();
+                    m_plot = 1;
+                }
                 break;
-            case SINARIO:
-                GraphicManager.getInstance().background.Draw(canvas, -750, -450);
-                SenariDraw(canvas);
-                GraphicManager.getInstance().m_airplane.Draw(canvas,1,m_Width/2,m_Height/2);
+            case 1:   //배치시작이라는 글자가 휙휙 날라오는 장면이다.
+                m_airtext.SlowText(canvas, m_Width, m_Height, timeDelta);
+                if (m_airtext.getState() == true) {
+                    m_plot = 2;
+                }
+                break;
+            case 2: //이 장면은 배치 제한 시간 30초가 나오는 장면이다.
+                canvas.drawText("" + (int) m_batch_gameTime, m_Width / 2, m_Height / 20, paint);
+                if (m_batch_gameTime <= 0) {
+                    if (m_SaraSay < 9) {
+                        m_plot = 3;
+                    }
+                }
+                break;
+            case 3: //배치가 끝난 이후 사라가 말을 시작한 장면
+            {
+                GraphicManager.getInstance().m_Sara.Draw(canvas, (int) m_Width / 20 * 14, (int) m_Height / 20 * 10);
+                GraphicManager.getInstance().ballon_talk.Draw(canvas, (int) m_Width / 20 * 12, (int) m_Height / 20 * 2);
+                temp = m_talk.getSara2(m_SaraSay);
+                result = temp.split("#");
+                for (int i = 0; i < result.length; i++) {
+                    if (i == 0)
+                        canvas.drawText(result[i], m_Width / 20 * 12, (int) m_Height / 20 * 3, paint);
+                    else if (i == 1) {
+                        canvas.drawText(result[i], m_Width / 20 * 12, (int) m_Height / 20 * 4, paint);
+                    } else if (i == 2) {
+                        canvas.drawText(result[i], m_Width / 20 * 12, (int) m_Height / 20 * 5, paint);
+                    }
+                }
+
+            }
+            if(m_SaraSay>8)
+            {
+                LoadEnemy();
+                m_plot=4;
+            }
+            break;
+            case 4:
+                //LoadEnemy();
+                m_airtext1.SlowText(canvas, m_Width, m_Height, timeDelta);
+               // m_airtext1.SlowText(canvas, m_Width, m_Height, timeDelta);
+                if(m_airtext1.getState()==true)
+                {
+
+                    Units.setRoundState(true);
+                    m_plot=5;
+                }
+                break;
+            case 5:
+                if(Units.EnemyUnits.size()==0)
+                {
+                    Units.setRoundTheEnd(true);
+                    Units.setRoundState(false);
+                    m_plot=6;
+                    m_WhoWIn=1;
+                    SetMap();
+                }
+                else if(Units.MyUnits.size()==0)
+                {
+                    Units.setRoundTheEnd(true);
+                    Units.setRoundState(false);
+                    m_plot=6;
+                    m_WhoWIn=2;
+                    SetMap();
+                }
+
+                   // m_plot=6;
+                break;
+            case 6:
+
+               // canvas.drawText("게임 끝",100,100,paint);
+                if(m_WhoWIn==1)
+                {
+                    m_airtextVic.FadeOutText(canvas,m_Width,m_Height,timeDelta);
+                    if(m_airtextVic.getState()==true) {
+                        m_plot = 7;
+                    }
+                    //아군 승리
+                }
+                else if(m_WhoWIn==2)
+                {
+                    m_airTextFebe.FadeOutText(canvas,m_Width,m_Height,timeDelta);
+                    m_plot=7;
+                    //적 승리
+                }
+                else
+                {
+                    //무 승부
+                }
+                break;
+            case 7:
+                Sound.getInstance().backgroundRelease();
+                AppManager.getInstance().state=AppManager.S_LOADING;
+                AppManager.getInstance().getGameView().ChangeGameState(new Ready_Room());
+
                 break;
         }
 
@@ -336,33 +447,51 @@ public class StoryView implements IState {
 
 
 
+
+
+
+
+
     }
 
+    /*  public void AirText(Canvas canvas,String a) throws InterruptedException {
+          for(int i=0;i<a.length();i++) {
+              for(int j=0;j<=i;j++)
+              {
+                  String aa=a.toUpperCase();
+                  canvas.drawText(""+aa.charAt(j),m_Width/20*(9+j),m_Height/2,paint);
+              }
+      }*/
+    @Override
+    public void Render(Canvas canvas) {
+        if(AppManager.getInstance().state!=AppManager.S_LOADING) {
 
 
+            switch (my_view) {
+                case GAMESTART:
+
+                    GraphicManager.getInstance().background.Draw(canvas, -750, -450);
+                    GameDraw(canvas);
+                    fade_in.fadeDraw(canvas);
+
+                    break;
+                case SINARIO:
+                    GraphicManager.getInstance().background.Draw(canvas, -750, -450);
+                    SenariDraw(canvas);
+                    GraphicManager.getInstance().m_airplane.Draw(canvas, 1, m_Width / 2, m_Height / 2);
+                    break;
+            }
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return false;
     }
+
     public void TouchGame(float x, float y) {
         int count = 0;
         if (y > (int) m_Height - (int) m_Height / 6) {
@@ -376,15 +505,13 @@ public class StoryView implements IState {
                 for (int j = 0; j < 50; j++) {
                     Unit temp;
                     if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true) {
-                        //  UnitValue.m_map[i][j]=3;
-
+                       //  UnitValue.m_map[i][j]=3;
                         //점핑 트랩 생산
                         if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == UnitValue.F_JUMPINGTRAP && UI_imfor.GetGold() >= 10) {
                             if (UnitValue.m_map[i][j] != 3) {
                                 temp = new Unit(AppManager.getInstance().getBitmap(R.drawable.trap));
                                 temp.resizebitmap(25, 25);
                                 CreateJumoingTrap(i, j, temp);
-
                                 m_UI_Touch_Postion = 0;
                             }
                             //아처 타워 생산
@@ -414,7 +541,7 @@ public class StoryView implements IState {
                         } else if (UI.CheckTable.get(m_UI_Touch_Postion).retruncode() == UnitValue.F_ANNA && UI_imfor.GetGold() >= 10) {
                             temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
                             temp.Anna(1);
-                            CreateAnna(i, j, temp, 0);
+                            CreateAnna(i, j, temp, 1);
                         }
 
                     } else {
@@ -425,8 +552,22 @@ public class StoryView implements IState {
 
 
             }
-            mode = DRAG;
-            Log.d("zoom", "mode=DRAG");
+
+        }
+    }
+
+    public void setEnviroMent()
+    {
+
+        for(int i=0;i< 50;i++)
+        {
+            for(int j=0;j<50;j++)
+            {
+                if( UnitValue.m_testmap[i][j]==UnitValue.F_ROCK1)
+                {
+                    CreateRock(i, j);
+                }
+            }
         }
     }
     @Override
@@ -437,8 +578,8 @@ public class StoryView implements IState {
         String strMsg = "";
         Log.i("액션" + strMsg, "" + strMsg);
         boolean statetimeer = false;
-        float x = event.getX();
-        float y = event.getY();
+         x = event.getX();
+         y = event.getY();
         switch (action & MotionEvent.ACTION_MASK) {
 
             case MotionEvent.ACTION_DOWN: {
@@ -448,8 +589,24 @@ public class StoryView implements IState {
                 //temptitle3.SetPosition((int)(m_click_x),(int)(m_click_y));
                 m_movex = x;
                 m_movey = y;
-                TouchGame(x, y);
-                m_SaraSay+=1;
+
+                switch(m_plot)
+                {
+                    case 2: //배치 시작 터치 부분
+                        TouchGame(x, y);
+                        break;
+                }
+               // TouchGame(x, y);
+                if (my_view == GAMESTART) {
+                    if (m_SaraSay < 7 || m_batch_gameTime <= 0)
+                        m_SaraSay += 1;
+                }
+                if (my_view == SINARIO) {
+                    if (m_SaraSay < 12)
+                        m_SaraSay += 1;
+                }
+                mode = DRAG;
+                Log.d("zoom", "mode=DRAG");
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
@@ -530,11 +687,11 @@ public class StoryView implements IState {
         }
         return true;
     }
+
     //줌인 줌 아웃을 위한 터치 이벤트 계산 함수
     private float spacing(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
         float y = event.getY(0) - event.getY(1);
-
         return FloatMath.sqrt(x * x + y * y);
     }
 
@@ -551,7 +708,7 @@ public class StoryView implements IState {
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
                 Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
-                stemp.InitEffect();
+                stemp.InitEffect(UnitValue.F_ELSATOWER);
                 Units.EnemyUnits.add(stemp);
             }
         } else {
@@ -567,7 +724,7 @@ public class StoryView implements IState {
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
                 Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
-                stemp.InitEffect();
+                stemp.InitEffect(UnitValue.F_ELSATOWER);
                 Units.MyUnits.add(stemp);
             }
         }
@@ -587,6 +744,7 @@ public class StoryView implements IState {
         Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
         Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
 
+
     }
 
     public void CreateJumoingTrap(int i, int j, Unit temp) {
@@ -594,30 +752,51 @@ public class StoryView implements IState {
         UnitValue.m_map[i][j] = 3;
         UI_imfor.BuyUnit(10);
         temp.SetPos(i, j);
+
         Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, UnitValue.F_JUMPINGTRAP));
+        Units.MyUnits.get(Units.MyUnits.size()-1).mHp=1;
     }
-    //안나생성 부분
+
+    public void CreateRock(int i,int j)
+    {
+        Unit temp;
+        temp=new Unit(GraphicManager.getInstance().rock1.m_bitmap);
+        temp.SetPos(i, j);
+        Units.Enviroment.add(new Unit_Imfor(temp,5000,0,UnitValue.F_ROCK1));
+        UnitValue.m_map[i][j]=3;
+
+    }
+    //안나생성 부분  whounit.1번은 아군 2번은 적
     public void CreateAnna(int i, int j, Unit temp, int whounit) {
         Sound.getInstance().play(4);
         UI_imfor.BuyUnit(10);
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
-
-
         //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
         //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
-        if (whounit == 0) {
+        switch(whounit) {
+            case 1:
+                //아군
 
-            Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA));
-            Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
-            //  Units.MyUnits.get(Units.MyUnits.size() - 1).m_BoundingSpear
-            Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
-        } else {
-            Units.EnemyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA));
-            Units.EnemyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
-            Units.EnemyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
-        }
+                Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA));
+                Units.MyUnits.get(Units.MyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).my_enemy = Units.EnemyUnits.get(0);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
+
+                break;
+            case 2:
+                //적군군
+                //적군군
+               temp.Anna(1);
+                Units.EnemyUnits.add(new Unit_Imfor(temp, 100, 1, UnitValue.F_ANNA));
+                Units.MyUnits.get(Units.MyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).my_enemy = Units.MyUnits.get(0);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
+                break;
+        }/**/
 
     }
 
@@ -642,26 +821,54 @@ public class StoryView implements IState {
         }
     }
 
-    public void LoadEnemy() {
-        Unit temp, temp1, temp2;
-        temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-        CreateMagicTower(10, 10, temp, true);
-        temp1 = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-        CreateMagicTower(10, 15, temp1, true);
-        temp2 = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-        CreateMagicTower(20, 20, temp2, true);
+    public void SetMap()
+    {
+        for(int i=0;i<Units.MyUnits.size();i++)
+        {
+            if(Units.MyUnits.get(i).mType==UnitValue.F_JUMPINGTRAP)
+            {
+                UnitValue.m_testmap[Units.MyUnits.get(i).myUnitObject.Postion.x][Units.MyUnits.get(i).myUnitObject.Postion.y]=UnitValue.F_ROCK1;
+            }
+        }
+
     }
+    public void LoadEnemy() {
+        Unit temp, temp1, temp2,temp3,temp4;
+
+
+
+            //유닛을 추가로 더해주기 위해서는 유닛을 temp에 할당해주고
+            //스프라이트가있는 애들은 고유의 스프라이트 컨트롤 함수를 호출해온다.
+            //그리고 Create로 호출해서 유닛을 생성한다.
+            temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
+            temp.Anna(1);
+            //CreateAnna(10, 10, temp, 2);
+            temp1 = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+           // CreateMagicTower(10, 15, temp1, true);
+            temp2 = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+          //  CreateMagicTower(20, 20, temp2, true);
+            temp3 = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
+           // temp3.Anna(1);
+
+            CreateRock(10, 10);
+            CreateRock(10, 10);
+
+
+
+       // CreateAnna(15, 15, temp3, 2);
+    }
+
     //타운홀 생성 부분
     public void CreateHall(int i, int j, Unit temp, int whounit) {
-        UnitValue.m_map[i][j] = 3;//원 위치
-        UnitValue.m_map[i][j + 1] = 3; //y값 증가
-        UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
-        UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+      //  UnitValue.m_map[i][j] = 3;//원 위치
+       // UnitValue.m_map[i][j + 1] = 3; //y값 증가
+        //UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+        //UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+        temp.SetPos(i, j);
         if (whounit == 0) {
-
-            Units.MyUnits.add(new Unit_Imfor(temp, 300, 1, UnitValue.F_TOWNHALL));
+            Units.MyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
         } else if (whounit == 1)
-            Units.EnemyUnits.add(new Unit_Imfor(temp, 300, 1, UnitValue.F_TOWNHALL));
+            Units.EnemyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
 
     }
 

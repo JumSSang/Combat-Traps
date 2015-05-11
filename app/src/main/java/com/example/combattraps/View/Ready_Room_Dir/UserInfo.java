@@ -5,8 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.example.combattraps.Game.GraphicManager;
-import com.example.combattraps.immortal.AppManager;
+import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.immortal.DBManager;
 
 /**

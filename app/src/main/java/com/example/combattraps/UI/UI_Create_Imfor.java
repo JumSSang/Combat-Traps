@@ -31,16 +31,6 @@ public class UI_Create_Imfor {
 
     ///
     private int m_RoundPoint=0;
-    private Graphic_image enemyGoldBar;
-    private Graphic_image GoldBar;
-    private Graphic_image PointBar;
-
-    private Graphic_image My_Logo;
-    private Graphic_image Guild_Logo;
-
-    private Graphic_image Enemy_Logo;
-    private Graphic_image Enemy_Guild_Logo;
-
 
     public UI_Create_Imfor(float x, float y)
     {

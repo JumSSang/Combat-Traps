@@ -1,5 +1,6 @@
 package com.example.combattraps.UI;
 
+import com.example.combattraps.Game.UnitDirect.UnitValue;
 import com.example.combattraps.R;
 import com.example.combattraps.immortal.AppManager;
 import com.example.combattraps.immortal.Graphic_image;
@@ -65,6 +66,18 @@ public class UI_Create_Bottom
                 case 6: //안나
                     temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_anna));
                     break;
+
+                case UnitValue.F_ROCK1:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.rock1));
+                    break;
+
+                case UnitValue.F_ROCKE2:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.rock2));
+                    break;
+                case UnitValue.F_TREE1:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tree1));
+                    break;
+
 
                 default:
                     temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.towersum));

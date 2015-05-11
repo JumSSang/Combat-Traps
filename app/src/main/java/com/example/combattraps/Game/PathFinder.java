@@ -22,7 +22,7 @@ public class PathFinder {
 
     public Node find(Vec2 origin, Vec2 dest) //나의 오브젝트,목표 오브젝트
     {
-        Log.e("finding path",origin+" to "+dest);
+        //Log.e("finding path",origin+" to "+dest);
         m_dest = dest;
 
         Node firstNode = new Node(origin);

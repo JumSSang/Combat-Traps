@@ -15,6 +15,7 @@ public class SpriteControl extends Graphic_image {
     public Rect[][] Attack;
     public Rect[][] Death;
     public Rect[]m_ButtonRect;
+    public Rect[]m_EffectRect;
     static final int MOVE=1;
     static final int ATTACK=2;
     static final int DEATH=3;
@@ -29,7 +30,7 @@ public class SpriteControl extends Graphic_image {
 
     private long mFrameTimer;
     protected boolean mbReply =true;
-    protected boolean mbEnd = false;
+    public boolean mbEnd = false;
     public Vec2 Postion;
 
     public SpriteControl(Bitmap bitmap) {
@@ -41,6 +42,7 @@ public class SpriteControl extends Graphic_image {
         Move=new Rect[10][10];
         Attack=new Rect[10][10];
         Death=new Rect[10][10];
+        m_EffectRect=new Rect[31];
 
     }
     public void SetPos(int x,int y)
@@ -64,6 +66,13 @@ public class SpriteControl extends Graphic_image {
         mNoOfFrames=0;
     }
 
+    public void AnnaEffect(int FPS)
+    {
+        mFPS=1000/FPS;
+        //Animation(1,10,100,400,1);
+        mNoOfFrames=30;
+        EffectAnimation(3,10,120,90);
+    }
     public void ButtonInit(int Width,int Height)
     {
         int left=0;
@@ -96,11 +105,11 @@ public class SpriteControl extends Graphic_image {
 
     public void Effect(int FPS)
     {
-        int height;
-        int start_width=9;
+
         mFPS=1000/FPS;
-        Animation(1,10,700/3,390/3,1);
-        mNoOfFrames=8;
+        //Animation(1,10,100,400,1);
+        mNoOfFrames=9;
+        Animation(1,9,212,100,1);
        // m_effect.InitSpriteData(0,390/3,700/3,1,10);
     }
     public void Anna(int FPS)
@@ -126,6 +135,28 @@ public class SpriteControl extends Graphic_image {
     public void Cannon(int FPS)
     {
 
+    }
+    public void EffectAnimation(int height,int width,int Width,int Height)
+    {
+        int left=0;
+        int right=0+Width;
+        int top=0;
+        int bottom=0+Height;
+        int count=0;
+        for(int i=0;i<height;i++)
+        {
+            left=0;
+            right=0+Width;
+            for(int j=0;j<width;j++)
+            {
+                m_EffectRect[count] = new Rect(left, top, right, bottom);
+                left+=Width;
+                right+=Width;
+                count+=1;
+            }
+            top+=Height;
+            bottom+=Height;
+        }
     }
 
 
@@ -190,6 +221,23 @@ public class SpriteControl extends Graphic_image {
                     if (mbReply) {
                         mCurrentFrame = 0;
                     } else {
+                        mbEnd = false;
+                    }
+                }
+            }
+        }
+    }
+
+    public void OneUpdate(long GameTime) {  //일반적인 애니메이션의 업데이트 부분이다.
+        if (!mbEnd) {
+
+            if (GameTime > mFrameTimer + mFPS) {
+                mFrameTimer = GameTime;
+                mCurrentFrame += 1;
+                if (mCurrentFrame >= mNoOfFrames) {
+                    if (mbReply) {
+                        mCurrentFrame = 0;
+                    } else {
                         mbEnd = true;
                     }
                 }
@@ -215,7 +263,15 @@ public class SpriteControl extends Graphic_image {
             canvas.drawBitmap(m_bitmap,m_ButtonRect[0],dest,null);
         }
     }
+    public void EffectDraw(Canvas canvas,float x,float y)
+    {
 
+        RectF dest= new  RectF(x, y,x +(m_EffectRect[0].right),
+            y +m_EffectRect[0].bottom);
+        canvas.drawBitmap(m_bitmap,m_EffectRect[mCurrentFrame], dest, null);
+
+
+    }
 
     public void Draw(Canvas canvas,int statenumber,float x,float y){
         switch(statenumber)

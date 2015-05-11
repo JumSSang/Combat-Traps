@@ -10,28 +10,23 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 
 import com.example.combattraps.Game.ActiveCollusion;
-import com.example.combattraps.Game.GraphicManager;
-import com.example.combattraps.Game.Map_analysis;
+import com.example.combattraps.immortal.DBManager;
+import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.Game.PathFinder;
 import com.example.combattraps.Game.UnitDirect.Unit;
 import com.example.combattraps.Game.UnitDirect.UnitManager;
 import com.example.combattraps.Game.UnitDirect.UnitValue;
 import com.example.combattraps.Game.UnitDirect.Unit_Imfor;
 import com.example.combattraps.Game_NetWork.GameNet;
-import com.example.combattraps.Game_NetWork.ListItem;
 import com.example.combattraps.R;
 import com.example.combattraps.UI.UI_Create_Bottom;
 import com.example.combattraps.UI.UI_Create_Imfor;
 import com.example.combattraps.UI.UnitList;
 import com.example.combattraps.immortal.AppManager;
-import com.example.combattraps.immortal.GameThread;
-import com.example.combattraps.immortal.Graphic_image;
 import com.example.combattraps.immortal.IState;
 import com.example.combattraps.immortal.Sound;
-import com.example.combattraps.immortal.Vec2;
 
 import java.util.ArrayList;
 
@@ -102,6 +97,7 @@ public class St_Battle implements IState {
 
     @Override
     public void Init() {
+        DBManager.getInstance().go_robby=3;
         AppManager.getInstance().state=AppManager.S_GAME;
         GraphicManager.getInstance().Init();
         Sound.getInstance().addList(1, R.raw.buildingsaw);
@@ -501,7 +497,7 @@ public class St_Battle implements IState {
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
                 Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
-                stemp.InitEffect();
+                stemp.InitEffect(UnitValue.F_ELSATOWER);
                 Units.EnemyUnits.add(stemp);
             }
         }
@@ -519,7 +515,7 @@ public class St_Battle implements IState {
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
                 Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
-                stemp.InitEffect();
+                stemp.InitEffect(UnitValue.F_ELSATOWER);
                 Units.MyUnits.add(stemp);
             }
         }

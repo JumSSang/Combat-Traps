@@ -3,6 +3,7 @@ package com.example.combattraps.immortal;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 
 /**
  * Created by GyungMin on 2015-02-03.
@@ -20,7 +21,8 @@ public class AppManager {
     public static final int S_ROBBY=1;
     public static final int S_GAME=2;
     public static final int S_STORY1=3;
-    public static final int S_LOADING=3;
+    public static final int S_LOADING=4;
+    public static final int S_CRMAP=5;
 
 
   public Bitmap getBitmap(int r)
@@ -58,6 +60,12 @@ public class AppManager {
     }
 
 
+    public boolean Collusion(int x, int y, Rect r) {
+        if (x > r.left && x < r.right && y > r.top && r.bottom > y) {
+            return true;
+        } else
+            return false;
+    }
 
 
 }

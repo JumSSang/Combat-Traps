@@ -41,6 +41,7 @@ public class Sound {
     public void backgroundRelease()
     {
         m_MediaPlayer.release();
+        m_MediaPlayer=null;
     }
 
 

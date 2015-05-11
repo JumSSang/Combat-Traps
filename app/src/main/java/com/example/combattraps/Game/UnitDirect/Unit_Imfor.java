@@ -2,6 +2,7 @@ package com.example.combattraps.Game.UnitDirect;
 
 import android.graphics.Rect;
 
+import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.Game.PathFinder;
 import com.example.combattraps.R;
 import com.example.combattraps.immortal.AppManager;
@@ -63,7 +64,13 @@ public class Unit_Imfor {
     public int count=0;
     private int range=2;
     public BoundingSpear m_BoundingSpear;
-    public int state=1; //0은 평화 1은 이동 2는 전투
+    public boolean m_attck=false;
+
+
+
+
+
+    private int state=1; //0은 평화 1은 이동 2는 전투
 
 
     public Unit_Imfor(Unit myUnitObject, int hp, int mSpeed, int type) {
@@ -87,11 +94,27 @@ public class Unit_Imfor {
     {
         this.m_BoundingSpear=new BoundingSpear(x,y,this.range);
     }
-    public void InitEffect()
+    public void setState(int a)
     {
-        m_effect=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
+        this.state=a;
+    }
+    public int getState()
+    {
+        return this.state;
+    }
+    public void InitEffect(int Value)
+    {
+        if(Value==UnitValue.F_ELSATOWER) {
+            m_effect = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
+            m_effect.resizebitmap(2000, 100);
+            m_effect.Effect(1);
+        }
+        else if(Value==UnitValue.F_ANNA)
+        {
+            m_effect =new SpriteControl(GraphicManager.getInstance().m_anna_punch.m_bitmap);
+            m_effect.AnnaEffect(200);
+         }
 
-        m_effect.ResizeBitmapRate(3,3);
     }
     public void minus(Vec2 a,Vec2 b)
     {

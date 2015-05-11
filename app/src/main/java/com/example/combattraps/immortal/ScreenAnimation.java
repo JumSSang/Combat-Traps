@@ -7,6 +7,7 @@ import android.graphics.Paint;
 /**
  * Created by 경민 on 2015-05-02.
  */
+
 public class ScreenAnimation {
 
     private double m_fade_time=0;
@@ -40,13 +41,18 @@ public class ScreenAnimation {
     {
         if(m_fade_alpah>0) {
             m_fade_time += dt;
-            if (m_fade_time > 0.005f) {
-                m_fade_alpah -= 1;
+            if (m_fade_time > 0.001f) {
+                m_fade_alpah -= 3;
+                if(m_fade_alpah<0)
+                {
+                    m_fade_alpah=0;
+                }
                 m_fade_time = 0;
             }
         }
         else
         {
+            m_fade_alpah=0;
             m_AnimationState=false;
         }
     }
@@ -55,14 +61,19 @@ public class ScreenAnimation {
     {
         if(m_fade_alpah<255) {
             m_fade_time += dt;
-            if (m_fade_time > 0.005f) {
-                m_fade_alpah += 1;
+            if (m_fade_time > 0.001f) {
+                m_fade_alpah += 2;
+                if(m_fade_alpah>255)
+                {
+                    m_fade_alpah=255;
+                }
                 m_fade_time = 0;
 
             }
         }
         else
         {
+          //  m_fade_alpah=255;
             m_AnimationState=false;
         }
     }

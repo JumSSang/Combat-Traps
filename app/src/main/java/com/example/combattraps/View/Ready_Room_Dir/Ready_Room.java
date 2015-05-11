@@ -1,11 +1,14 @@
-package com.example.combattraps.View;
+package com.example.combattraps.View.Ready_Room_Dir;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
-import com.example.combattraps.Game.GraphicManager;
+import com.example.combattraps.View.CreateMap_View.MapCreate_View;
+import com.example.combattraps.View.St_Battle;
+import com.example.combattraps.View.Story_room.StoryView;
+import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.R;
 import com.example.combattraps.View.Ready_Room_Dir.SumInfo;
 import com.example.combattraps.View.Ready_Room_Dir.UserInfo;
@@ -44,6 +47,9 @@ public class Ready_Room implements IState {
         currentTime = System.currentTimeMillis() / 1000;
         AppManager.getInstance().state = AppManager.S_ROBBY;
         GraphicManager.getInstance().Init();
+        if(Sound.getInstance().m_MediaPlayer==null) {
+            Sound.getInstance().backgroundPlay(R.raw.intro_bgm);
+        }
        // Sound.getInstance().backgroundPlay(R.raw.intro_bgm);
         Sound.getInstance().addList(6,R.raw.ready_tictok);
         m_Width = (int) GraphicManager.getInstance().m_Width;
@@ -108,6 +114,7 @@ public class Ready_Room implements IState {
         double timeDelta = newTime - currentTime;
         currentTime = newTime;
         double dt=timeDelta;
+        //GraphicManager.getInstance().m_anna_punch.Update(30);
         m_fadein.fadeInUpdate(timeDelta);
         if(!DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") && !DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") &&!DBManager.getInstance().GetEnemy().equals("검색취소"))
         {
@@ -116,10 +123,22 @@ public class Ready_Room implements IState {
         }
         if( btn_story.state_click==true)
         {
+            try {
+                DBManager.getInstance().connection.oos.writeObject("싱글게임");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                DBManager.getInstance().connection.oos.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Sound.getInstance().backgroundRelease();
             AppManager.getInstance().state=AppManager.S_STORY1;
-            AppManager.getInstance().getGameView().ChangeGameState(new StoryView());
+
+            AppManager.getInstance().getGameView().ChangeGameState(new MapCreate_View());
         }
+        GraphicManager.getInstance().m_anna_punch.Update(System.currentTimeMillis());
 
 
     }
@@ -142,6 +161,9 @@ public class Ready_Room implements IState {
             gear.Draw(canvas, m_Width / 20 * 18, 0);
             m_myImfoRender.onDraw(canvas);
             m_SumImfoRender.Draw(canvas);
+           // GraphicManager.getInstance().m_anna_punch.AnnaEffect(50);
+          //  GraphicManager.getInstance().m_anna_punch.Draw(canvas);
+            GraphicManager.getInstance().m_anna_punch.EffectDraw(canvas,m_Width/2,m_Height/2);
             if (GraphicManager.getInstance().btn_start.state_click == true && (DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") || DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") || DBManager.getInstance().GetEnemy().equals("검색취소"))) {
                 DBManager.getInstance().SetEnemy("대전 상대 검색중입니다..");
             } else if (GraphicManager.getInstance().btn_start.state_click == false && DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..")) {
@@ -154,7 +176,6 @@ public class Ready_Room implements IState {
                 }
 
             }
-
 
         }
         m_fadein.fadeDraw(canvas);
@@ -210,6 +231,7 @@ public class Ready_Room implements IState {
                 }
                 if((Collusion((int) x, (int) y, btn_storyRect)) )
                 {
+
                     btn_story.state_click = !btn_story.state_click;
                 }
                 if (Collusion((int) x, (int) y, btn_sotreRect)) {

@@ -1,6 +1,9 @@
 package com.example.combattraps.immortal;
 
+import com.example.combattraps.Game.UnitDirect.UnitValue;
 import com.example.combattraps.NetConnect;
+
+import java.io.IOException;
 
 /**
  * Created by 경민 on 2015-04-19.
@@ -23,6 +26,8 @@ public class DBManager {
     int state=0;
     public int go_robby=2;
     public boolean nextlobby=false;
+    public String m_StringMap;
+    public String m_server_getMap;
     public static DBManager getInstance()
     {
         if(s_instance==null)
@@ -48,11 +53,13 @@ public class DBManager {
     {
         return response;
     }
+
+
     public void SetResponse(String a) //서버로부터 신호들어온 문자열을 셋팅한다.
     {
         switch(go_robby)
         {
-            case 1:
+            case 1://처음 들어왔을경우 정보셋팅하는 부분이다.
                 /*
                 1. 닉네임
                 2.골드
@@ -70,16 +77,27 @@ public class DBManager {
                 this.victory=Integer.parseInt(result[4]);
                 this.sum_number=Integer.parseInt(result[5]);
                 this.guild=result[6];
-                go_robby=3;
+
                 break;
-            case 2:
+            case 2: //뭐지?!!!
                 this.response=a;
                 break;
-            case 3:
+            case 3: //적의 아이디와 썸네일 분리해서 정보를 넘겨준다.
                 String[] result2=a.split(":");
 
                 this.enemy=result2[0];
                 this.enemysum= Integer.parseInt(result2[1]);
+
+                break;
+            case 4: //싱글게임 시작시 맵정보를 불러오는 부분이다.
+                m_StringMap=a;
+
+                break;
+            case 5:
+
+
+                break;
+            case 6:
 
                 break;
         }

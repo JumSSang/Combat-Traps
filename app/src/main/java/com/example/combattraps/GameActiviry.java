@@ -7,10 +7,9 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.combattraps.View.ReadyView;
-import com.example.combattraps.View.Ready_Room;
-import com.example.combattraps.View.St_Battle;
+import com.example.combattraps.View.LoadingView;
 
+import com.example.combattraps.immortal.AppManager;
 import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.GameView;
 
@@ -38,7 +37,8 @@ public class GameActiviry extends Activity {
         }
 
 
-        GameView w =new GameView(this, new ReadyView());
+        GameView w =new GameView(this, new LoadingView());
+        AppManager.getInstance().state=AppManager.S_LOADING;
 
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metrics = new DisplayMetrics();
