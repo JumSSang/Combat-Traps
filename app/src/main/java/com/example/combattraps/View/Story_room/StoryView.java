@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 
 import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
+import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.Game.PathFinder;
 import com.example.combattraps.Game.UnitDirect.Unit;
@@ -29,6 +30,7 @@ import com.example.combattraps.immortal.ScreenAnimation;
 import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.TextEffect;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class StoryView implements IState {
@@ -98,10 +100,18 @@ public class StoryView implements IState {
     UnitManager Units;
 
     TextEffect m_airtext, m_airtext1,m_airtextVic,m_airTextFebe;
-
+    public void sendMessage(String a) throws IOException {
+        DBManager.getInstance().connection.oos.writeObject(a);
+        DBManager.getInstance().connection.oos.flush();
+    }
     @Override
     public void Init() {
-
+        DBManager.getInstance().go_robby = 4;
+        try {
+            sendMessage("1");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         m_talk = new Story_String();
         AppManager.getInstance().state = AppManager.S_STORY1;
@@ -184,6 +194,56 @@ public class StoryView implements IState {
         temp3.set(UnitValue.F_ANNA, 1, 0);
         UnitDataList.add(temp3);//2
 
+
+    }
+    public void LoadingDBMap(String a) {
+        String[] result = a.split("=");
+        String[] imfors;
+        for (int i = 0; i < result.length; i++) {
+
+            int x = 0;
+            int y = 0;
+            int level = 0;
+            int type = 0;
+            imfors = result[i].split("a");
+
+            x = Integer.parseInt(imfors[0]);
+            y = Integer.parseInt(imfors[1]);
+            level = Integer.parseInt(imfors[2]);
+            type = Integer.parseInt(imfors[3]);
+            switch (type) {
+                case UnitValue.F_TOWER:
+
+                    break;
+                case UnitValue.F_JUMPINGTRAP:
+                    break;
+                case UnitValue.F_ZOMBIE:
+                    break;
+                case UnitValue.F_GOLDRUN:
+                    break;
+                case UnitValue.F_ELSATOWER:
+
+                    break;
+                case UnitValue.F_ANNA:
+
+                    break;
+                case UnitValue.F_TOWNHALL:
+                    break;
+                case UnitValue.F_TREE1:
+                    CreateTree1(x, y);
+                    break;
+
+                case UnitValue.F_ROCK1:
+                    CreateRock(x, y);
+                    break;
+                case UnitValue.F_ROCKE2:
+                    CreateRock2(x, y);
+                    break;
+
+
+            }
+
+        }
 
     }
 
@@ -285,8 +345,13 @@ public class StoryView implements IState {
                 } else if (UnitValue.m_map[i][j] == 2) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 } else if (UnitValue.m_map[i][j] == 3) {
-                    GraphicManager.getInstance().temptitle3.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
+                    GraphicManager.getInstance().temptile5.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 }
+                else if(UnitValue.m_map[i][j]==UnitValue.M_NOTMOVE)
+                {
+                    GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
+                }
+
             }
         }
 
@@ -327,6 +392,7 @@ public class StoryView implements IState {
 
         switch (m_plot) {
             case 0: //처음으로 간단한 설명을 하는 장면의 대화 시뮬 부분이다.
+
                 GraphicManager.getInstance().m_Sara.Draw(canvas, (int) m_Width / 20 * 14, (int) m_Height / 20 * 10);
                 GraphicManager.getInstance().ballon_talk.Draw(canvas, (int) m_Width / 20 * 12, (int) m_Height / 20 * 2);
                 String temp = m_talk.getSara2(m_SaraSay);
@@ -342,6 +408,7 @@ public class StoryView implements IState {
                 }
                 if(m_SaraSay >6) {
                     setEnviroMent();
+                    LoadingDBMap(DBManager.getInstance().m_StringMap);
                     m_plot = 1;
                 }
                 break;
@@ -875,6 +942,27 @@ public class StoryView implements IState {
     //아처 타워 생성 부분 추후 수정 예정 부분
 
 
+    public void CreateTree1(int i, int j) {
+        if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
+            Unit temp;
+            temp = new Unit(GraphicManager.getInstance().tree1.m_bitmap);
+            temp.SetPos(i, j);
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1));
+            UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
+        }
+
+    }
+
+    public void CreateRock2(int i, int j) {
+        if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
+            Unit temp;
+            temp = new Unit(GraphicManager.getInstance().rock2.m_bitmap);
+            temp.SetPos(i, j);
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2));
+            UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
+        }
+
+    }
 }
 
 
