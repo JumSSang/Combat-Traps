@@ -65,6 +65,7 @@ public class Unit_Imfor {
     private int range=2;
     public BoundingSpear m_BoundingSpear;
     public boolean m_attck=false;
+    public int findingTilenumber=0;
 
 
 

@@ -94,6 +94,7 @@ public class GraphicManager {
     public void Init() {
 
         deleteImage();
+        GameList=new ArrayList<>();
         DisplayMetrics metrics = AppManager.getInstance().getResources().getDisplayMetrics();
         m_Width = metrics.widthPixels;
         m_Height = metrics.heightPixels;
@@ -118,7 +119,7 @@ public class GraphicManager {
             m_anna.Anna(30);
             //m_elsatower.SetPosition(750 + 50 / 2 * (33 - 15), -300 + 30 / 2 * (33 + 15) + 15);
             mTownHall = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.hall));
-            mTownHall.ResizeBitmapRate(2, 2);
+            mTownHall.resizebitmap(500, 500);
             m_anna.SetPosition(750 + 50 / 2 * (15 - 15), -300 + 30 / 2 * (15 + 15) + 15);
             temptile1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile1));
             temptile1.resizebitmap(51, 26);
@@ -131,11 +132,16 @@ public class GraphicManager {
             temptitle3.resizebitmap(51, 26);
             temptile5=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile3));
             temptile5.resizebitmap(51,51);
-
         }
 
         else if(AppManager.getInstance().state==AppManager.S_ROBBY)
         {
+
+            for(int i=0;i<GameList.size();i++)
+            {
+                GameList.get(i).m_bitmap=null;
+            }
+            GameList.clear();
             RobbyList=new ArrayList<>();
             m_anna_punch=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna_punch_effect));
             m_anna_punch.AnnaEffect(30);
@@ -161,29 +167,32 @@ public class GraphicManager {
             RobbyList.add(m_UserView); //유저 정보 창 추가
             RobbyList.add(m_Gold_image); //골드 바 추가
             RobbyList.add(m_Top_Bar); //탑바 추가
-
         }
 
         else if(AppManager.getInstance().state==AppManager.S_STORY1)
         {
+            //GameList=new ArrayList<>();
             //추후 모든 변수는 ArrayList로 관리 상수를 이용해서 이미지를 처리하게 한다.
              for(int i=0;i<RobbyList.size();i++)
              {
                  RobbyList.get(i).m_bitmap=null;
              }
-
             m_anna_punch=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna_punch_effect));
             m_anna_punch.AnnaEffect(30);
+
             mElsa_Tower = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.elsa_tower));
+
             ButtonView_Image = new Graphic_image((AppManager.getInstance().getBitmap(R.drawable.button_view)));
+
             TowerButton = new Graphic_image(((AppManager.getInstance().getBitmap(R.drawable.towersum))));
+
             mElsa_Tower.resizebitmap(1534, 318);
             mElsa_Tower.ResizeBitmapRate(2, 2);
+
             TowerButton.resizebitmap((int) m_Width / 12, (int) m_Height / 9);
             ButtonView_Image.resizebitmap((int) m_Width/20*15, (int) m_Height / 6);
+
             m_effect = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
-            //m_effect.resizebitmap(2198,130);
-        //   m_effect.Effect(1);
             m_elsatower = new SpriteControl(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
             m_elsatower.ElsaTower(30);
             m_anna = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna));
@@ -191,7 +200,7 @@ public class GraphicManager {
             m_anna.Anna(30);
             m_elsatower.SetPosition(750 + 50 / 2 * (33 - 15), -300 + 30 / 2 * (33 + 15) + 15);
             mTownHall = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.hall));
-            mTownHall.ResizeBitmapRate(2, 2);
+            mTownHall.resizebitmap(359/2, 451/2);
             m_anna.SetPosition(750 + 50 / 2 * (15 - 15), -300 + 30 / 2 * (15 + 15) + 15);
             temptile1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile1));
             temptile1.resizebitmap(51, 26);
@@ -203,7 +212,6 @@ public class GraphicManager {
             temptitle4.resizebitmap(51,51);
             temptile5=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile3));
             temptile5.resizebitmap(51,26);
-
             temptitle3.resizebitmap(51, 26);
             m_Chat_View=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.bar_btn_view));
             m_Chat_View.resizebitmap((int)m_Width/20*15,(int)m_Height/4);
@@ -222,7 +230,24 @@ public class GraphicManager {
             tree1=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.tree1));
             tree1.resizebitmap(70, 70);
 
-
+            GameList.add(background);
+            GameList.add(m_effect);
+            GameList.add(m_elsatower);
+            GameList.add(m_anna);
+            GameList.add(mElsa_Tower);
+            GameList.add(mTownHall);
+            GameList.add(m_Chat_View);
+            GameList.add(m_airplane);
+            GameList.add(TowerButton);
+            GameList.add(ButtonView_Image);
+            GameList.add(mElsa_Tower);
+            GameList.add(m_anna_punch);
+            GameList.add(temptile1);
+            GameList.add(temptile2);
+            GameList.add(temptitle3);
+            GameList.add(temptitle4);
+            GameList.add(temptile5);
+            GameList.add(ballon_talk);
 
 
         }

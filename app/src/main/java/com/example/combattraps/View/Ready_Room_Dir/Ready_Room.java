@@ -42,8 +42,11 @@ public class Ready_Room implements IState {
     SumInfo m_SumImfoRender;
     ScreenAnimation m_fadein;
     double currentTime;
+
     @Override
+
     public void Init() {
+
         currentTime = System.currentTimeMillis() / 1000;
         AppManager.getInstance().state = AppManager.S_ROBBY;
         GraphicManager.getInstance().Init();
@@ -135,8 +138,12 @@ public class Ready_Room implements IState {
             }
             Sound.getInstance().backgroundRelease();
             AppManager.getInstance().state=AppManager.S_STORY1;
-
+            if(DBManager.getInstance().GetID().equals("쩜상랠리"))
             AppManager.getInstance().getGameView().ChangeGameState(new MapCreate_View());
+            else
+            {
+                AppManager.getInstance().getGameView().ChangeGameState(new StoryView());
+            }
         }
         GraphicManager.getInstance().m_anna_punch.Update(System.currentTimeMillis());
 

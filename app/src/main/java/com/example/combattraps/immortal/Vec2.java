@@ -11,6 +11,7 @@ public class Vec2 {
     public int y;
     public float distance;
 
+
     public float normal;
 
     public Vec2(int x, int y) {

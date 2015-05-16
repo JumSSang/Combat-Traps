@@ -158,6 +158,35 @@ public class MapCreate_View implements IState {
     @Override
     public void Update() {
         Units.Update(10);
+        switch (m_plot) {
+            case 0:
+                if (DBManager.getInstance().m_StringMap != null) {
+
+                    m_plot = 1;
+                }
+                break;
+            case 1: //배치 시작 터치 부분
+                LoadMap(DBManager.getInstance().m_StringMap);
+                TouchGame(x, y);
+                if (AppManager.getInstance().Collusion((int) x, (int) y, r)) {
+                    m_plot=2;
+                }
+
+                break;
+            case 2://배치 완료
+
+                    saveMap();
+                    m_plot=3;
+
+
+                break;
+            case 3:
+
+
+                AppManager.getInstance().state=AppManager.S_ROBBY;
+                AppManager.getInstance().getGameView().ChangeGameState(new Ready_Room());
+                break;
+        }
 
     }
 
@@ -242,18 +271,7 @@ public class MapCreate_View implements IState {
                 m_movex = x;
                 m_movey = y;
 
-                switch (m_plot) {
-                    case 0:
-                        if (DBManager.getInstance().m_StringMap != null) {
 
-                            m_plot = 1;
-                        }
-                        break;
-                    case 1: //배치 시작 터치 부분
-                        LoadMap(DBManager.getInstance().m_StringMap);
-                        TouchGame(x, y);
-                        break;
-                }
                 mode = DRAG;
                 Log.d("zoom", "mode=DRAG");
                 break;
@@ -449,15 +467,6 @@ public class MapCreate_View implements IState {
         }
 
 
-        if (AppManager.getInstance().Collusion((int) x, (int) y, r)) {
-            saveMap();
-        DBManager.getInstance().go_robby=5;
-
-        AppManager.getInstance().state=AppManager.S_ROBBY;
-        AppManager.getInstance().getGameView().ChangeGameState(new Ready_Room());
-
-
-        }
 
         }
 
@@ -483,6 +492,14 @@ public void saveMap()
             text+=map[i];
         }
         DBManager.getInstance().m_server_getMap=text;
+
+        try {
+            DBManager.getInstance().connection.oos.writeObject(text);
+            DBManager.getInstance().connection.oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void CreateRock(int i, int j) {
