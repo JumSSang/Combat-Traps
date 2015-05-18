@@ -285,10 +285,10 @@ public class St_Battle implements IState {
         canvas.drawText("" + m_time, 500, 500, paint);
         if (PlayerUnit.size() > 2) {
 
-            float srcx = PlayerUnit.get(1).DrawPosition.fx;
-            float srcy = PlayerUnit.get(1).DrawPosition.fy;
-            float destx = PlayerUnit.get(PlayerUnit.size() - 1).DrawPosition.fx;
-            float desty = PlayerUnit.get(PlayerUnit.size() - 1).DrawPosition.fy;
+            float srcx = PlayerUnit.get(1).DrawPosition.x;
+            float srcy = PlayerUnit.get(1).DrawPosition.y;
+            float destx = PlayerUnit.get(PlayerUnit.size() - 1).DrawPosition.x;
+            float desty = PlayerUnit.get(PlayerUnit.size() - 1).DrawPosition.y;
 
             float distance = (float) Math.sqrt(Math.pow((destx - srcx), 2) + Math.pow(desty - srcy, 2));
 

@@ -35,7 +35,7 @@ public class Sound {
     {
         m_MediaPlayer=MediaPlayer.create(m_context, soundID);
         m_MediaPlayer.setLooping(true);
-        m_MediaPlayer.setVolume(0.4f,0.4f);
+        m_MediaPlayer.setVolume(0.0f,0.0f);
         m_MediaPlayer.start();
     }
     public void backgroundRelease()

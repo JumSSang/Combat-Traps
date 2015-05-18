@@ -6,6 +6,7 @@ import android.graphics.Paint;
 
 import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.Vec2;
+import com.example.combattraps.immortal.Vec2F;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,10 +71,11 @@ public class UnitManager {
                 case UnitValue.F_ELSATOWER:
                     // paint.setARGB(50, 255, 0, 0);
                     // canvas.drawCircle(UnitList.get(i).m_BoundingSpear.fx, UnitList.get(i).m_BoundingSpear.fy, 200, paint);
-                    UnitList.get(i).myUnitObject.Draw(canvas, 1, UnitList.get(i).DrawPosition.fx, UnitList.get(i).DrawPosition.fy - 100);
+                    UnitList.get(i).myUnitObject.Draw(canvas, 1, UnitList.get(i).DrawPosition.x, UnitList.get(i).DrawPosition.y - 100);
                     UnitList.get(i).IniteBouningSpear(750 + 50 / 2 * (UnitList.get(i).myUnitObject.Postion.y - UnitList.get(i).myUnitObject.Postion.x) + 25,
                             -300 + 25 / 2 * (UnitList.get(i).myUnitObject.Postion.y + UnitList.get(i).myUnitObject.Postion.x) + 25);
-                    canvas.drawText("?", UnitList.get(i).DrawPosition.fx + 30, UnitList.get(i).DrawPosition.fy - 120, paint);
+
+                    canvas.drawText("?", UnitList.get(i).DrawPosition.x + 30, UnitList.get(i).DrawPosition.y - 120, paint);
                     paint.setARGB(50, 100, 100, 100);
                     //canvas.drawCircle(UnitList.get(i).m_BoundingSpear.GetX(),UnitList.get(i).m_BoundingSpear.GetY(),UnitList.get(i).m_BoundingSpear.GetRadius(),paint);
 
@@ -81,7 +83,7 @@ public class UnitManager {
                     UnitList.get(i).originHP.top -= 110;
                     UnitList.get(i).originHP.bottom -= 110;
                     UnitList.get(i).m_effect.Effect(30);
-                    UnitList.get(i).m_effect.Draw(canvas, 1, UnitList.get(i).DrawPosition.fx - 30, UnitList.get(i).DrawPosition.fy - 50);
+                    UnitList.get(i).m_effect.Draw(canvas, 1, UnitList.get(i).DrawPosition.x - 30, UnitList.get(i).DrawPosition.y - 50);
 
                     paint.setColor(Color.GREEN);
                     canvas.drawRect(UnitList.get(i).originHP, paint);
@@ -90,7 +92,7 @@ public class UnitManager {
 
 
                 case UnitValue.F_ANNA:
-                    UnitList.get(i).myUnitObject.Draw(canvas, 1, UnitList.get(i).DrawPosition.fx, UnitList.get(i).DrawPosition.fy - 30);
+                    UnitList.get(i).myUnitObject.Draw(canvas, 1, UnitList.get(i).DrawPosition.x, UnitList.get(i).DrawPosition.y - 30);
                     paint.setARGB(50, 100, 100, 100);
                     //canvas.drawCircle(UnitList.get(i).m_BoundingSpear.GetX(),UnitList.get(i).m_BoundingSpear.GetY(),UnitList.get(i).m_BoundingSpear.GetRadius(),paint);
                     paint.setColor(Color.WHITE);
@@ -100,16 +102,26 @@ public class UnitManager {
                     UnitList.get(i).originHP.bottom -= 40;
                     canvas.drawRect(UnitList.get(i).originHP, paint);
                     paint.setColor(Color.WHITE);
-                    if (UnitList.get(i).getState() != UnitValue.S_BATTLE_MOVE) {
-                        canvas.drawText("" , UnitList.get(i).DrawPosition.fx + 10, UnitList.get(i).DrawPosition.fy - 50, paint);
-                    } else {
-                        canvas.drawText("!" , UnitList.get(i).DrawPosition.fx + 10, UnitList.get(i).DrawPosition.fy - 50, paint);
+                    switch(UnitList.get(i).getState())
+                    {
+                        case UnitValue.S_MOVE:
+                         canvas.drawText("타운홀" , UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
+                            break;
+                        case UnitValue.S_BATTLE_MOVE:
+                           canvas.drawText("바운딩" , UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
+                            break;
+                        case UnitValue.S_REMOVE:
+                            canvas.drawText("적제거" , UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
+                            break;
+
                     }
+
+
 
                     if (UnitList.get(i).m_attck) {
 
                         UnitList.get(i).m_effect.OneUpdate(System.currentTimeMillis());
-                        UnitList.get(i).m_effect.EffectDraw(canvas, UnitList.get(i).my_enemy.DrawPosition.fx - 30, UnitList.get(i).my_enemy.DrawPosition.fy - 60); // 검색해라!
+                        UnitList.get(i).m_effect.EffectDraw(canvas, UnitList.get(i).my_enemy.DrawPosition.x - 30, UnitList.get(i).my_enemy.DrawPosition.y - 60); // 검색해라!
                         if (UnitList.get(i).m_effect.mbEnd) {
                             UnitList.get(i).m_attck = false;
                             UnitList.get(i).m_effect.mbEnd = false;
@@ -118,25 +130,25 @@ public class UnitManager {
                     }
                     break;
                 case UnitValue.F_ROCK1:
-                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.fx, (int) UnitList.get(i).DrawPosition.fy - 25);
+                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x, (int) UnitList.get(i).DrawPosition.y - 25);
                     break;
                 case UnitValue.F_JUMPINGTRAP:
-                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.fx, (int) UnitList.get(i).DrawPosition.fy);
+                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x, (int) UnitList.get(i).DrawPosition.y);
                     break;
                 case UnitValue.F_TOWNHALL:
                     if (UnitList.get(i).mHp > 0)
-                        UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.fx + 25, (int) UnitList.get(i).DrawPosition.fy - 175);
+                        UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x + 25, (int) UnitList.get(i).DrawPosition.y - 175);
                     break;
                 case UnitValue.F_TREE1:
-                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.fx - 25, (int) UnitList.get(i).DrawPosition.fy - 50);
+                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x - 25, (int) UnitList.get(i).DrawPosition.y - 50);
                     break;
                 case UnitValue.F_ROCKE2:
-                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.fx, (int) UnitList.get(i).DrawPosition.fy - 25);
+                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x, (int) UnitList.get(i).DrawPosition.y - 25);
                     break;
 
                 default:
 
-                    UnitList.get(i).myUnitObject.Draw(canvas, UnitList.get(i).DrawPosition.x, UnitList.get(i).DrawPosition.y);
+                    UnitList.get(i).myUnitObject.Draw(canvas,(int) UnitList.get(i).DrawPosition.x, (int)UnitList.get(i).DrawPosition.y);
                     UnitList.get(i).Hpbar();
                     paint.setColor(Color.GREEN);
                     canvas.drawRect(UnitList.get(i).originHP, paint);
@@ -154,7 +166,7 @@ public class UnitManager {
                 a.m_effect.Update(System.currentTimeMillis());
                 break;
             case UnitValue.F_ANNA:
-                a.IniteBouningSpear(a.DrawPosition.fx, a.DrawPosition.fy);
+                a.IniteBouningSpear(a.DrawPosition.x, a.DrawPosition.y);
                 break;
             case UnitValue.F_ZOMBIE:
                 break;
@@ -221,10 +233,9 @@ public class UnitManager {
             {
                 a.myUnitObject.mDirection = 1;
 
-
             } else if (x == 1 && y == 1)//top
             {
-                a.myUnitObject.mDirection = 4;
+                a.myUnitObject.mDirection = 3;
 
 
             } else if (x == 1 && y == -1)//right
@@ -267,42 +278,79 @@ public class UnitManager {
             UnitList.get(i).myTime += dt; //유닛의 움직임 타임을 더해준다.
             if (UnitList.get(i).myTime > 0.05f) {  //유닛의 움직임 타임이 0.5보다 커지면 타일을 하나씩 움직인다.
                 if (UnitList.get(i).findedPath != null)  //목표타겟이 되는 부분이 Null값이 아니면 다음 문장  실행
-                    if (UnitList.get(i).findedPath.parentNode != null &&UnitList.get(i).getState()==UnitValue.S_BATTLE_MOVE) {  //부모노드가 비지않았다면 다음 으로
+                    if (UnitList.get(i).findedPath.parentNode != null && (UnitList.get(i).getState()==UnitValue.S_BATTLE_MOVE || UnitList.get(i).getState()==UnitValue.S_MOVE)) {  //부모노드가 비지않았다면 다음 으로
                         if (UnitList.get(i).mType == UnitValue.F_ANNA && UnitList.get(i).mThisMove == false) {
                             int x = UnitList.get(i).findedPath.m_pos.x - UnitList.get(i).findedPath.parentNode.m_pos.x; //x좌표를 findfaoth  좌표값으로 변경
                             int y = UnitList.get(i).findedPath.m_pos.y - UnitList.get(i).findedPath.parentNode.m_pos.y;
                             DirectionUpdate(x, y, UnitList.get(i), UnitValue.F_ANNA);//방향 업데이트
-                            UnitList.get(i).minus(UnitList.get(i).DrawPosition,
-                                    new Vec2((float) (750 + 50 / 2 * (UnitList.get(i).findedPath.parentNode.m_pos.y - UnitList.get(i).findedPath.parentNode.m_pos.x)) - (float) Math.random() * 10, (float) (-300 + 25 / 2 * (UnitList.get(i).findedPath.parentNode.m_pos.y + UnitList.get(i).findedPath.parentNode.m_pos.x)) - (float) Math.random() * 10));
+                           /* UnitList.get(i).minus(UnitList.get(i).DrawPosition,
+                                    new Vec2F((float) (750 + 50 / 2 * (UnitList.get(i).findedPath.parentNode.m_pos.y - UnitList.get(i).findedPath.parentNode.m_pos.x)) - (float) Math.random() * 10, (float) (-300 + 25 / 2 * (UnitList.get(i).findedPath.parentNode.m_pos.y + UnitList.get(i).findedPath.parentNode.m_pos.x)) - (float) Math.random() * 10));*/
                             UnitList.get(i).mThisMove = true; //무브는 트루이다.
-                            UnitList.get(i).m_moveVector.Normalize(); //무브 벡터를 노멀라이즈 해준다.
-                            UnitList.get(i).Speed(UnitList.get(i).m_moveVector.fx / 6, UnitList.get(i).m_moveVector.fy / 6); //그리고 무브 벡터를 6의로 나눠서 이동해준다.
-                            UnitList.get(i).count = 0; //다시 Count는 0이된다???  즉 카운터는 해주는 카운터라 보면된다 6을 나눴으니 6칸이동하면 0으로바꿔줘야함 그래야 이동가능
-                        }
 
+                            UnitList.get(i).nextstate=false;
+                            float a=(float) (750 + 50 / 2 * (UnitList.get(i).findedPath.parentNode.m_pos.y -UnitList.get(i).findedPath.parentNode.m_pos.x));
+                            float b=(float)(-300 + 25 / 2 * (UnitList.get(i).findedPath.parentNode.m_pos.y+UnitList.get(i).findedPath.parentNode.m_pos.x));
+                            UnitList.get(i).m_SpeedVecrt=new Vec2F(a,b);
+                            UnitList.get(i).m_SpeedVecrt.sub(UnitList.get(i).DrawPosition);
+                            UnitList.get(i).m_SpeedVecrt.normalize();
+                            UnitList.get(i).m_SpeedVecrt.multiply(2);
+                            float jegop=((a-UnitList.get(i).DrawPosition.x)*(a-UnitList.get(i).DrawPosition.x) +(b-UnitList.get(i).DrawPosition.y)*(b-UnitList.get(i).DrawPosition.y));
+                            UnitList.get(i).m_distance=(float)Math.sqrt(jegop);
+
+
+
+
+
+                        }
                         if (UnitList.get(i).mThisMove == true) {
-                            if (UnitList.get(i).count == 6) {
-                                // count가 6이 되었으니 이동
+                              if(  UnitList.get(i).m_distance<0)
+                              {
                                 UnitList.get(i).mThisMove = false;
-                                UnitList.get(i).count = 0;//0으로 바꿔줘서 이동 가능하게 해줌
-                            } else {
-                                UnitList.get(i).count += 1; //이동해주고있다.
-                                UnitList.get(i).DrawPosition.fx += UnitList.get(i).mVSpeed.fx; //노멀라이즈 된 6의로 나눈값으로 이동하고있다.
-                                UnitList.get(i).DrawPosition.fy += UnitList.get(i).mVSpeed.fy;
+
+                            } else if(UnitList.get(i).getState()!=UnitValue.S_BATTLE){
+
+                                  if(UnitList.get(i).m_SpeedVecrt!=null)
+                                  {
+                                      UnitList.get(i).DrawPosition.add(UnitList.get(i).m_SpeedVecrt);
+                                      UnitList.get(i).m_distance -= 2;
+                                  }
+
                             }
                         }
                         if (UnitList.get(i).mThisMove == false) {
+                            UnitList.get(i).myPath.LoadMap(UnitValue.m_map);
+                            UnitList.get(i).findedPath=null;
+                            if(UnitList.get(i).my_enemy.mHp>0) {
+                                    UnitList.get(i).findedPath = UnitList.get(i).myPath.find(enemyPositionTarget(UnitList.get(i).myUnitObject.Postion, UnitList.get(i).my_enemy.myUnitObject.unitPosition, UnitList.get(i)), UnitList.get(i).myUnitObject.Postion);
+                                      if(UnitList.get(i).findedPath.parentNode!=null) {
+                                    UnitList.get(i).findedPath = UnitList.get(i).findedPath.parentNode; //이동이 끝났으니 부모노드값을 바꿔준다. 목표노드값을 변경
+                                    UnitList.get(i).myUnitObject.SetPos(UnitList.get(i).findedPath.m_pos.x, UnitList.get(i).findedPath.m_pos.y); //포지션 좌표값도 변경해서 후에 계산 편리성 도모
+                                    // UnitValue.m_map[UnitList.get(i).myUnitObject.Postion.x][UnitList.get(i).myUnitObject.Postion.y]=4;
+                                        //  UnitList.get(i).myUnitObject.unitPosition.clear();
+                                    //UnitList.get(i).myUnitObject.unitPosition.add(UnitList.get(i).findedPath.m_pos);
+                                    UnitList.get(i).nextstate = true;
+                                }
+                            }
+                            else
+                            {
+                                UnitList.get(i).setState(UnitValue.S_REMOVE);
+                            }
 
-                            UnitList.get(i).findedPath = UnitList.get(i).findedPath.parentNode; //이동이 끝났으니 부모노드값을 바꿔준다. 목표노드값을 변경
-                            UnitList.get(i).myUnitObject.SetPos(UnitList.get(i).findedPath.m_pos.x, UnitList.get(i).findedPath.m_pos.y); //포지션 좌표값도 변경해서 후에 계산 편리성 도모
                         }
                         UnitList.get(i).myTime = 0;
                     } else {
-                        int x = UnitList.get(i).myUnitObject.Postion.x - UnitList.get(i).findedPath.m_pos.x; //x좌표를 findfaoth  좌표값으로 변경
-                        int y = UnitList.get(i).myUnitObject.Postion.y - UnitList.get(i).findedPath.m_pos.y;
+
+                        int x = UnitList.get(i).myUnitObject.Postion.x - UnitList.get(i).my_enemy.myUnitObject.Postion.x; //x좌표를 findfaoth  좌표값으로 변경
+                        int y = UnitList.get(i).myUnitObject.Postion.y -  UnitList.get(i).my_enemy.myUnitObject.Postion.y;
                         DirectionUpdate(x, y, UnitList.get(i), UnitValue.F_ANNA);//방향 업데이트
-                        UnitList.get(i).findedPath = null;
+
+
+
+                        //UnitList.get(i).myUnitObject.SetPos(UnitList.get(i).findedPath.m_pos.x, UnitList.get(i).findedPath.m_pos.y); //포지션 좌표값도 변경해서 후에 계산 편리성 도모
+                      //  UnitList.get(i).findedPath = null;
+
                         // UnitList.get(i).setState(UnitValue.S_BATTLE); // 더이상 이동할곳이 없으면 전투 상태로 바꿔준다..
+                     //   UnitList.get(i).nextstate=true;
                     }
             }
 
@@ -312,7 +360,7 @@ public class UnitManager {
     }
 
 
-    public boolean AABB(Vec2 A, Vec2 B, float range) {
+    public boolean AABB(Vec2F A, Vec2F B, float range) {
 
         /*bool isCollision(Sphere* m1,Sphere *m2)
         {
@@ -324,7 +372,7 @@ public class UnitManager {
             else
                 return FALSE;
         }*/
-        float distance = (float) Math.sqrt((B.fx - A.fx) * (B.fx - A.fx) + (B.fy - A.fy) * (B.fy - A.fy));
+        float distance = (float) Math.sqrt((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y));
         // A.distance=distance;
         if (range >= distance) {
             return true;
@@ -359,6 +407,70 @@ public class UnitManager {
         return false;
     }
 
+    public void AnnaPattern(Unit_Imfor a,double dt,ArrayList<Unit_Imfor>tempEnemy)
+    {
+        switch (a.getState()) {
+            case UnitValue.S_MOVE: //주변에 유닛이나 타워가 없으면 무브상태로 된다 .이때는 타운홀로만 향하게 된다. 이때 바운딩 영역 체크를 하는 부분이 생긴다.
+                ///바운딩 영역을 체크하는 부분은 무브에서만 한다.
+                if (tempEnemy.size() != 0) {
+                    for (int i = 0; i < tempEnemy.size(); i++) {
+                        if (AABB(a.DrawPosition, tempEnemy.get(i).DrawPosition, a.m_BoundingSpear.GetRadius()) ) {
+                            a.my_enemy = tempEnemy.get(i);
+                            a.myPath.LoadMap(UnitValue.m_map);
+                            if(tempEnemy.get(i).myUnitObject.unitPosition.size()>0) {
+                                a.findedPath = a.myPath.find(enemyPositionTarget(a.myUnitObject.Postion, tempEnemy.get(i).myUnitObject.unitPosition, a), a.myUnitObject.Postion);
+                            }
+                            a.setState(UnitValue.S_BATTLE_MOVE);
+                            break;
+                        }
+                    }
+                }
+                break;
+            case UnitValue.S_BATTLE: //하나의 유닛을 인식을 하게 되고 위치까지 도달하게 되는데 이때 공격을 하는데 자신의 공격 범위안에 유닛이 사라지면 S_BAttleMove를 호출하고 상대 유닛이 제거된 상태면 S_Move상태로 바꿔준다.
+                if(a.my_enemy.mType==UnitValue.F_ANNA) {
+                    a.my_enemy.myUnitObject.unitPosition.clear();
+                    a.my_enemy.myUnitObject.unitPosition.add(a.my_enemy.myUnitObject.Postion);
+                }
+                UnitBattle(a, dt, 1);
+                break;
+            case UnitValue.S_REMOVE: //상대의 유닛이 제거 되었을때 행동할 패턴이다. 제거되고 나면 먼저 바운딩영역안 적을 검색하고 없으면 PathFinde로 타운홀로 향한다.
+
+                if (tempEnemy.size() != 0) {
+                    for (int i = 0; i < tempEnemy.size(); i++) {
+                        if (AABB(a.DrawPosition, tempEnemy.get(i).DrawPosition, a.m_BoundingSpear.GetRadius()) && a.getState() != UnitValue.S_BATTLE &&tempEnemy.get(i).mHp>0) {
+                            a.my_enemy = tempEnemy.get(i);
+                            a.myPath.LoadMap(UnitValue.m_map);
+                            a.setState(UnitValue.S_BATTLE_MOVE);
+                            a.findedPath = a.myPath.find(enemyPositionTarget(a.myUnitObject.Postion, tempEnemy.get(i).myUnitObject.unitPosition, a), a.myUnitObject.Postion);
+                            return;
+                        }
+                    }
+                    a.setState(UnitValue.S_MOVE);
+                    a.my_enemy = tempEnemy.get(0);
+                    a.myPath.LoadMap(UnitValue.m_map);
+                    a.findedPath = a.myPath.find(enemyPositionTarget(a.myUnitObject.Postion, tempEnemy.get(0).myUnitObject.unitPosition,a),a.myUnitObject.Postion);
+                }
+
+                break;
+            case UnitValue.S_BATTLE_MOVE://상대유닛이나 타워 타일 영역 앞까지 무사히 안착시켜주는 부분이다. 겹치는 현상 없애줌
+
+                if (a.my_enemy.myUnitObject.unitPosition.size() > 0) {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int x = -1; x <= 1; x++) {
+
+                            if ((a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x + x == a.myUnitObject.Postion.x) && (a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y + y == a.myUnitObject.Postion.y)) {
+                                a.setState(UnitValue.S_BATTLE);
+                                return;
+                            }
+                        }
+                    }
+
+                }
+                break;
+        }
+    }
+
+
 
     //Agoon은 적인지 아군인지 업데이트할 대상을 의미한다. 1번은 아군 2번은 적
     public void UnitMonitor(Unit_Imfor a, double dt, int Agoon) {
@@ -371,101 +483,12 @@ public class UnitManager {
                 case UnitValue.F_ANNA:
                     if (Agoon == 1) {
 
-
-                        switch (a.getState())
-                        {
-                            case UnitValue.S_MOVE: //주변에 유닛이나 타워가 없으면 무브상태로 된다 .이때는 타운홀로만 향하게 된다. 이때 바운딩 영역 체크를 하는 부분이 생긴다.
-                                ///바운딩 영역을 체크하는 부분은 무브에서만 한다.
-                                if (EnemyUnits.size() != 0) {
-                                    for (int i = 0; i < EnemyUnits.size(); i++) {
-                                        if (AABB(a.DrawPosition, EnemyUnits.get(i).DrawPosition, a.m_BoundingSpear.GetRadius()) && a.getState() != UnitValue.S_BATTLE) {
-                                            a.my_enemy = EnemyUnits.get(i);
-                                            a.myPath.LoadMap(UnitValue.m_map);
-                                            a.setState(UnitValue.S_BATTLE_MOVE);
-                                            a.findedPath = a.myPath.find(enemyPositionTarget(a.myUnitObject.Postion, EnemyUnits.get(i).myUnitObject.unitPosition,a), a.myUnitObject.Postion);
-                                        }
-                                    }
-                                }
-
-                                break;
-                            case UnitValue.S_BATTLE: //하나의 유닛을 인식을 하게 되고 위치까지 도달하게 되는데 이때 공격을 하는데 자신의 공격 범위안에 유닛이 사라지면 S_BAttleMove를 호출하고 상대 유닛이 제거된 상태면 S_Move상태로 바꿔준다.
-                                UnitBattle(a, dt, 1);
-
-                                break;
-                            case UnitValue.S_REMOVE: //상대의 유닛이 제거 되었을때 행동할 패턴이다. 제거되고 나면 먼저 바운딩영역안 적을 검색하고 없으면 PathFinde로 타운홀로 향한다.
-                                a.my_enemy = EnemyUnits.get(0);
-                                a.myPath.LoadMap(UnitValue.m_map);
-                                a.setState(UnitValue.S_BATTLE_MOVE);
-                                a.findedPath = a.myPath.find(EnemyUnits.get(0).myUnitObject.Postion, a.myUnitObject.Postion);
-                                a.setState(UnitValue.S_MOVE);
-                                break;
-                            case UnitValue.S_BATTLE_MOVE://상대유닛이나 타워 타일 영역 앞까지 무사히 안착시켜주는 부분이다. 겹치는 현상 없애줌
-                                if(a.my_enemy.myUnitObject.unitPosition.size()>2) {
-                                    for (int y = -1; y <= 1; y++) {
-                                        for (int x = -1; x <= 1; x++) {
-                                            if (x == 0 && y == 0) continue;
-                                            if ((a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x + x == a.myUnitObject.Postion.x) && (a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y + y == a.myUnitObject.Postion.y) && a.getState() == UnitValue.S_BATTLE_MOVE) {
-                                                a.setState(UnitValue.S_BATTLE);
-                                            }
-                                        }
-                                    }
-                                }
-                                break;
-                        }
-                    } else if (Agoon == 2) {
-
-                        // 전투중일때는 모든 이동을 멈춘다.
-                        if (a.getState() == UnitValue.S_BATTLE) {
-                            UnitBattle(a, dt, 1);
-                        } else {
-
-                            // 적 유닛타일 근처에 들어가게 되면 전투상태로 돌입하게 해주는 부분이다.
-                            for (int y = -1; y <= 1; y++) {
-                                for (int x = -1; x <= 1; x++) {
-                                    if (x == 0 && y == 0) continue;
-                                    if( (a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x+x ==a.myUnitObject.Postion.x) &&(  a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y+y ==a.myUnitObject.Postion.y) &&a.getState()!=UnitValue.S_BATTLE )
-                                    {
-                                        a.setState(UnitValue.S_BATTLE);
-                                    }
-                                }
-                            }
-
-                            //목표로 하는 유닛이 죽게된다면 타운홀로 다시 찾아가라고 하는 부분이다.
-                            if ((a.getState() == UnitValue.S_REMOVE)) {
-                                a.my_enemy = MyUnits.get(0);
-                                a.myPath.LoadMap(UnitValue.m_map);
-                                a.findedPath = a.myPath.find(MyUnits.get(0).myUnitObject.Postion, a.myUnitObject.Postion);
-                            }// else if (((a.my_enemy.myUnitObject.Postion.y == a.myUnitObject.Postion.y) && (a.my_enemy.myUnitObject.Postion.x == a.myUnitObject.Postion.x)) && a.getState() != UnitValue.S_BATTLE) {
-
-
-                            //유닛이 찾아가다가 바운딩 스피어 영역에 적군을 만나게 된다면?
-                            //바운딩 원으로 근처에 있는 적을 모두 검색한다. 제일 먼저 들어오게된 유닛을 첫번째 타겟으로 삼는다.
-                            for (int i = 0; i < MyUnits.size(); i++) {
-                                if (AABB(a.DrawPosition, MyUnits.get(i).DrawPosition, a.m_BoundingSpear.GetRadius()) && a.getState() != UnitValue.S_BATTLE) {
-//                            // if (AABB(a.DrawPosition, EneEnemyUnits.get(i).DrawPosition, a.m_BoundingSpear.GetRadius()) && a.state != 2) {
-                                    a.my_enemy = MyUnits.get(i);
-                                    a.myPath.LoadMap(UnitValue.m_map);
-                                    a.setState(UnitValue.S_BATTLE_MOVE);
-                                    a.findedPath = a.myPath.find(MyUnits.get(i).myUnitObject.Postion, a.myUnitObject.Postion);
-                                }
-                            }
-                            if (a.my_enemy.myUnitObject.Postion == a.myUnitObject.Postion) {
-                                a.setState(UnitValue.S_BATTLE);
-                                //UnitBattle(a, dt,2);
-                            }
-                        }
+                        AnnaPattern(a,dt,EnemyUnits);
                     }
-
-                    break;
-                case UnitValue.F_ZOMBIE:
-                    break;
-                case UnitValue.F_JUMPINGTRAP:
-                    break;
-                case UnitValue.F_TOWNHALL:
-                    break;
-                case UnitValue.F_TOWER:
-                    break;
-                default:
+                    else if(Agoon==2)
+                    {
+                        AnnaPattern(a,dt,MyUnits);
+                    }
                     break;
             }
         }
@@ -483,19 +506,46 @@ public class UnitManager {
 
             if (a.myAttackDelayTime > 2.0f) {
                 if (a.my_enemy.mHp > 0) {
-                    Sound.getInstance().play(5);
-                    a.m_attck = true;
-                    a.my_enemy.mHp -= 1;
-                    a.myAttackDelayTime = 0;
-                } else {
+                    for (int y = -1; y <= 1; y++) {
+                        for (int x = -1; x <= 1; x++) {
+                               if(x==0 &&y==0)
+                                   continue;
+                            if ((a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x + x == a.myUnitObject.Postion.x) && (a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y + y == a.myUnitObject.Postion.y)) {
+
+                                int tempy=a.myUnitObject.Postion.y - a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y;
+                                int tempx=a.myUnitObject.Postion.x -  a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x;
+
+
+                                    DirectionUpdate(tempx,tempy,a,UnitValue.F_ANNA);
+                                    Sound.getInstance().play(5);
+                                    a.m_attck = true;
+                                    a.my_enemy.mHp -= 1;
+                                    a.myAttackDelayTime = 0;
+                                return;
+                           }
+
+                        }
+                    }
+                    if(a.my_enemy.mHp > 0) {
+                        a.findedPath=null;
+                        a.myPath.LoadMap(UnitValue.m_map);
+                       // a.my_enemy.myUnitObject.unitPosition.clear();
+                        //a.my_enemy.myUnitObject.unitPosition.add(a.my_enemy.myUnitObject.Postion);
+                        a.findedPath = a.myPath.find(enemyPositionTarget(a.myUnitObject.Postion, a.my_enemy.myUnitObject.unitPosition, a), a.myUnitObject.Postion);
+                        a.setState(UnitValue.S_BATTLE_MOVE);
+                        // return;
+                    }
+
+                }
+                else {
                     a.m_attck = false;
                     if (whoenemy == 1) {
                         a.my_enemy.myUnitObject.unitPosition.clear();
                         a.setState(UnitValue.S_REMOVE);
-
                         return;
                         // a.my_enemy=EnemyUnits.get(0);
-                    } else if (whoenemy == 2) {
+                    }
+                    else if (whoenemy == 2) {
                         a.my_enemy.myUnitObject.unitPosition.clear();
                         a.setState(UnitValue.S_REMOVE);
 

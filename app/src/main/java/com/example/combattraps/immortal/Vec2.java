@@ -9,7 +9,10 @@ public class Vec2 {
     public float fy;
     public int x;
     public int y;
-    public float distance;
+    public float nx;
+    public float ny;
+
+
 
 
     public float normal;
@@ -18,6 +21,7 @@ public class Vec2 {
         this.x = x;
         this.y = y;
     }
+
     public Vec2(float x,float y)
     {
         this.fx=x;
@@ -28,6 +32,11 @@ public class Vec2 {
         this.y = pos.y;
     }
 
+    public void multiply(float b)
+    {
+        this.nx=this.nx*b;
+        this.ny= this.ny*b;
+    }
     public boolean equals(Vec2 o)
     {
         return o.x == x && o.y == y;
@@ -38,11 +47,17 @@ public class Vec2 {
         this.x = o.x;
         this.y = o.y;
     }
-    public void Normalize()
+    public void normal(float distance)
     {
-        normal=(float)(1/Math.sqrt( Math.pow(fx,2)+ Math.pow(fy,2)));
+        //float distance=getLength();
+        this.div(distance);
     }
 
+    public void div(float a)
+    {
+        this.nx=this.fx/a;
+        this.ny=this.fy/a;
+    }
 
     public void add(Vec2 o)
     {
@@ -56,6 +71,17 @@ public class Vec2 {
         int dx = x-target.x;
         int dy = y-target.y;
         return (int)Math.sqrt(dx*dx+dy*dy);
+    }
+    public void sub(Vec2 o)
+    {
+        this.x -=o.x;
+        this.y -=o.y;
+    }
+
+
+    public float getLength(Vec2 b)
+    {
+        return (float)Math.sqrt((this.x-b.x)*(this.x-b.x)   + (this.y-b.y)*(this.y-b.y));
     }
 
     @Override

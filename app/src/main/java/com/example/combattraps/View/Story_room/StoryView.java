@@ -309,8 +309,9 @@ public class StoryView implements IState {
 
             if (!fade_out.getAnimationState()) {
                 my_view = GAMESTART;
+                my_view = GAMESTART;
                 Sound.getInstance().backgroundRelease();
-                Sound.getInstance().backgroundPlay(R.raw.battle_bgm);
+               Sound.getInstance().backgroundPlay(R.raw.battle_bgm);
                 m_SaraSay = 0;
                 return;
             }
@@ -758,6 +759,8 @@ public class StoryView implements IState {
                 Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
                 stemp.InitEffect(UnitValue.F_ELSATOWER);
                 //  Units.EnemyUnits.add(stemp);
+
+                //움직이는 유닛 같은 경우에는 이 타일도 같이 움직여 줘야한다.
                 stemp.myUnitObject.addPosition(new Vec2(i, j));
                 stemp.myUnitObject.addPosition(new Vec2(i, j + 1));
                 stemp.myUnitObject.addPosition(new Vec2(i + 1, j));
@@ -857,6 +860,7 @@ public class StoryView implements IState {
                 Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
                 Units.MyUnits.get(Units.MyUnits.size() - 1).my_enemy = Units.EnemyUnits.get(0);
                 Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.addPosition( Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion);
 
                 break;
             case 2:
@@ -868,6 +872,7 @@ public class StoryView implements IState {
                 Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
                 Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).my_enemy = Units.MyUnits.get(0);
                 Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myUnitObject.addPosition( Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myUnitObject.Postion);
                 break;
         }/**/
 
@@ -911,6 +916,10 @@ public class StoryView implements IState {
         CreateMagicTower(20,10,new Unit(GraphicManager.getInstance().m_elsatower.m_bitmap),true);
         CreateMagicTower(10,20,new Unit(GraphicManager.getInstance().m_elsatower.m_bitmap),true);
         CreateMagicTower(8,40,new Unit(GraphicManager.getInstance().m_elsatower.m_bitmap),true);
+        CreateAnna(8,40,2);
+        CreateAnna(19,22,2);
+        CreateAnna(33,10,2);
+
 
     }
 

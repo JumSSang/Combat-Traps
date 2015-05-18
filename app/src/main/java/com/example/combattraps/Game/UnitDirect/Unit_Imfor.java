@@ -8,6 +8,7 @@ import com.example.combattraps.R;
 import com.example.combattraps.immortal.AppManager;
 import com.example.combattraps.immortal.SpriteControl;
 import com.example.combattraps.immortal.Vec2;
+import com.example.combattraps.immortal.Vec2F;
 
 /**
  * Created by GyungMin on 2015-03-29.
@@ -54,18 +55,23 @@ public class Unit_Imfor {
     public double myTime;
     public int mType=0;
     public Rect originHP;
-    public Vec2 DrawPosition;
+    public Vec2F DrawPosition;
+    public Vec2 m_RealPosition;
     public Unit_Imfor my_enemy;
     public double myAttackDelayTime=0;
     public SpriteControl m_effect;
     public Vec2 mVSpeed;
     public boolean mThisMove=false;
+    public boolean nextstate=false; //다음 상태로 들어가기 위해 필요한 상태
     public Vec2 m_moveVector;
     public int count=0;
     private int range=2;
     public BoundingSpear m_BoundingSpear;
     public boolean m_attck=false;
     public int findingTilenumber=0;
+    public int m_time_pathfinder=0;
+    public Vec2F m_SpeedVecrt;
+    public float m_distance=0;
 
 
 
@@ -82,7 +88,8 @@ public class Unit_Imfor {
             this.myTime=0;
         float tempx=(float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x));
         float tempy=(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x));
-        DrawPosition=new Vec2((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)) ,(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x)));
+        DrawPosition=new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)) ,(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x)));
+        m_RealPosition=new Vec2((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)) ,(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x)));
         m_moveVector=new Vec2((float)0,(float)0);
         //m_BoundingSpear=new Vec2(tempx+40,tempy+40);
             this.mType=type;
@@ -138,8 +145,8 @@ public class Unit_Imfor {
     //750 + 50 / 2 * (y - x)
     public void Hpbar()
     {
-        int x=(int)DrawPosition.fx;
-        int y=(int)DrawPosition.fy;
+        int x=(int)DrawPosition.x;
+        int y=(int)DrawPosition.y;
         int dx=x;
         int dy= y;
         originHP=new Rect(dx,
