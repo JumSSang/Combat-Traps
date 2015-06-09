@@ -21,8 +21,6 @@ public class SpriteControl extends Graphic_image {
     static final int DEATH=3;
     public int mDirection=0;
 
-
-
     public boolean state_click=false;
     private int mFPS;
     private int mNoOfFrames;
@@ -66,6 +64,17 @@ public class SpriteControl extends Graphic_image {
         mNoOfFrames=0;
     }
 
+
+    public void SetBulletRect(int FPS)
+    {
+        mFPS=1000/FPS;
+        //Animation(1,10,100,400,1);
+        mNoOfFrames=10;
+        EffectAnimation(2,5,100,75);
+
+    }
+
+
     public void AnnaEffect(int FPS)
     {
         mFPS=1000/FPS;
@@ -86,7 +95,7 @@ public class SpriteControl extends Graphic_image {
         m_ButtonRect[1] = new Rect(left, top, right, bottom);
 
     }
-    public void ElsaTower(int FPS)
+    public void ElsaTower(int FPS) //엘사 타워 애니메이션
     {
         int height=8;
         int start_width=8;
@@ -94,7 +103,8 @@ public class SpriteControl extends Graphic_image {
         noAnimation(100, 159, MOVE);
         mNoOfFrames=8;
     }
-    public void Air(int FPS)
+
+    public void Air(int FPS) //비행기 애니메이션
     {
         int height;
         int start_width=9;
@@ -103,7 +113,7 @@ public class SpriteControl extends Graphic_image {
         mNoOfFrames=2;
     }
 
-    public void Effect(int FPS)
+    public void Effect(int FPS) //이펙트 출력
     {
 
         mFPS=1000/FPS;
@@ -136,7 +146,7 @@ public class SpriteControl extends Graphic_image {
     {
 
     }
-    public void EffectAnimation(int height,int width,int Width,int Height)
+    public void EffectAnimation(int height,int width,int Width,int Height) //이펙트 사각형 초기화부분이다.
     {
         int left=0;
         int right=0+Width;
@@ -162,7 +172,7 @@ public class SpriteControl extends Graphic_image {
 
 
     //애니메이션을 출력하는 부분이다.
-    //방향성을 가지고있는 케릭터 애니메이션 처리를 담당한다.
+    //방향성을 가지고있는 케릭터 애니메이션 처리를 담당한다. 사각형 부분 초기화임 ㅇㅇㅇㅇ
     public void Animation(int height,int width,int Width,int Height,int state)
     {
 
@@ -302,5 +312,19 @@ public class SpriteControl extends Graphic_image {
     {
 
     }
+
+
+
+
+    public void bulletInit(int FPS)  //Init역할
+    {
+        mFPS=1000/FPS;
+        //Animation(1,10,100,400,1);
+        mNoOfFrames=9;
+        Animation(1,9,212,100,1);
+        // m_effect.InitSpriteData(0,390/3,700/3,1,10);
+    }
+
+
 
 }

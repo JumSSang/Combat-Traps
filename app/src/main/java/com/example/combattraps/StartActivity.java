@@ -4,11 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.example.combattraps.immortal.DBManager;
 
@@ -25,8 +29,9 @@ public class StartActivity extends Activity implements View.OnClickListener {
     EditText edit_id;
     AlertDialog.Builder builder;    // 여기서 this는 Activity의 this
     boolean connect = true;
-
-
+    SharedPreferences setting;
+    SharedPreferences.Editor editor;
+    CheckBox Auto_LogIn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,42 @@ public class StartActivity extends Activity implements View.OnClickListener {
         builder = new AlertDialog.Builder(this);
         DBManager.getInstance().connection = new NetConnect();
         DBManager.getInstance().connection.execute(null, null, null);
+        setting = getSharedPreferences("setting", 0);
+        editor= setting.edit();
+        Auto_LogIn = (CheckBox) findViewById(R.id.AutoLogin);
+
+        if(setting.getBoolean("Auto_Login_enabled", false)){
+            edit_id.setText(setting.getString("ID", ""));
+            edit_password.setText(setting.getString("PW", ""));
+            Auto_LogIn.setChecked(true);
+        }
+
+        Auto_LogIn.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // TODO Auto-generated method stub
+                if(isChecked){
+                    String ID = edit_id.getText().toString();
+                    String PW = edit_password.getText().toString();
+                    editor.putString("ID", ID);
+                    editor.putString("PW", PW);
+                    editor.putBoolean("Auto_Login_enabled", true);
+                    editor.commit();
+                }else{
+                    /**
+                     * remove로 지우는것은 부분삭제
+                     * clear로 지우는것은 전체 삭제 입니다
+                     */
+//					editor.remove("ID");
+//					editor.remove("PW");
+//					editor.remove("Auto_Login_enabled");
+                    editor.clear();
+                    editor.commit();
+                }
+            }
+        });
+
+
     }
 
     public void onClick(View v) {
@@ -57,16 +98,11 @@ public class StartActivity extends Activity implements View.OnClickListener {
                             connect = false;
                             final Intent i = new Intent(this, GameActiviry.class);
                             AlertDialog.Builder alert_confirm = new AlertDialog.Builder(StartActivity.this);
-                            alert_confirm.setMessage("접속 성공!").setCancelable(false).setPositiveButton("확인",
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
+
 
                                                     startActivity(i);
 
 
-                                        }
-                                    });
                             AlertDialog alert = alert_confirm.create();
                             alert.show();
                           //  DBManager.getInstance().SetResponse("");
@@ -119,6 +155,10 @@ public class StartActivity extends Activity implements View.OnClickListener {
 
         }
     }
+
+
+
+
 
     public void send_Message(String str) { // 서버로 메세지를 보내는 메소드
         try {

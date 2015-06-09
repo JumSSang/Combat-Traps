@@ -1,4 +1,4 @@
-package com.example.combattraps.View.CreateMap_View;
+package com.example.combattraps.View.Test_GameView;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -31,6 +31,7 @@ import com.example.combattraps.immortal.IState;
 import com.example.combattraps.immortal.ScreenAnimation;
 import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.TextEffect;
+import com.example.combattraps.immortal.Vec2;
 
 
 import java.io.IOException;
@@ -39,28 +40,18 @@ import java.util.ArrayList;
 /**
  * Created by 경민 on 2015-05-11.
  */
-public class MapCreate_View implements IState {
+public class TestView implements IState {
 
-    private double m_batch_gameTime = 5;
-    private final int GAMESTART = 0;
-    private final int SINARIO = 1;
-    private int m_WhoWIn = 0;
-
-    private int my_view = SINARIO;
     private int m_plot = 0;
-
 
     Matrix matrix = new Matrix();
     private ArrayList<ActiveCollusion> tileColl;
+
     private ArrayList<UnitList> UnitDataList;
     private UI_Create_Bottom UI;
-    private UI_Create_Imfor UI_imfor;
     public int m_UI_Touch_Postion = 0;
-    private Story_String m_talk;
     private ScreenAnimation fade_in;
     private ScreenAnimation fade_out;
-    private double timeDelta;
-    Paint paint;
     float x;
     float y;
     float m_click_x = 0; //첫번째 터치좌표 x
@@ -68,7 +59,7 @@ public class MapCreate_View implements IState {
     float m_click2_x = 0; //2번째 터치 좌표 x
     float m_click2_y = 0; //2번째 터치 좌표 y
     /////////////////////
-
+    double m_thread_tiem = 0;
     float m_matrix_x = 1.0f;//메트릭스 변화 하는 x비율
     float m_matrix_y = 1.0f;//메트릭스 변화 하는 y비율
 
@@ -93,16 +84,12 @@ public class MapCreate_View implements IState {
     // 핀치시 두좌표간의 거리 저장
     float oldDist = 1f;
     float newDist = 1f;
-    ///////////////////////////////////////////
+
     double currentTime;
     double m_time = 0;
-    double m_thread_tiem = 0;
-    double m_OpenServerTime = 0;
-    double m_checkLoader = 0;
-    double fade_endTime = 0;
     UnitManager Units;
     Rect r;
-    TextEffect m_airtext, m_airtext1, m_airtextVic, m_airTextFebe;
+    private double timeDelta;
 
     public void sendMessage(String a) throws IOException {
         DBManager.getInstance().connection.oos.writeObject(a);
@@ -111,21 +98,8 @@ public class MapCreate_View implements IState {
 
     @Override
     public void Init() {
-        DBManager.getInstance().go_robby = 4;
-        try {
-            sendMessage("1");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
-        Sound.getInstance().addList(1, R.raw.buildingsaw);
-        Sound.getInstance().backgroundPlay(R.raw.story_1);
-        Sound.getInstance().addList(2, R.raw.smallchain);
-        Sound.getInstance().addList(3, R.raw.zombie_create_sound);
-        Sound.getInstance().addList(4, R.raw.hello);
-        Sound.getInstance().addList(5, R.raw.smash);
-        Sound.getInstance().addList(6, R.raw.text_call);
         currentTime = System.currentTimeMillis() / 1000;
         tileColl = new ArrayList<ActiveCollusion>();
         UnitDataList = new ArrayList<UnitList>();
@@ -148,6 +122,8 @@ public class MapCreate_View implements IState {
         fade_out.InitFadeOut();
         fade_in.InitFadeIn();
         r = new Rect((int) m_Width / 20 * 18, 0, (int) (m_Width), (int) m_Height / 20);
+        LoadEnemys();
+        Units.setRoundState(true);
     }
 
     @Override
@@ -157,35 +133,17 @@ public class MapCreate_View implements IState {
 
     @Override
     public void Update() {
-        Units.Update(10);
-        switch (m_plot) {
-            case 0:
-                if (DBManager.getInstance().m_StringMap != null) {
 
-                    m_plot = 1;
-                }
-                break;
-            case 1: //배치 시작 터치 부분
-                LoadMap(DBManager.getInstance().m_StringMap);
-                TouchGame(x, y);
-                if (AppManager.getInstance().Collusion((int) x, (int) y, r)) {
-                    m_plot=2;
-                }
+        if (AppManager.getInstance().state != AppManager.S_LOADING) {
+            // long frameEndTime = System.currentTimeMillis();
+            //long delta = frameEndTime - frameStartTime;
+            double newTime = System.currentTimeMillis() / 1000.0;
+            timeDelta = newTime - currentTime;
+            currentTime = newTime;
+            m_time += timeDelta;
+            m_thread_tiem += timeDelta;
+            Units.Update(timeDelta);
 
-                break;
-            case 2://배치 완료
-
-                    saveMap();
-                    m_plot=3;
-
-
-                break;
-            case 3:
-
-
-                AppManager.getInstance().state=AppManager.S_ROBBY;
-                AppManager.getInstance().getGameView().ChangeGameState(new Ready_Room());
-                break;
         }
 
     }
@@ -204,26 +162,20 @@ public class MapCreate_View implements IState {
         GraphicManager.getInstance().background.Draw(canvas, -750, -450);
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                switch (UnitValue.m_map[i][j]) {
-                    case UnitValue.M_GRASS1:
-                        GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                        break;
-                    case UnitValue.M_GRASS2:
-                        GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                        break;
-                    case UnitValue.M_EMPTY:
-                        GraphicManager.getInstance().temptitle3.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                        break;
-                    case UnitValue.M_NOTMOVE:
-                        GraphicManager.getInstance().temptile5.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                        break;
+                if (UnitValue.m_map[i][j] == 1) {
+                    GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
 
-
+                } else if (UnitValue.m_map[i][j] == 2) {
+                    GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
+                } else if (UnitValue.m_map[i][j] == 3) {
+                    GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
+                } else if (UnitValue.m_map[i][j] == UnitValue.M_NOTMOVE) {
+                    GraphicManager.getInstance().temptile5.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 }
-
 
             }
         }
+
         //나무가 타일에 겹쳐지지 않게 그려주기 위해 한번더 연산해 주었다.
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
@@ -233,16 +185,23 @@ public class MapCreate_View implements IState {
                 }
             }
         }
-
         Units.RenderUnit(canvas);
         canvas.restore();
+
         GraphicManager.getInstance().ButtonView_Image.Draw(canvas, 0, (int) m_Height - (int) m_Height / 6);
+        //유저 정보를 뿌려주는 인스턴스의 Draw
+       // UI_imfor.Draw(canvas);
+        //UI 버튼위치마다 번호를 매겨서 글자 출력 해준다.
         for (int i = 0; i < UI.Button.size(); i++) {
             UI.Button.get(i).Draw(canvas);
             canvas.drawText("" + i, (int) (UI.Button.get(i).GetX()), (int) (UI.Button.get(i).GetY()), paint);
         }
-
-        canvas.drawRect(m_Width / 20 * 18, 0, m_Width, m_Height / 20, paint);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
+        paint.setColor(Color.RED);
+       // talkUnit(canvas);
+        //클릭 위치마다 사각형을 그려준다 오브젝트에 사각형
+        canvas.drawRect((m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12, m_Height - m_Height / 6, (m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12 + m_Width / 12, m_Height - m_Height / 18, paint);
 
     }
 
@@ -269,7 +228,7 @@ public class MapCreate_View implements IState {
                 //temptitle3.SetPosition((int)(m_click_x),(int)(m_click_y));
                 m_movex = x;
                 m_movey = y;
-
+                TouchGame(x, y);
 
                 mode = DRAG;
                 Log.d("zoom", "mode=DRAG");
@@ -359,12 +318,14 @@ public class MapCreate_View implements IState {
         UnitList temp1 = new UnitList();
         UnitList temp2 = new UnitList();
         UnitList temp3 = new UnitList();
-        temp1.set(UnitValue.F_ROCK1, 1, 0);
+        temp1.set(UnitValue.F_ANNA, 1, 0);
         UnitDataList.add(temp1);
         temp2.set(UnitValue.F_ROCKE2, 1, 0);
         UnitDataList.add(temp2);//2
         temp3.set(UnitValue.F_TREE1, 1, 0);
         UnitDataList.add(temp3);//2
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_ANNA,1,0);
     }
 
     //줌인 줌 아웃을 위한 터치 이벤트 계산 함수
@@ -384,7 +345,6 @@ public class MapCreate_View implements IState {
             int level = 0;
             int type = 0;
             imfors = result[i].split("a");
-
             x = Integer.parseInt(imfors[0]);
             y = Integer.parseInt(imfors[1]);
             level = Integer.parseInt(imfors[2]);
@@ -403,6 +363,7 @@ public class MapCreate_View implements IState {
 
                     break;
                 case UnitValue.F_ANNA:
+                 //   CreateAnna(x,y,1);
 
                     break;
                 case UnitValue.F_TOWNHALL:
@@ -417,15 +378,40 @@ public class MapCreate_View implements IState {
                 case UnitValue.F_ROCKE2:
                     CreateRock2(x, y);
                     break;
-
-
             }
 
         }
 
     }
+    public void LoadEnemys() {
+        Unit temp, temp1, temp2;
+        temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+         CreateHall(10,10,0);
+        CreateHall(30,30,1);
+        temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+        CreateMagicTower(15, 15, temp, true);
 
 
+    }
+    //타운홀 생성 부분
+    public void CreateHall(int i, int j, int whounit) {
+        //  UnitValue.m_map[i][j] = 3;//원 위치
+        // UnitValue.m_map[i][j + 1] = 3; //y값 증가
+        //UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+        //UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+        Unit temp;
+        temp = new Unit(GraphicManager.getInstance().mTownHall.m_bitmap);
+        temp.SetPos(i, j);
+
+        if (whounit == 0) {
+            Units.MyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
+            Units.MyUnits.get(0).myUnitObject.addPosition(new Vec2(i, j));
+        } else if (whounit == 1)
+        {
+            Units.EnemyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
+            Units.EnemyUnits.get(0).myUnitObject.addPosition(new Vec2(i, j));
+        }
+    }
     public void TouchGame(float x, float y) {
         int count = 0;
         if (y > (int) m_Height - (int) m_Height / 6) {
@@ -435,41 +421,39 @@ public class MapCreate_View implements IState {
                 }
             }
         } else {
+
             for (int i = 0; i < 50; i++) {
                 for (int j = 0; j < 50; j++) {
                     Unit temp;
                     if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
-                        //  UnitValue.m_map[i][j]=3;
-                        //점핑 트랩 생산
                         switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
-                            case UnitValue.F_ROCK1:
-                                CreateRock(i, j);
+                            case UnitValue.F_ANNA:
+                                CreateAnna(i, j, 1);
 
                                 break;
-                            case UnitValue.F_ROCKE2:
+                            case UnitValue.F_ROCK1:
                                 CreateRock2(i, j);
-
                                 break;
                             case UnitValue.F_TREE1:
                                 CreateTree1(i, j);
 
                                 break;
 
-}
-}
-        count++;
-        }
+                        }
+                    }
+                    count++;
+                }
 
 
-        }
-
-        }
-
-
+            }
 
         }
 
-public void saveMap()
+
+
+    }
+
+    public void saveMap()
     {
         int number=Units.Enviroment.size();
         String[] map;
@@ -479,7 +463,7 @@ public void saveMap()
         {
             String a;
             if(i!=0)
-             a= String.valueOf("="+Units.Enviroment.get(i).myUnitObject.Postion.x +"a"+Units.Enviroment.get(i).myUnitObject.Postion.y+"a"+"0"+"a"+Units.Enviroment.get(i).mType);
+                a= String.valueOf("="+Units.Enviroment.get(i).myUnitObject.Postion.x +"a"+Units.Enviroment.get(i).myUnitObject.Postion.y+"a"+"0"+"a"+Units.Enviroment.get(i).mType);
             else
             {
                 a= String.valueOf(Units.Enviroment.get(i).myUnitObject.Postion.x +"a"+Units.Enviroment.get(i).myUnitObject.Postion.y+"a"+"0"+"a"+Units.Enviroment.get(i).mType);
@@ -500,6 +484,47 @@ public void saveMap()
         }
 
     }
+
+
+    public void CreateAnna(int i, int j, int whounit) {
+//        Sound.getInstance().play(4);
+     //   UI_imfor.BuyUnit(10);
+        Unit temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
+        temp.Anna(1);
+        temp.SetPos(i, j);
+        temp.addPosition(temp.Postion);
+        //temp.SetPosition(i,j);
+        //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
+        //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
+
+        switch (whounit) {
+            case 1:
+                //아군
+
+                Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA));
+                Units.MyUnits.get(Units.MyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).my_enemy = Units.EnemyUnits.get(0);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
+                Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.addPosition( Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion);
+                //UnitValue.m_map[Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion.x][Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion.y]=UnitValue.M_NOTMOVE;
+
+                break;
+            case 2:
+                //적군군
+                //적군군
+                temp.Anna(1);
+                Units.EnemyUnits.add(new Unit_Imfor(temp, 100, 1, UnitValue.F_ANNA));
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).my_enemy = Units.MyUnits.get(0);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
+                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myUnitObject.addPosition( Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myUnitObject.Postion);
+                break;
+        }/**/
+
+    }
+
 
     public void CreateRock(int i, int j) {
         if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
@@ -555,6 +580,54 @@ public void saveMap()
                     UnitValue.m_map[i][j] = 4;
                 }
 
+            }
+        }
+    }
+
+    public void CreateMagicTower(int i, int j, Unit temp, boolean enemy) {
+        if (enemy == true) {
+            if (UnitValue.m_map[i][j] != 3 && UnitValue.m_map[i][j + 1] != 3 && UnitValue.m_map[i + 1][j + 1] != 3 && UnitValue.m_map[i + 1][j] != 3) {
+//                Sound.getInstance().play(1);
+                UnitValue.m_map[i][j] = 3;//원 위치
+                UnitValue.m_map[i][j + 1] = 3; //y값 증가
+                UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+                UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+                m_UI_Touch_Postion = 0;
+                temp.SetPos(i, j);
+                temp.ElsaTower(1);
+                //temp.resizebitmap(100-100/3,60);
+                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
+                stemp.InitEffect(UnitValue.F_ELSATOWER);
+                //  Units.EnemyUnits.add(stemp);
+
+                //움직이는 유닛 같은 경우에는 이 타일도 같이 움직여 줘야한다.
+                stemp.myUnitObject.addPosition(new Vec2(i, j));
+                stemp.myUnitObject.addPosition(new Vec2(i, j + 1));
+                stemp.myUnitObject.addPosition(new Vec2(i + 1, j));
+                stemp.myUnitObject.addPosition(new Vec2(i + 1, j + 1));
+
+                Units.EnemyUnits.add(stemp);
+            }
+        } else {
+            if (UnitValue.m_map[i][j] != 3 && UnitValue.m_map[i][j + 1] != 3 && UnitValue.m_map[i + 1][j + 1] != 3 && UnitValue.m_map[i + 1][j] != 3) {
+
+                Sound.getInstance().play(1);
+                UnitValue.m_map[i][j] = 3;//원 위치
+                UnitValue.m_map[i][j + 1] = 3; //y값 증가
+                UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
+                UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
+                m_UI_Touch_Postion = 0;
+                temp.SetPos(i, j);
+                temp.ElsaTower(1);
+                //temp.resizebitmap(100-100/3,60);
+                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
+                stemp.InitEffect(UnitValue.F_ELSATOWER);
+                stemp.myUnitObject.addPosition(new Vec2(i, j));
+                stemp.myUnitObject.addPosition(new Vec2(i, j + 1));
+                stemp.myUnitObject.addPosition(new Vec2(i + 1, j));
+                stemp.myUnitObject.addPosition(new Vec2(i + 1, j + 1));
+
+                Units.MyUnits.add(stemp);
             }
         }
     }

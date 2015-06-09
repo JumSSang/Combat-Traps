@@ -387,7 +387,9 @@ public class StoryView implements IState {
 
     }
 
-    public void talkUnit(Canvas canvas) {
+
+    //유닛의 대화화
+   public void talkUnit(Canvas canvas) {
 
         paint = new Paint();
         paint.setColor(Color.WHITE);
@@ -841,7 +843,7 @@ public class StoryView implements IState {
     //안나생성 부분  whounit.1번은 아군 2번은 적
     public void CreateAnna(int i, int j, int whounit) {
         Sound.getInstance().play(4);
-        UI_imfor.BuyUnit(10);
+        //UI_imfor.BuyUnit(10);
         Unit temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
         temp.Anna(1);
         temp.SetPos(i, j);
@@ -861,6 +863,7 @@ public class StoryView implements IState {
                 Units.MyUnits.get(Units.MyUnits.size() - 1).my_enemy = Units.EnemyUnits.get(0);
                 Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
                 Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.addPosition( Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion);
+                UnitValue.m_map[Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion.x][Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion.y]=UnitValue.M_NOTMOVE;
 
                 break;
             case 2:

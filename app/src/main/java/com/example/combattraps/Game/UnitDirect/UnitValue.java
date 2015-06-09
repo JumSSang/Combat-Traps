@@ -21,6 +21,8 @@ public class UnitValue {
     public static final int M_NOTMOVE = 5;
     public static final int M_NOTDESTROY = 6;
 
+    public static final int BU_SPPOT=0;
+
     private boolean m_GameStart = false;
     private static UnitValue s_instance;
     public static int[][] m_map = new int[50][50];

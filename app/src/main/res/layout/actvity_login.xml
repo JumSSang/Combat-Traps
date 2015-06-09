@@ -28,7 +28,7 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="446dp"
         android:layout_height="wrap_content"
         android:weightSum="1">
 
@@ -50,16 +50,15 @@
             android:layout_height="fill_parent"></LinearLayout>
 
         <EditText
-            android:layout_width="157dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/edit_id"
-            android:layout_weight="0.59" />
+            android:id="@+id/edit_id" />
 
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:layout_width="447dp"
         android:layout_height="wrap_content"
         android:weightSum="1">
 
@@ -82,12 +81,11 @@
             android:layout_height="match_parent" />
 
         <EditText
-            android:layout_width="161dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:ems="10"
-            android:id="@+id/edit_secret"
-            android:layout_weight="0.42" />
+            android:id="@+id/edit_secret" />
     </LinearLayout>
 
     <LinearLayout
@@ -100,27 +98,45 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="372dp"
+        android:layout_width="match_parent"
         android:layout_height="131dp"
         android:weightSum="1">
-
-        <Button
-            android:layout_width="129dp"
-            android:layout_height="59dp"
-            android:text="로그인"
-            android:id="@+id/btn_login"
-            android:layout_gravity="right" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="104dp"
-            android:layout_height="55dp"></LinearLayout>
+            android:layout_height="102dp"
+            android:layout_weight="0.60">
 
-        <Button
-            android:layout_width="143dp"
-            android:layout_height="64dp"
-            android:text="회원가입"
-            android:id="@+id/rege" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="83dp"
+                android:text="로그인"
+                android:id="@+id/btn_login"
+                android:layout_weight="0.09" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="104dp"
+            android:layout_height="97dp"
+            android:layout_weight="0.44">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="83dp"
+                android:text="회원가입"
+                android:id="@+id/rege"
+                android:layout_weight="3.20" />
+        </LinearLayout>
+
     </LinearLayout>
+
+    <CheckBox
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:text="자동 로그인"
+        android:id="@+id/AutoLogin"
+        android:layout_weight="0.29" />
 
 </LinearLayout>

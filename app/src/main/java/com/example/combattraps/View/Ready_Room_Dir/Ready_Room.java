@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import com.example.combattraps.View.CreateMap_View.MapCreate_View;
 import com.example.combattraps.View.St_Battle;
 import com.example.combattraps.View.Story_room.StoryView;
+import com.example.combattraps.View.Test_GameView.TestView;
 import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.R;
 import com.example.combattraps.View.Ready_Room_Dir.SumInfo;
@@ -139,7 +140,7 @@ public class Ready_Room implements IState {
             Sound.getInstance().backgroundRelease();
             AppManager.getInstance().state=AppManager.S_STORY1;
             if(DBManager.getInstance().GetID().equals("쩜상랠리"))
-            AppManager.getInstance().getGameView().ChangeGameState(new MapCreate_View());
+            AppManager.getInstance().getGameView().ChangeGameState(new TestView());
             else
             {
                 AppManager.getInstance().getGameView().ChangeGameState(new StoryView());

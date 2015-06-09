@@ -56,7 +56,7 @@ public class GraphicManager {
     public SpriteControl m_elsatower;
     public SpriteControl m_effect;
     public SpriteControl m_anna_punch;
-
+    public SpriteControl m_bulletSprite;
     /*
      로비 관련 리소스
      */
@@ -132,6 +132,8 @@ public class GraphicManager {
             temptitle3.resizebitmap(51, 26);
             temptile5=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tile3));
             temptile5.resizebitmap(51,51);
+            m_bulletSprite=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.point_bullet));
+            m_bulletSprite.SetBulletRect(10);
         }
 
         else if(AppManager.getInstance().state==AppManager.S_ROBBY)
@@ -143,8 +145,11 @@ public class GraphicManager {
             }
             GameList.clear();
             RobbyList=new ArrayList<>();
+
             m_anna_punch=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna_punch_effect));
             m_anna_punch.AnnaEffect(30);
+
+
             //추후 모든 변수는 ArrayList로 관리 상수를 이용해서 이미지를 처리하게 한다.
             background1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.background_lobby));
             background1.resizebitmap((int) m_Width, (int) m_Height);

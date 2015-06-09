@@ -54,24 +54,33 @@ public class Unit_Imfor {
     public PathFinder.Node findedPath;
     public double myTime;
     public int mType=0;
+
     public Rect originHP;
+    public Rect destHP;
     public Vec2F DrawPosition;
-    public Vec2 m_RealPosition;
-    public Unit_Imfor my_enemy;
+
+    public Unit_Imfor my_enemy; //적정보
     public double myAttackDelayTime=0;
+
     public SpriteControl m_effect;
     public Vec2 mVSpeed;
-    public boolean mThisMove=false;
+    private boolean mThisMove=false;
     public boolean nextstate=false; //다음 상태로 들어가기 위해 필요한 상태
+
     public Vec2 m_moveVector;
     public int count=0;
-    private int range=2;
+    private int m_range=2; //유닛이 전투 상태에 돌입하게 해주는 바운딩 영역의 반지름이 된다.
+    public float m_ac_range=2.0f; //유닛이 상대를 인식하게 되는 바운딩 거리
+ //   private int range=2;
     public BoundingSpear m_BoundingSpear;
+    public BoundingSpear m_battleBounding;
+
     public boolean m_attck=false;
     public int findingTilenumber=0;
     public int m_time_pathfinder=0;
     public Vec2F m_SpeedVecrt;
     public float m_distance=0;
+    private int tempHp;
 
 
 
@@ -80,27 +89,49 @@ public class Unit_Imfor {
     private int state=1; //0은 평화 1은 이동 2는 전투
 
 
+    public void setMovestate(boolean a)
+    {
+        this.mThisMove=a;
+    }
+    public boolean getMovestate()
+    {
+        return mThisMove;
+    }
     public Unit_Imfor(Unit myUnitObject, int hp, int mSpeed, int type) {
             myPath=new PathFinder();
             this.mHp=hp;
+        this.tempHp=hp;
             this.mSpeed=mSpeed;
             this.myUnitObject=myUnitObject;
             this.myTime=0;
-        float tempx=(float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x));
-        float tempy=(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x));
-        DrawPosition=new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)) ,(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x)));
-        m_RealPosition=new Vec2((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)) ,(float)(-300 + 25 / 2 * (myUnitObject.Postion.y+myUnitObject.Postion.x)));
+
+        if(type==UnitValue.F_ANNA)
+        {
+            DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x))+10  , (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x))-40);
+        }
+        else {
+            DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
+        }
         m_moveVector=new Vec2((float)0,(float)0);
-        //m_BoundingSpear=new Vec2(tempx+40,tempy+40);
+
             this.mType=type;
     }
-    public void SetRange(int r)
+    public void setRange(int r)
     {
-        this.range=r;
+        this.m_range=r;
     }
-    public void IniteBouningSpear(float x,float y)
+
+    public void boundingPositionUpdate(float x,float y)
     {
-        this.m_BoundingSpear=new BoundingSpear(x,y,this.range);
+        if(this.mType==UnitValue.F_ANNA) {
+            this.m_battleBounding = new BoundingSpear(x + 16, y + 50, 0.2f); //안나의 바운딩 영역 위치 생성
+            this.m_BoundingSpear = new BoundingSpear(x + 15, y + 50, this.m_range);
+        }
+        else
+        {
+            this.m_battleBounding=new BoundingSpear(x+10,y,0.2f);
+            this.m_BoundingSpear=new BoundingSpear(x+10,y,this.m_ac_range);
+        }
     }
     public void setState(int a)
     {
@@ -142,6 +173,12 @@ public class Unit_Imfor {
         findedPath=myPath.find(mMyTarget.Postion,myUnitObject.Postion);
     }
 
+    public boolean boundingUnit()
+    {
+
+        return false;
+    }
+
     //750 + 50 / 2 * (y - x)
     public void Hpbar()
     {
@@ -149,10 +186,15 @@ public class Unit_Imfor {
         int y=(int)DrawPosition.y;
         int dx=x;
         int dy= y;
+
         originHP=new Rect(dx,
                 dy,
                 dx+mHp,
                 dy+5);
+        destHP =new Rect(dx,
+                dy,
+                dx+tempHp
+                ,dy+5);
 
     }
 
