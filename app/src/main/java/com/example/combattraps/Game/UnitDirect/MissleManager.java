@@ -14,7 +14,7 @@ import com.example.combattraps.immortal.Vec2F;
  */
 public class MissleManager {
     public SpriteControl img_Sprite;
-
+    Unit_Imfor m_parents;
     Vec2F m_Target; //미사일 타겟
     Vec2F m_StartPosition; //미사일 시작 지점
     Vec2F m_SpeedVector;//방향성을 가지는 벡터 미사일 이동 할때 add해줄값
@@ -27,8 +27,10 @@ public class MissleManager {
     float m_distance = 0;
     boolean state=false;
 
-    MissleManager(Vec2F StartPosition, Vec2F target, float damage, float speed, boolean team, int type) {
-        this.m_StartPosition = StartPosition;
+    MissleManager(Vec2F StartPosition, Vec2F target, float damage, float speed, boolean team, int type,Unit_Imfor parents) {
+        this.m_StartPosition=new Vec2F( StartPosition.x, StartPosition.y-120);
+        this.DrawPosition =new Vec2F(StartPosition.x,StartPosition.y-120);
+        this.m_parents=parents;
         this.m_Target = target;
         this.m_Damage = damage;
         this.m_Speed = speed;
@@ -52,7 +54,7 @@ public class MissleManager {
     }
 
     public void directionVector() {
-        m_SpeedVector = new Vec2F(DrawPosition.x, DrawPosition.y);
+        m_SpeedVector = new Vec2F(m_Target.x, m_Target.y);
         m_SpeedVector.sub(DrawPosition);
         m_SpeedVector.normalize();
         m_SpeedVector.multiply(m_Speed);
@@ -64,12 +66,14 @@ public class MissleManager {
         if (m_distance <= 0) {
             state=false;
         } else {
+            DrawPosition.add(m_SpeedVector);
             m_distance -= m_Speed;
         }
     }
 
-    public void draw(Canvas canvas, float x, float y) {
-        img_Sprite.EffectDraw(canvas, x, y);
+    public void draw(Canvas canvas) {
+        img_Sprite.Update(System.currentTimeMillis());
+        img_Sprite.EffectDraw(canvas, DrawPosition.x, DrawPosition.y);
     }
 
 

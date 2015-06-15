@@ -13,6 +13,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.example.combattraps.Game.ActiveCollusion;
+import com.example.combattraps.Game.UnitDirect.Bounding;
+import com.example.combattraps.Game.UnitDirect.CreateUnit;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -45,7 +47,7 @@ public class TestView implements IState {
     private int m_plot = 0;
 
     Matrix matrix = new Matrix();
-    private ArrayList<ActiveCollusion> tileColl;
+
 
     private ArrayList<UnitList> UnitDataList;
     private UI_Create_Bottom UI;
@@ -101,7 +103,7 @@ public class TestView implements IState {
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
         currentTime = System.currentTimeMillis() / 1000;
-        tileColl = new ArrayList<ActiveCollusion>();
+        Bounding.tileColl = new ArrayList<ActiveCollusion>();
         UnitDataList = new ArrayList<UnitList>();
         DisplayMetrics metrics = AppManager.getInstance().getResources().getDisplayMetrics();
         m_Width = metrics.widthPixels;
@@ -326,6 +328,10 @@ public class TestView implements IState {
         UnitDataList.add(temp3);//2
         UnitDataList.add(new UnitList());
         UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_ANNA,1,0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_TOWER,1,0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_BOOM,1,0);
     }
 
     //줌인 줌 아웃을 위한 터치 이벤트 계산 함수
@@ -369,14 +375,14 @@ public class TestView implements IState {
                 case UnitValue.F_TOWNHALL:
                     break;
                 case UnitValue.F_TREE1:
-                    CreateTree1(x, y);
+                    CreateUnit.CreateTree1(x, y, Units.Enviroment);
                     break;
 
                 case UnitValue.F_ROCK1:
-                    CreateRock(x, y);
+                    CreateUnit.CreateRock(x, y, Units.Enviroment);
                     break;
                 case UnitValue.F_ROCKE2:
-                    CreateRock2(x, y);
+                    CreateUnit.CreateRock2(x, y, Units.Enviroment);
                     break;
             }
 
@@ -386,32 +392,14 @@ public class TestView implements IState {
     public void LoadEnemys() {
         Unit temp, temp1, temp2;
         temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-         CreateHall(10,10,0);
-        CreateHall(30,30,1);
+         CreateUnit.CreateHall(10,10,Units.MyUnits,Units.EnemyUnits,true);
+        CreateUnit.CreateHall(30, 30, Units.MyUnits, Units.EnemyUnits, false);
         temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-        CreateMagicTower(15, 15, temp, true);
-
-
+        CreateUnit.CreateMagicTower(15, 15, temp, Units.MyUnits, Units.EnemyUnits, true);
     }
     //타운홀 생성 부분
-    public void CreateHall(int i, int j, int whounit) {
-        //  UnitValue.m_map[i][j] = 3;//원 위치
-        // UnitValue.m_map[i][j + 1] = 3; //y값 증가
-        //UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
-        //UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
-        Unit temp;
-        temp = new Unit(GraphicManager.getInstance().mTownHall.m_bitmap);
-        temp.SetPos(i, j);
 
-        if (whounit == 0) {
-            Units.MyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
-            Units.MyUnits.get(0).myUnitObject.addPosition(new Vec2(i, j));
-        } else if (whounit == 1)
-        {
-            Units.EnemyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
-            Units.EnemyUnits.get(0).myUnitObject.addPosition(new Vec2(i, j));
-        }
-    }
+
     public void TouchGame(float x, float y) {
         int count = 0;
         if (y > (int) m_Height - (int) m_Height / 6) {
@@ -425,26 +413,29 @@ public class TestView implements IState {
             for (int i = 0; i < 50; i++) {
                 for (int j = 0; j < 50; j++) {
                     Unit temp;
-                    if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
+                    if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
                         switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
                             case UnitValue.F_ANNA:
-                                CreateAnna(i, j, 1);
-
+                                CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
                                 break;
                             case UnitValue.F_ROCK1:
-                                CreateRock2(i, j);
+                                CreateUnit.CreateRock2(i, j, Units.Enviroment);
                                 break;
                             case UnitValue.F_TREE1:
-                                CreateTree1(i, j);
-
+                                CreateUnit.CreateTree1(i, j, Units.Enviroment);
                                 break;
+                            case UnitValue.F_TOWER:
+                                CreateUnit.CreateArchorTower(i,j,Units.MyUnits,Units.EnemyUnits,true);
+                                break;
+                            case UnitValue.F_BOOM:
+                                CreateUnit.CreateBoom(i, j, Units.MyUnits, true);
+                                break;
+
 
                         }
                     }
                     count++;
                 }
-
-
             }
 
         }
@@ -485,81 +476,6 @@ public class TestView implements IState {
 
     }
 
-
-    public void CreateAnna(int i, int j, int whounit) {
-//        Sound.getInstance().play(4);
-     //   UI_imfor.BuyUnit(10);
-        Unit temp = new Unit(GraphicManager.getInstance().m_anna.m_bitmap);
-        temp.Anna(1);
-        temp.SetPos(i, j);
-        temp.addPosition(temp.Postion);
-        //temp.SetPosition(i,j);
-        //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
-        //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
-
-        switch (whounit) {
-            case 1:
-                //아군
-
-                Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA));
-                Units.MyUnits.get(Units.MyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
-                Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
-                Units.MyUnits.get(Units.MyUnits.size() - 1).my_enemy = Units.EnemyUnits.get(0);
-                Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
-                Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.addPosition( Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion);
-                //UnitValue.m_map[Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion.x][Units.MyUnits.get(Units.MyUnits.size() - 1).myUnitObject.Postion.y]=UnitValue.M_NOTMOVE;
-
-                break;
-            case 2:
-                //적군군
-                //적군군
-                temp.Anna(1);
-                Units.EnemyUnits.add(new Unit_Imfor(temp, 100, 1, UnitValue.F_ANNA));
-                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
-                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
-                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).my_enemy = Units.MyUnits.get(0);
-                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).WhoEnemy(Units.MyUnits.get(0).myUnitObject);
-                Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myUnitObject.addPosition( Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myUnitObject.Postion);
-                break;
-        }/**/
-
-    }
-
-
-    public void CreateRock(int i, int j) {
-        if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
-            Unit temp;
-            temp = new Unit(GraphicManager.getInstance().rock1.m_bitmap);
-            temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1));
-            UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
-        }
-
-
-    }
-
-    public void CreateTree1(int i, int j) {
-        if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
-            Unit temp;
-            temp = new Unit(GraphicManager.getInstance().tree1.m_bitmap);
-            temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1));
-            UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
-        }
-
-    }
-
-    public void CreateRock2(int i, int j) {
-        if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
-            Unit temp;
-            temp = new Unit(GraphicManager.getInstance().rock2.m_bitmap);
-            temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2));
-            UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
-        }
-
-    }
-
     public void InitMap() {
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
@@ -569,7 +485,7 @@ public class TestView implements IState {
                 temp.addSpot(750 + 50 / 2 * (j - i) + 50, -300 + 25 / 2 * (j + i) + 12);//p3 오른쪽
                 temp.addSpot(750 + 50 / 2 * (j - i) + 25, -300 + 25 / 2 * (j + i) + 25);//p4 아래
                 temp.distanceCal();
-                tileColl.add(temp);
+                Bounding.tileColl.add(temp);
 
                 if ((i + j) % 2 == 0) {
                     UnitValue.m_map[i][j] = 1;
@@ -584,51 +500,5 @@ public class TestView implements IState {
         }
     }
 
-    public void CreateMagicTower(int i, int j, Unit temp, boolean enemy) {
-        if (enemy == true) {
-            if (UnitValue.m_map[i][j] != 3 && UnitValue.m_map[i][j + 1] != 3 && UnitValue.m_map[i + 1][j + 1] != 3 && UnitValue.m_map[i + 1][j] != 3) {
-//                Sound.getInstance().play(1);
-                UnitValue.m_map[i][j] = 3;//원 위치
-                UnitValue.m_map[i][j + 1] = 3; //y값 증가
-                UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
-                UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
-                m_UI_Touch_Postion = 0;
-                temp.SetPos(i, j);
-                temp.ElsaTower(1);
-                //temp.resizebitmap(100-100/3,60);
-                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
-                stemp.InitEffect(UnitValue.F_ELSATOWER);
-                //  Units.EnemyUnits.add(stemp);
 
-                //움직이는 유닛 같은 경우에는 이 타일도 같이 움직여 줘야한다.
-                stemp.myUnitObject.addPosition(new Vec2(i, j));
-                stemp.myUnitObject.addPosition(new Vec2(i, j + 1));
-                stemp.myUnitObject.addPosition(new Vec2(i + 1, j));
-                stemp.myUnitObject.addPosition(new Vec2(i + 1, j + 1));
-
-                Units.EnemyUnits.add(stemp);
-            }
-        } else {
-            if (UnitValue.m_map[i][j] != 3 && UnitValue.m_map[i][j + 1] != 3 && UnitValue.m_map[i + 1][j + 1] != 3 && UnitValue.m_map[i + 1][j] != 3) {
-
-                Sound.getInstance().play(1);
-                UnitValue.m_map[i][j] = 3;//원 위치
-                UnitValue.m_map[i][j + 1] = 3; //y값 증가
-                UnitValue.m_map[i + 1][j] = 3; //left값 증가 +1
-                UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
-                m_UI_Touch_Postion = 0;
-                temp.SetPos(i, j);
-                temp.ElsaTower(1);
-                //temp.resizebitmap(100-100/3,60);
-                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
-                stemp.InitEffect(UnitValue.F_ELSATOWER);
-                stemp.myUnitObject.addPosition(new Vec2(i, j));
-                stemp.myUnitObject.addPosition(new Vec2(i, j + 1));
-                stemp.myUnitObject.addPosition(new Vec2(i + 1, j));
-                stemp.myUnitObject.addPosition(new Vec2(i + 1, j + 1));
-
-                Units.MyUnits.add(stemp);
-            }
-        }
-    }
 }

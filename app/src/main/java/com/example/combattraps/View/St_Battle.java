@@ -1,3 +1,4 @@
+/*
 package com.example.combattraps.View;
 
 import android.graphics.Canvas;
@@ -250,10 +251,12 @@ public class St_Battle implements IState {
         }
 
         Units.RenderUnit(canvas);
-        /*
+        */
+/*
 
         디버깅용 터치 좌표 확인을 위해 하얀색 원형 그려주는 부분이다.
-         */
+         *//*
+
         paint.setColor(Color.WHITE);
 
         canvas.drawCircle((m_click_x / m_matrix_x - m_diffX), (m_click_y / m_matrix_y - m_diffY), 5, paint);
@@ -496,7 +499,7 @@ public class St_Battle implements IState {
                 temp.SetPos(i, j);
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
-                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
+                //Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
                 stemp.InitEffect(UnitValue.F_ELSATOWER);
                 Units.EnemyUnits.add(stemp);
             }
@@ -514,7 +517,7 @@ public class St_Battle implements IState {
                 temp.SetPos(i, j);
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
-                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
+               // Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, f_elsatower);
                 stemp.InitEffect(UnitValue.F_ELSATOWER);
                 Units.MyUnits.add(stemp);
             }
@@ -529,7 +532,7 @@ public class St_Battle implements IState {
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
 
-        Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_zombie));
+       // Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_zombie));
         //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
         //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
@@ -544,7 +547,7 @@ public class St_Battle implements IState {
          UnitValue.m_map[i][j] = 3;
         UI_imfor.BuyUnit(10);
         temp.SetPos(i, j);
-        Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, f_jumpingtrap));
+      //  Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, f_jumpingtrap));
     }
 
     //안나생성 부분
@@ -562,7 +565,7 @@ public class St_Battle implements IState {
 
         if(whounit==0) {
 
-            Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
+           // Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, f_anna));
             Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap( UnitValue.m_map);
           //  Units.MyUnits.get(Units.MyUnits.size() - 1).m_BoundingSpear
            Units.MyUnits.get(Units.MyUnits.size() - 1).WhoEnemy(Units.EnemyUnits.get(0).myUnitObject);
@@ -593,10 +596,10 @@ public class St_Battle implements IState {
          UnitValue.m_map[i + 1][j + 1] = 3; //y left값 증가 +1
         if(whounit==0)
         {
-            Units.MyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
+        //    Units.MyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
         }
         else if(whounit==1)
-            Units.EnemyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
+       //     Units.EnemyUnits.add(new Unit_Imfor(temp, 300, 1, f_townhall));
 
     }
 
@@ -615,11 +618,11 @@ public class St_Battle implements IState {
             temp.SetPos(i, j);
             temp.resizebitmap(100 - 100 / 3, 60);
             if(whounit==0) {
-                Units.MyUnits.add(new Unit_Imfor(temp, 30, 0, f_tower));
+              //  Units.MyUnits.add(new Unit_Imfor(temp, 30, 0, f_tower));
             }
             else
             {
-                Units.EnemyUnits.add(new Unit_Imfor(temp,30,0,f_tower));
+              //  Units.EnemyUnits.add(new Unit_Imfor(temp,30,0,f_tower));
             }
         }
     }
@@ -629,3 +632,4 @@ public class St_Battle implements IState {
 }
 
 
+*/

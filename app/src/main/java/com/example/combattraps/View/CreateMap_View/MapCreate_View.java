@@ -506,7 +506,7 @@ public void saveMap()
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().rock1.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1,true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 
@@ -518,7 +518,7 @@ public void saveMap()
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().tree1.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1,true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 
@@ -529,7 +529,7 @@ public void saveMap()
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().rock2.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2,true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 

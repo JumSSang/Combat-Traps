@@ -14,6 +14,7 @@ public class UnitValue {
     public static final int F_ROCK1 = 8;
     public static final int F_TREE1 = 9;
     public static final int F_ROCKE2 = 10;
+    public static final int F_BOOM=11;
 
     public static final int M_GRASS1 = 1;
     public static final int M_GRASS2 = 2;
@@ -22,6 +23,7 @@ public class UnitValue {
     public static final int M_NOTDESTROY = 6;
 
     public static final int BU_SPPOT=0;
+    public static final int BU_ARROW=1;
 
     private boolean m_GameStart = false;
     private static UnitValue s_instance;

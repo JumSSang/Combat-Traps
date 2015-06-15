@@ -57,6 +57,9 @@ public class GraphicManager {
     public SpriteControl m_effect;
     public SpriteControl m_anna_punch;
     public SpriteControl m_bulletSprite;
+    public SpriteControl m_newClearSprite;
+    public SpriteControl m_ArchorTower;
+    public SpriteControl m_Boom;
     /*
      로비 관련 리소스
      */
@@ -134,6 +137,9 @@ public class GraphicManager {
             temptile5.resizebitmap(51,51);
             m_bulletSprite=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.point_bullet));
             m_bulletSprite.SetBulletRect(10);
+            m_newClearSprite=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.explosion));
+            m_newClearSprite.resizebitmap(300,400);
+            m_newClearSprite.SetExplosion(10);
         }
 
         else if(AppManager.getInstance().state==AppManager.S_ROBBY)
@@ -148,7 +154,6 @@ public class GraphicManager {
 
             m_anna_punch=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna_punch_effect));
             m_anna_punch.AnnaEffect(30);
-
 
             //추후 모든 변수는 ArrayList로 관리 상수를 이용해서 이미지를 처리하게 한다.
             background1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.background_lobby));
@@ -184,7 +189,7 @@ public class GraphicManager {
              }
             m_anna_punch=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna_punch_effect));
             m_anna_punch.AnnaEffect(30);
-
+            m_Boom=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.trap_bommer));
             mElsa_Tower = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.elsa_tower));
 
             ButtonView_Image = new Graphic_image((AppManager.getInstance().getBitmap(R.drawable.button_view)));
@@ -196,7 +201,8 @@ public class GraphicManager {
 
             TowerButton.resizebitmap((int) m_Width / 12, (int) m_Height / 9);
             ButtonView_Image.resizebitmap((int) m_Width/20*15, (int) m_Height / 6);
-
+            m_ArchorTower=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.archortower));
+            m_ArchorTower.resizebitmap(75,100);
             m_effect = new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
             m_elsatower = new SpriteControl(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
             m_elsatower.ElsaTower(30);
@@ -234,7 +240,12 @@ public class GraphicManager {
             rock2.resizebitmap(70,70);
             tree1=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.tree1));
             tree1.resizebitmap(70, 70);
+            m_bulletSprite=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.point_bullet));
 
+            m_bulletSprite.SetBulletRect(10);
+            m_newClearSprite=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.explosion));
+            m_newClearSprite.resizebitmap(300,400);
+            m_newClearSprite.SetExplosion(10);
             GameList.add(background);
             GameList.add(m_effect);
             GameList.add(m_elsatower);

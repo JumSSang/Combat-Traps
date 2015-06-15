@@ -16,15 +16,18 @@ import com.example.combattraps.immortal.Vec2F;
 class BoundingSpear
 {
     private float m_radius;
+    public Vec2F m_position;
     private float m_x;
     private float m_y;
-    private int m_middlePosition;
+
 
     BoundingSpear(float x,float y,float r)
     {
         m_radius=r*100;
         m_x=x;
         m_y=y;
+
+        m_position=new Vec2F(m_x,m_y);
     }
 
     public float GetX()
@@ -46,6 +49,7 @@ class BoundingSpear
     }
 }
 public class Unit_Imfor {
+    public Vec2F middlePosition;
     public PathFinder myPath;
     public Unit myUnitObject;
     public Unit mMyTarget;
@@ -60,6 +64,7 @@ public class Unit_Imfor {
     public Vec2F DrawPosition;
 
     public Unit_Imfor my_enemy; //적정보
+    public boolean b_myUnit=false;
     public double myAttackDelayTime=0;
 
     public SpriteControl m_effect;
@@ -69,7 +74,7 @@ public class Unit_Imfor {
 
     public Vec2 m_moveVector;
     public int count=0;
-    private int m_range=2; //유닛이 전투 상태에 돌입하게 해주는 바운딩 영역의 반지름이 된다.
+    public int m_range=2; //유닛이 전투 상태에 돌입하게 해주는 바운딩 영역의 반지름이 된다.
     public float m_ac_range=2.0f; //유닛이 상대를 인식하게 되는 바운딩 거리
  //   private int range=2;
     public BoundingSpear m_BoundingSpear;
@@ -97,21 +102,35 @@ public class Unit_Imfor {
     {
         return mThisMove;
     }
-    public Unit_Imfor(Unit myUnitObject, int hp, int mSpeed, int type) {
+    public Unit_Imfor(Unit myUnitObject, int hp, int mSpeed, int type,boolean b_myUnit) {
             myPath=new PathFinder();
             this.mHp=hp;
         this.tempHp=hp;
             this.mSpeed=mSpeed;
             this.myUnitObject=myUnitObject;
             this.myTime=0;
+        this.b_myUnit=b_myUnit;
 
-        if(type==UnitValue.F_ANNA)
+        switch(type)
         {
-            DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x))+10  , (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x))-40);
+            case UnitValue.F_ANNA:
+                middlePosition=  new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x))+10+ 16, (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x))-40 + 50);
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x))+10  , (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x))-40);
+                break;
+            case UnitValue.F_ELSATOWER:
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
+                break;
+            case UnitValue.F_TOWER:
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x))-15, (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x))-50);
+                break;
+            case UnitValue.F_BOOM:
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
+                break;
+            default:
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
+                break;
         }
-        else {
-            DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
-        }
+
         m_moveVector=new Vec2((float)0,(float)0);
 
             this.mType=type;
@@ -123,15 +142,30 @@ public class Unit_Imfor {
 
     public void boundingPositionUpdate(float x,float y)
     {
-        if(this.mType==UnitValue.F_ANNA) {
-            this.m_battleBounding = new BoundingSpear(x + 16, y + 50, 0.2f); //안나의 바운딩 영역 위치 생성
-            this.m_BoundingSpear = new BoundingSpear(x + 15, y + 50, this.m_range);
-        }
-        else
+        switch(this.mType)
         {
-            this.m_battleBounding=new BoundingSpear(x+10,y,0.2f);
-            this.m_BoundingSpear=new BoundingSpear(x+10,y,this.m_ac_range);
+            case UnitValue.F_ANNA:
+                this.m_battleBounding = new BoundingSpear(x + 16, y + 50, 0.2f); //안나의 바운딩 영역 위치 생성
+                this.m_BoundingSpear = new BoundingSpear(x + 15, y + 50, 2);
+                break;
+            case UnitValue.F_ELSATOWER:
+                this.m_battleBounding=new BoundingSpear(x+25,y+25,0.4f);
+                this.m_BoundingSpear=new BoundingSpear(x+25,y+25,2);
+                break;
+            case UnitValue.F_TOWER:
+                this.m_battleBounding=new BoundingSpear(x+35,y+75,0.4f);
+                this.m_BoundingSpear=new BoundingSpear(x+35,y+75,2);
+                break;
+            case UnitValue.F_BOOM:
+                this.m_battleBounding=new BoundingSpear(x+35,y+75,0.4f);
+                this.m_BoundingSpear=new BoundingSpear(x+35,y+75,2);
+                break;
+            default:
+                this.m_battleBounding=new BoundingSpear(x+10,y,0.2f);
+                this.m_BoundingSpear=new BoundingSpear(x+10,y,2);
+                break;
         }
+
     }
     public void setState(int a)
     {

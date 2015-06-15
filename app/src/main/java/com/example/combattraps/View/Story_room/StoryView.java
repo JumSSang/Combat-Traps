@@ -758,7 +758,7 @@ public class StoryView implements IState {
                 temp.SetPos(i, j);
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
-                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
+                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER,false);
                 stemp.InitEffect(UnitValue.F_ELSATOWER);
                 //  Units.EnemyUnits.add(stemp);
 
@@ -782,7 +782,7 @@ public class StoryView implements IState {
                 temp.SetPos(i, j);
                 temp.ElsaTower(1);
                 //temp.resizebitmap(100-100/3,60);
-                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER);
+                Unit_Imfor stemp = new Unit_Imfor(temp, 50, 0, UnitValue.F_ELSATOWER,true);
                 stemp.InitEffect(UnitValue.F_ELSATOWER);
                 stemp.myUnitObject.addPosition(new Vec2(i, j));
                 stemp.myUnitObject.addPosition(new Vec2(i, j + 1));
@@ -811,7 +811,7 @@ public class StoryView implements IState {
         temp.SetPos(i, j);
         //temp.SetPosition(i,j);
 
-        Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ZOMBIE));
+        Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ZOMBIE,true));
         //Unit lastUnit = Units.MyUnits.get(Units.MyUnits.size()-1);
         //findedPath = finderOjbect.find(Units.MyUnits.get(0), lastUnit); // 찾기
 
@@ -827,7 +827,7 @@ public class StoryView implements IState {
         UI_imfor.BuyUnit(10);
         temp.SetPos(i, j);
 
-        Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, UnitValue.F_JUMPINGTRAP));
+        Units.MyUnits.add(new Unit_Imfor(temp, 0, 0, UnitValue.F_JUMPINGTRAP,true));
         Units.MyUnits.get(Units.MyUnits.size() - 1).mHp = 1;
     }
 
@@ -835,7 +835,7 @@ public class StoryView implements IState {
         Unit temp;
         temp = new Unit(GraphicManager.getInstance().rock1.m_bitmap);
         temp.SetPos(i, j);
-        Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1));
+        Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1,true));
         UnitValue.m_map[i][j] = 3;
 
     }
@@ -857,7 +857,7 @@ public class StoryView implements IState {
                 //아군
 
 
-                Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA));
+                Units.MyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA,true));
                 Units.MyUnits.get(Units.MyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
                 Units.MyUnits.get(Units.MyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
                 Units.MyUnits.get(Units.MyUnits.size() - 1).my_enemy = Units.EnemyUnits.get(0);
@@ -870,7 +870,7 @@ public class StoryView implements IState {
                 //적군군
                 //적군군
                 temp.Anna(1);
-                Units.EnemyUnits.add(new Unit_Imfor(temp, 100, 1, UnitValue.F_ANNA));
+                Units.EnemyUnits.add(new Unit_Imfor(temp, 100, 1, UnitValue.F_ANNA,false));
                 Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
                 Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
                 Units.EnemyUnits.get(Units.EnemyUnits.size() - 1).my_enemy = Units.MyUnits.get(0);
@@ -895,9 +895,9 @@ public class StoryView implements IState {
             temp.SetPos(i, j);
             temp.resizebitmap(100 - 100 / 3, 60);
             if (whounit == 0) {
-                Units.MyUnits.add(new Unit_Imfor(temp, 30, 0, UnitValue.F_TOWER));
+                Units.MyUnits.add(new Unit_Imfor(temp, 30, 0, UnitValue.F_TOWER,true));
             } else {
-                Units.EnemyUnits.add(new Unit_Imfor(temp, 30, 0, UnitValue.F_TOWER));
+                Units.EnemyUnits.add(new Unit_Imfor(temp, 30, 0, UnitValue.F_TOWER,false));
             }
         }
     }
@@ -937,11 +937,11 @@ public class StoryView implements IState {
         temp.SetPos(i, j);
 
         if (whounit == 0) {
-            Units.MyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
+            Units.MyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL,true));
             Units.MyUnits.get(0).myUnitObject.addPosition(new Vec2(i, j));
         } else if (whounit == 1)
         {
-            Units.EnemyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL));
+            Units.EnemyUnits.add(new Unit_Imfor(temp, 5, 1, UnitValue.F_TOWNHALL,false));
         Units.EnemyUnits.get(0).myUnitObject.addPosition(new Vec2(i, j));
       }
    }
@@ -954,7 +954,7 @@ public class StoryView implements IState {
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().tree1.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1,true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 
@@ -965,7 +965,7 @@ public class StoryView implements IState {
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().rock2.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2,true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 

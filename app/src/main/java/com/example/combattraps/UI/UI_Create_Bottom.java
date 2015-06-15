@@ -77,6 +77,10 @@ public class UI_Create_Bottom
                 case UnitValue.F_TREE1:
                     temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.tree1));
                     break;
+                case UnitValue.F_BOOM:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.trap_bommer));
+                    break;
+
 
 
                 default:

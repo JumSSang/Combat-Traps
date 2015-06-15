@@ -6,7 +6,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.example.combattraps.View.CreateMap_View.MapCreate_View;
-import com.example.combattraps.View.St_Battle;
+
 import com.example.combattraps.View.Story_room.StoryView;
 import com.example.combattraps.View.Test_GameView.TestView;
 import com.example.combattraps.immortal.GraphicManager;
@@ -123,7 +123,7 @@ public class Ready_Room implements IState {
         if(!DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") && !DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") &&!DBManager.getInstance().GetEnemy().equals("검색취소"))
         {
             GraphicManager.getInstance().btn_start.state_click=false;
-            AppManager.getInstance().getGameView().ChangeGameState(new St_Battle());
+            //AppManager.getInstance().getGameView().ChangeGameState(new St_Battle());
         }
         if( btn_story.state_click==true)
         {

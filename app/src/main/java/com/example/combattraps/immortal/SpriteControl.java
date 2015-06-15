@@ -41,8 +41,16 @@ public class SpriteControl extends Graphic_image {
         Attack=new Rect[10][10];
         Death=new Rect[10][10];
         m_EffectRect=new Rect[31];
-
     }
+    public void setEndState(boolean state)
+    {
+        this.mbEnd=state;
+    }
+    public boolean getEndState()
+    {
+        return mbEnd;
+    }
+
     public void SetPos(int x,int y)
     {
         Postion.x=x;
@@ -71,7 +79,13 @@ public class SpriteControl extends Graphic_image {
         //Animation(1,10,100,400,1);
         mNoOfFrames=10;
         EffectAnimation(2,5,100,75);
-
+    }
+    public void SetExplosion(int FPS)
+    {
+        mFPS=1000/FPS;
+        //Animation(1,10,100,400,1);
+        mNoOfFrames=12;
+        EffectAnimation(4,3,100,100);
     }
 
 
@@ -247,9 +261,11 @@ public class SpriteControl extends Graphic_image {
                 if (mCurrentFrame >= mNoOfFrames) {
                     if (mbReply) {
                         mCurrentFrame = 0;
+                        mbEnd = true;
                     } else {
                         mbEnd = true;
                     }
+
                 }
             }
         }
