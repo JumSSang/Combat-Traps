@@ -41,9 +41,7 @@ public class GameThread extends Thread {
             finally{
                 if(_canvas!=null)
                 {
-
                     m_surfaceHolder.unlockCanvasAndPost(_canvas);
-
                 }
             }
 

@@ -6,12 +6,14 @@ import android.graphics.Paint;
 
 import com.example.combattraps.R;
 import com.example.combattraps.immortal.AppManager;
+import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.GraphicManager;
 import com.example.combattraps.immortal.Sound;
 import com.example.combattraps.immortal.SpriteControl;
 import com.example.combattraps.immortal.Vec2;
 import com.example.combattraps.immortal.Vec2F;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,7 +62,7 @@ public class UnitManager {
     }
 
     public void remove(ArrayList<Unit_Imfor> list, Unit_Imfor a) {
-        if (a.mHp <= 0) {
+        if (a.mHp <= 0 || a.boom_erase==true) {
             list.remove(a);
         }
     }
@@ -79,7 +81,7 @@ public class UnitManager {
         paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(20);
-
+        paint.setStyle(Paint.Style.STROKE);
         for (int i = 0; i < UnitList.size(); i++) {
             int x = UnitList.get(i).myUnitObject.Postion.x;
             int y = UnitList.get(i).myUnitObject.Postion.y;
@@ -97,7 +99,7 @@ public class UnitManager {
                             paint.setColor(Color.RED);
                         }
                     paint.setColor(Color.GREEN);
-                    paint.setStyle(Paint.Style.STROKE);
+
                     //바운딩영역 확인하는 원
 
 
@@ -126,7 +128,7 @@ public class UnitManager {
                     {
                         paint.setColor(Color.RED);
                     }
-                    canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(), UnitList.get(i).m_battleBounding.GetY(), UnitList.get(i).m_battleBounding.GetRadius(), paint);
+                  //  canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(), UnitList.get(i).m_battleBounding.GetY(), UnitList.get(i).m_battleBounding.GetRadius(), paint);
                     canvas.drawRect(UnitList.get(i).originHP, paint);
                     paint.setColor(Color.WHITE);
                     break;
@@ -155,18 +157,18 @@ public class UnitManager {
                     {
                         paint.setColor(Color.RED);
                     }
-                    canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(), UnitList.get(i).m_battleBounding.GetY(), UnitList.get(i).m_battleBounding.GetRadius(), paint);
+                   // canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(), UnitList.get(i).m_battleBounding.GetY(), UnitList.get(i).m_battleBounding.GetRadius(), paint);
                     canvas.drawRect(UnitList.get(i).originHP, paint);
                     paint.setColor(Color.WHITE);
                     switch (UnitList.get(i).getState()) {
                         case UnitValue.S_MOVE:
-                             canvas.drawText("타운홀" + UnitList.get(i).myUnitObject.Postion + UnitList.get(i).getMovestate(), UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
+                             canvas.drawText("타운홀" , UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
                             break;
                         case UnitValue.S_BATTLE_MOVE:
-                            canvas.drawText("바운딩" + UnitList.get(i).myUnitObject.Postion, UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
+                            canvas.drawText("바운딩" , UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
                             break;
                         case UnitValue.S_REMOVE:
-                            canvas.drawText("적제거" + UnitList.get(i).myUnitObject.Postion, UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
+                            canvas.drawText("적제거" , UnitList.get(i).DrawPosition.x + 10, UnitList.get(i).DrawPosition.y - 50, paint);
                             break;
 
                     }
@@ -198,11 +200,30 @@ public class UnitManager {
                     break;
                 case UnitValue.F_TOWER:
                     UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x, (int) UnitList.get(i).DrawPosition.y);
-                    canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(),UnitList.get(i).m_battleBounding.GetY(),UnitList.get(i).m_battleBounding.GetRadius(),paint);
+                   //canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(),UnitList.get(i).m_battleBounding.GetY(),UnitList.get(i).m_battleBounding.GetRadius(),paint);
                     UnitList.get(i).Hpbar();
                     paint.setColor(Color.GREEN);
                     canvas.drawRect(UnitList.get(i).originHP, paint);
                     paint.setColor(Color.WHITE);
+                    break;
+                case UnitValue.F_BOOM:
+                    UnitList.get(i).myUnitObject.Draw(canvas, (int) UnitList.get(i).DrawPosition.x, (int) UnitList.get(i).DrawPosition.y);
+                 //   canvas.drawCircle(UnitList.get(i).m_battleBounding.GetX(),UnitList.get(i).m_battleBounding.GetY(),UnitList.get(i).m_battleBounding.GetRadius(),paint);
+                    UnitList.get(i).Hpbar();
+                    if(UnitList.get(i).b_myUnit)
+                    {
+                        paint.setColor(Color.GREEN);
+                    }
+                    else
+                    {
+                        paint.setColor(Color.RED);
+                    }
+                    canvas.drawRect(UnitList.get(i).originHP, paint);
+                    paint.setColor(Color.WHITE);
+                    if( UnitList.get(i).boom_start)
+                    {
+                        canvas.drawText(""+(int)UnitList.get(i).myAttackDelayTime ,UnitList.get(i).m_battleBounding.GetX(),UnitList.get(i).m_battleBounding.GetY()-50,paint);
+                    }
                     break;
 
 
@@ -230,11 +251,9 @@ public class UnitManager {
         for (int i = 0; i < BulletList.size(); i++) {
             BulletList.get(i).draw(canvas);
         }
-        ExplosionDraw(canvas);
-        GraphicManager.getInstance().m_newClearSprite.OneUpdate(System.currentTimeMillis());
-        GraphicManager.getInstance().m_newClearSprite.EffectDraw(canvas, 100, 100);
-        canvas.drawText("" + BulletList.size(), 500, 500, paint);
 
+        canvas.drawText("" + BulletList.size(), 500, 500, paint);
+        ExplosionDraw(canvas);
 
     }
 
@@ -283,6 +302,17 @@ public class UnitManager {
         UnitList.addAll(Enviroment);
         unitSort();//유닛의 출력순서 정렬 부분
 
+        if(DBManager.getInstance().go_robby==5) {
+            if(DBManager.nextFrame==true)
+                DBManager.FrameCount += 1;
+
+            try {
+                DBManager.getInstance().sendMessage(""+DBManager.FrameCount);
+                DBManager.nextFrame=false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         for (int i = 0; i < MyUnits.size(); i++) {
             add();//아군 유닛 추가 상태 체크 부분
@@ -290,7 +320,10 @@ public class UnitManager {
             animationUpdate(MyUnits.get(i)); //유닛 애니메이션 업데이트 구현부분
             if (m_roundStart == true) {
                 if (EnemyUnits.size() != 0)
-                    UnitMonitor(MyUnits.get(i), dt, true);
+
+
+                UnitMonitor(MyUnits.get(i), dt, true);
+
             }
             remove(MyUnits, MyUnits.get(i));//유닛 제거 체크 부분
         }
@@ -310,16 +343,19 @@ public class UnitManager {
 
         if (m_roundStart == true) {
             MoveUpdate(dt);
-        }
-        MissleUpdate(dt);
-        MissleErase();
-        for(int i=0;i<ExplosiveList.size();i++)
-        {
-            if(ExplosiveList.get(i).life==false)
+            MissleUpdate(dt);
+            MissleErase();
+            for(int i=0;i<ExplosiveList.size();i++)
             {
-                ExplosiveList.remove(i);
+                if(ExplosiveList.get(i).life==false)
+                {
+                    ExplosiveList.remove(i);
+                }
             }
         }
+
+
+
 
     }
 
@@ -333,8 +369,14 @@ public class UnitManager {
 
             if (BulletList.get(i).state == false) {
                 if (BulletList.get(i).m_parents.my_enemy != null) {
-                    ExplosiveList.add(new Explosive(new Vec2F(BulletList.get(i).DrawPosition.x-25,BulletList.get(i).DrawPosition.y-25),40,10,true,0));
-                    ExplosiveList.get(ExplosiveList.size()-1).boom_attack(MyUnits);
+                    ExplosiveList.add(new Explosive(new Vec2F(BulletList.get(i).DrawPosition.x+20,BulletList.get(i).DrawPosition.y),40,10,true,0));
+                    if(BulletList.get(i).m_parents.b_myUnit) {
+                        ExplosiveList.get(ExplosiveList.size() - 1).boom_attack(EnemyUnits);
+                    }
+                    else
+                    {
+                        ExplosiveList.get(ExplosiveList.size() - 1).boom_attack(MyUnits);
+                    }
                 }
                 BulletList.remove(i);
             }
@@ -342,6 +384,7 @@ public class UnitManager {
             //return;
         }
     }
+
 
 
     public void MissleUpdate(double dt) {
@@ -396,6 +439,61 @@ public class UnitManager {
     }
 
 
+    //폭탄 제어 부분
+    public void BoomPattern(Unit_Imfor a, boolean myUnit, double dt)
+    {
+        //아군부분
+        if (myUnit == true) {
+            if(a.boom_start)
+            {
+                a.myAttackDelayTime-=dt;
+                if(a.myAttackDelayTime<=0)
+                {
+                    a.boom_erase=true;
+                    ExplosiveList.add(new Explosive(new Vec2F(a.m_battleBounding.GetX(),a.m_battleBounding.GetY()),40,10,true,0));
+                    ExplosiveList.get(ExplosiveList.size()-1).boom_attack(EnemyUnits);
+
+                }
+
+                return;
+            }
+
+            for (int i = 0; i < EnemyUnits.size(); i++) {
+                if (Bounding.UnitAABB(a.m_BoundingSpear.m_position, EnemyUnits.get(i).m_battleBounding.m_position, a.m_battleBounding.GetRadius(), EnemyUnits.get(i).m_battleBounding.GetRadius()) ) {
+                    a.boom_start=true;
+                    return;
+                }
+            }
+
+        }
+
+        //적부분
+        else
+        {
+            if(a.boom_start)
+            {
+                a.myAttackDelayTime-=dt;
+                if(a.myAttackDelayTime<=0)
+                {
+                    a.boom_erase=true;
+                    ExplosiveList.add(new Explosive(new Vec2F(a.m_battleBounding.GetX(),a.m_battleBounding.GetY()),40,10,true,0));
+                    ExplosiveList.get(ExplosiveList.size()-1).boom_attack(MyUnits);
+
+                }
+
+                return;
+            }
+
+            for (int i = 0; i < MyUnits.size(); i++) {
+                if (Bounding.UnitAABB(a.m_BoundingSpear.m_position, MyUnits.get(i).m_battleBounding.m_position, a.m_battleBounding.GetRadius(), MyUnits.get(i).m_battleBounding.GetRadius()) ) {
+                    a.boom_start=true;
+                    return;
+                    }
+
+                }
+        }
+    }
+
     //엘사타워 제어부분분
     public void ElsaTowerPattern(Unit_Imfor a, boolean myUnit, double dt) {
         //if (tempEnemy.size() != 0) {
@@ -441,13 +539,13 @@ public class UnitManager {
                             switch(a.my_enemy.mType)
                             {
                                 case UnitValue.F_ANNA:
-                                    tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX(), a.my_enemy.m_battleBounding.GetY());
+                                    tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX()-35, a.my_enemy.m_battleBounding.GetY()-25);
                                     break;
                                 case UnitValue.F_TOWER:
-                                    tempVect= new Vec2F(a.my_enemy.DrawPosition.x+25, a.my_enemy.DrawPosition.y + 50);
+                                    tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX(), a.my_enemy.m_battleBounding.GetY());
                                     break;
                                 default:
-                                    tempVect= new Vec2F(a.my_enemy.DrawPosition.x, a.my_enemy.DrawPosition.y + 50);
+                                    tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX(), a.my_enemy.m_battleBounding.GetY());
                                     break;
                             }
                             BulletList.add(new MissleManager(a.DrawPosition, tempVect, 3, 7, myUnit, 0, a));
@@ -504,7 +602,7 @@ public class UnitManager {
                             switch(a.my_enemy.mType)
                             {
                                 case UnitValue.F_ANNA:
-                                    tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX(), a.my_enemy.m_battleBounding.GetY());
+                                    tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX()-20, a.my_enemy.m_battleBounding.GetY());
                                     break;
                                 case UnitValue.F_TOWER:
                                     tempVect= new Vec2F(a.my_enemy.m_battleBounding.GetX(), a.my_enemy.m_battleBounding.GetY());
@@ -638,9 +736,10 @@ public class UnitManager {
                         }
                     }
                 }
-                if(a.my_enemy.mHp<=0)
-                {
-                    a.setState(UnitValue.S_REMOVE);
+                if(a.my_enemy!=null) {
+                    if (a.my_enemy.mHp <= 0) {
+                        a.setState(UnitValue.S_REMOVE);
+                    }
                 }
                 break;
             case UnitValue.S_BATTLE: //하나의 유닛을 인식을 하게 되고 위치까지 도달하게 되는데 이때 공격을 하는데 자신의 공격 범위안에 유닛이 사라지면 S_BAttleMove를 호출하고 상대 유닛이 제거된 상태면 S_Move상태로 바꿔준다.
@@ -651,7 +750,6 @@ public class UnitManager {
                         Unit temp;
                         if (Bounding.tileColl.get(count).resultCal(a.DrawPosition.x , a.DrawPosition.y) == true && UnitValue.m_map[i][j] != 3) {
                                 a.myUnitObject.SetPos(i,j);
-
                             }
                         }
                         count++;
@@ -711,6 +809,16 @@ public class UnitManager {
                         AnnaPattern(a, dt, MyUnits);
                     }
                     break;
+                case UnitValue.F_BOOM:
+                    if(Agoon==true)
+                    {
+                        BoomPattern(a,true,dt);
+                    }
+                    else
+                    {
+                        BoomPattern(a,false,dt);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -737,11 +845,11 @@ public class UnitManager {
 
         if (a.getState() == (UnitValue.S_BATTLE)) {
 
-            if (a.myAttackDelayTime > 2.0f) {
-                if (a.my_enemy.mHp > 0) {
+            if (a.myAttackDelayTime > 1.0f) {
+                if (a.my_enemy.mHp > 0&&a.my_enemy.myUnitObject.unitPosition.size()>0 &&a.my_enemy!=null) {
                     float y = a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y;
                     float x = a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x;
-                    if (Bounding.UnitAABB(a.DrawPosition, a.my_enemy.DrawPosition, a.m_battleBounding.GetRadius(), a.my_enemy.m_battleBounding.GetRadius())) {
+                    if (Bounding.UnitAABB(a.m_battleBounding.m_position, a.m_battleBounding.m_position, a.m_battleBounding.GetRadius(), a.my_enemy.m_battleBounding.GetRadius())) {
                         int tempy = a.myUnitObject.Postion.y - a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).y;
                         int tempx = a.myUnitObject.Postion.x - a.my_enemy.myUnitObject.unitPosition.get(a.findingTilenumber).x;
                         DirectionUpdate(tempx, tempy, a, UnitValue.F_ANNA);

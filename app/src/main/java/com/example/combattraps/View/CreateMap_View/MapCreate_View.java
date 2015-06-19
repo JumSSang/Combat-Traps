@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import com.example.combattraps.Game.ActiveCollusion;
+import com.example.combattraps.Game.UnitDirect.CreateUnit;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -169,21 +170,21 @@ public class MapCreate_View implements IState {
                 LoadMap(DBManager.getInstance().m_StringMap);
                 TouchGame(x, y);
                 if (AppManager.getInstance().Collusion((int) x, (int) y, r)) {
-                    m_plot=2;
+                    m_plot = 2;
                 }
 
                 break;
             case 2://배치 완료
 
-                    saveMap();
-                    m_plot=3;
+                saveMap();
+                m_plot = 3;
 
 
                 break;
             case 3:
 
 
-                AppManager.getInstance().state=AppManager.S_ROBBY;
+                AppManager.getInstance().state = AppManager.S_ROBBY;
                 AppManager.getInstance().getGameView().ChangeGameState(new Ready_Room());
                 break;
         }
@@ -365,6 +366,15 @@ public class MapCreate_View implements IState {
         UnitDataList.add(temp2);//2
         temp3.set(UnitValue.F_TREE1, 1, 0);
         UnitDataList.add(temp3);//2
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size() - 1).set(UnitValue.F_TOWER, 1, 0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size() - 1).set(UnitValue.F_BOOM, 1, 0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size() - 1).set(UnitValue.F_ELSATOWER, 1, 0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size() - 1).set(UnitValue.F_ANNA, 1, 0);
+
     }
 
     //줌인 줌 아웃을 위한 터치 이벤트 계산 함수
@@ -391,7 +401,7 @@ public class MapCreate_View implements IState {
             type = Integer.parseInt(imfors[3]);
             switch (type) {
                 case UnitValue.F_TOWER:
-
+                    CreateUnit.CreateArchorTower(x, y, Units.MyUnits, Units.EnemyUnits, false);
                     break;
                 case UnitValue.F_JUMPINGTRAP:
                     break;
@@ -400,22 +410,27 @@ public class MapCreate_View implements IState {
                 case UnitValue.F_GOLDRUN:
                     break;
                 case UnitValue.F_ELSATOWER:
-
+                    Unit temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+                    CreateUnit.CreateMagicTower(x, y, temp, Units.MyUnits, Units.EnemyUnits, false);
                     break;
                 case UnitValue.F_ANNA:
-
+                    CreateUnit.CreateAnna(x, y, Units.MyUnits, Units.EnemyUnits, false);
                     break;
                 case UnitValue.F_TOWNHALL:
                     break;
                 case UnitValue.F_TREE1:
-                    CreateTree1(x, y);
+                    CreateUnit.CreateTree1(x, y, Units.Enviroment);
                     break;
 
                 case UnitValue.F_ROCK1:
-                    CreateRock(x, y);
+                    CreateUnit.CreateRock(x, y, Units.Enviroment);
+
                     break;
                 case UnitValue.F_ROCKE2:
-                    CreateRock2(x, y);
+                    CreateUnit.CreateRock2(x, y, Units.Enviroment);
+                    break;
+                case UnitValue.F_BOOM:
+                    CreateUnit.CreateBoom(x, y, Units.EnemyUnits);
                     break;
 
 
@@ -454,43 +469,53 @@ public class MapCreate_View implements IState {
                                 CreateTree1(i, j);
 
                                 break;
+                            case UnitValue.F_TOWER:
+                                CreateUnit.CreateArchorTower(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                break;
+                            case UnitValue.F_BOOM:
+                                CreateUnit.CreateBoom(i, j, Units.MyUnits);
+                                break;
+                            case UnitValue.F_ELSATOWER:
+                                Unit temped = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+                                CreateUnit.CreateMagicTower(i, j, temped, Units.MyUnits, Units.EnemyUnits, false);
+                                break;
+                            case UnitValue.F_ANNA:
+                                CreateUnit.CreateAnna(i,j, Units.MyUnits, Units.EnemyUnits, false);
+                                break;
 
-}
-}
-        count++;
-        }
+                        }
+                    }
+                    count++;
+                }
 
 
-        }
-
-        }
-
-
-
-        }
-
-public void saveMap()
-    {
-        int number=Units.Enviroment.size();
-        String[] map;
-        map=new String[number];
-        String text="";
-        for(int i=0;i<Units.Enviroment.size();i++)
-        {
-            String a;
-            if(i!=0)
-             a= String.valueOf("="+Units.Enviroment.get(i).myUnitObject.Postion.x +"a"+Units.Enviroment.get(i).myUnitObject.Postion.y+"a"+"0"+"a"+Units.Enviroment.get(i).mType);
-            else
-            {
-                a= String.valueOf(Units.Enviroment.get(i).myUnitObject.Postion.x +"a"+Units.Enviroment.get(i).myUnitObject.Postion.y+"a"+"0"+"a"+Units.Enviroment.get(i).mType);
             }
-            map[i]=a;
+
         }
-        for(int i=0;i<map.length;i++)
-        {
-            text+=map[i];
+
+
+    }
+
+    public void saveMap() {
+        Units.Enviroment.addAll(Units.EnemyUnits);
+        Units.Enviroment.addAll(Units.MyUnits);
+        int number = Units.Enviroment.size();
+        String[] map;
+        map = new String[number];
+        String text = "";
+        for (int i = 0; i < Units.Enviroment.size(); i++) {
+            String a;
+            if (i != 0)
+                a = String.valueOf("=" + Units.Enviroment.get(i).myUnitObject.Postion.x + "a" + Units.Enviroment.get(i).myUnitObject.Postion.y + "a" + "0" + "a" + Units.Enviroment.get(i).mType);
+            else {
+                a = String.valueOf(Units.Enviroment.get(i).myUnitObject.Postion.x + "a" + Units.Enviroment.get(i).myUnitObject.Postion.y + "a" + "0" + "a" + Units.Enviroment.get(i).mType);
+            }
+            map[i] = a;
         }
-        DBManager.getInstance().m_server_getMap=text;
+        for (int i = 0; i < map.length; i++) {
+            text += map[i];
+        }
+        DBManager.getInstance().m_server_getMap = text;
 
         try {
             DBManager.getInstance().connection.oos.writeObject(text);
@@ -506,7 +531,7 @@ public void saveMap()
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().rock1.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1,true));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCK1, true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 
@@ -518,7 +543,7 @@ public void saveMap()
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().tree1.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1,true));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_TREE1, true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 
@@ -529,7 +554,7 @@ public void saveMap()
             Unit temp;
             temp = new Unit(GraphicManager.getInstance().rock2.m_bitmap);
             temp.SetPos(i, j);
-            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2,true));
+            Units.Enviroment.add(new Unit_Imfor(temp, 5000, 0, UnitValue.F_ROCKE2, true));
             UnitValue.m_map[i][j] = UnitValue.M_NOTMOVE;
         }
 

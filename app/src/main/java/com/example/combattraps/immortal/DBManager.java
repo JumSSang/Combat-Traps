@@ -28,6 +28,8 @@ public class DBManager {
     public boolean nextlobby=false;
     public String m_StringMap;
     public String m_server_getMap;
+    public static float FrameCount=0;
+    public static boolean nextFrame=true;
     public static DBManager getInstance()
     {
         if(s_instance==null)
@@ -52,6 +54,10 @@ public class DBManager {
     public String getResponse() //접속이라던가 모든 문자열을 보내준다.
     {
         return response;
+    }
+    public void sendMessage(String a) throws IOException {
+        connection.oos.writeObject(a);
+        connection.oos.flush();
     }
 
 
@@ -84,16 +90,20 @@ public class DBManager {
                 break;
             case 3: //적의 아이디와 썸네일 분리해서 정보를 넘겨준다.
                 String[] result2=a.split(":");
-
                 this.enemy=result2[0];
                 this.enemysum= Integer.parseInt(result2[1]);
 
                 break;
             case 4: //싱글게임 시작시 맵정보를 불러오는 부분이다.
                 m_StringMap=a;
+                go_robby=5;
 
                 break;
             case 5:
+                if(a.equals("nextFrame"))
+                {
+                    nextFrame=true;
+                }
 
 
                 break;

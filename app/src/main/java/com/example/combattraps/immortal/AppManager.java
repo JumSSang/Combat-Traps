@@ -25,6 +25,7 @@ public class AppManager {
     public static final int S_CRMAP=5;
 
 
+
   public Bitmap getBitmap(int r)
     {
         return BitmapFactory.decodeResource(m_resource, r);

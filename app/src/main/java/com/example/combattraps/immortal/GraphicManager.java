@@ -190,6 +190,7 @@ public class GraphicManager {
             m_anna_punch=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.anna_punch_effect));
             m_anna_punch.AnnaEffect(30);
             m_Boom=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.trap_bommer));
+            m_Boom.resizebitmap(50,50);
             mElsa_Tower = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.elsa_tower));
 
             ButtonView_Image = new Graphic_image((AppManager.getInstance().getBitmap(R.drawable.button_view)));

@@ -100,6 +100,7 @@ public class TestView implements IState {
 
     @Override
     public void Init() {
+        DBManager.getInstance().go_robby = 5;
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
         currentTime = System.currentTimeMillis() / 1000;
@@ -392,10 +393,12 @@ public class TestView implements IState {
     public void LoadEnemys() {
         Unit temp, temp1, temp2;
         temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-         CreateUnit.CreateHall(10,10,Units.MyUnits,Units.EnemyUnits,true);
-        CreateUnit.CreateHall(30, 30, Units.MyUnits, Units.EnemyUnits, false);
+         CreateUnit.CreateHall(10,10,Units.MyUnits,true);
+        CreateUnit.CreateHall(30, 30, Units.EnemyUnits, false);
         temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-        CreateUnit.CreateMagicTower(15, 15, temp, Units.MyUnits, Units.EnemyUnits, true);
+        CreateUnit.CreateMagicTower(15, 15, temp, Units.MyUnits, Units.EnemyUnits, false);
+        CreateUnit.CreateBoom(25, 25, Units.EnemyUnits);
+        CreateUnit.CreateBoom(21, 21, Units.EnemyUnits);
     }
     //타운홀 생성 부분
 
@@ -412,7 +415,7 @@ public class TestView implements IState {
 
             for (int i = 0; i < 50; i++) {
                 for (int j = 0; j < 50; j++) {
-                    Unit temp;
+
                     if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
                         switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
                             case UnitValue.F_ANNA:
@@ -428,7 +431,11 @@ public class TestView implements IState {
                                 CreateUnit.CreateArchorTower(i,j,Units.MyUnits,Units.EnemyUnits,true);
                                 break;
                             case UnitValue.F_BOOM:
-                                CreateUnit.CreateBoom(i, j, Units.MyUnits, true);
+                                CreateUnit.CreateBoom(i, j, Units.MyUnits);
+                                break;
+                            case UnitValue.F_ELSATOWER:
+                                Unit temped = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+                                CreateUnit.CreateMagicTower(15, 15, temped, Units.MyUnits, Units.EnemyUnits, false);
                                 break;
 
 

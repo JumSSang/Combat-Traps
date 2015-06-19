@@ -28,6 +28,8 @@ public class Explosive {
 
     public Explosive(Vec2F Dp,float range,float damage,boolean team,int type)
     {
+        Dp.x-=50;
+        Dp.y-=53;
         this.DrawPosition=Dp;
         this.m_damage=damage;
        // this.m_range=range;
@@ -45,7 +47,7 @@ public class Explosive {
         img_Sprite.OneUpdate(System.currentTimeMillis());
         img_Sprite.EffectDraw(canvas, DrawPosition.x, DrawPosition.y);
         paint.setStyle(Paint.Style.STROKE);
-       // canvas.drawCircle(middlePosition.x,middlePosition.y,m_range,paint);
+        //canvas.drawCircle(middlePosition.x,middlePosition.y,m_range,paint);
         if(img_Sprite.getEndState()==true)
         {
             life=false;
@@ -57,7 +59,7 @@ public class Explosive {
         {
             if(enemy.get(i).mHp>0 &&enemy.get(i)!=null)
             {
-                if(Bounding.ExplosionAABB(middlePosition,enemy.get(i).m_battleBounding.m_position,m_range,enemy.get(i).m_range))
+                if(Bounding.ExplosionAABB(middlePosition,enemy.get(i).m_battleBounding.m_position,m_range,enemy.get(i).m_battleBounding.GetRadius()))
                 {
                     enemy.get(i).mHp-=m_damage;
                 }

@@ -87,6 +87,9 @@ public class Unit_Imfor {
     public float m_distance=0;
     private int tempHp;
 
+    public boolean boom_start=false;
+    public boolean boom_erase=false;
+
 
 
 
@@ -124,7 +127,8 @@ public class Unit_Imfor {
                 DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x))-15, (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x))-50);
                 break;
             case UnitValue.F_BOOM:
-                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)-25));
+                myAttackDelayTime=5;
                 break;
             default:
                 DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
@@ -157,8 +161,8 @@ public class Unit_Imfor {
                 this.m_BoundingSpear=new BoundingSpear(x+35,y+75,2);
                 break;
             case UnitValue.F_BOOM:
-                this.m_battleBounding=new BoundingSpear(x+35,y+75,0.4f);
-                this.m_BoundingSpear=new BoundingSpear(x+35,y+75,2);
+                this.m_battleBounding = new BoundingSpear(x + 20, y+25, 0.2f); //안나의 바운딩 영역 위치 생성
+                this.m_BoundingSpear = new BoundingSpear(x + 20, y+25 , 2);
                 break;
             default:
                 this.m_battleBounding=new BoundingSpear(x+10,y,0.2f);
