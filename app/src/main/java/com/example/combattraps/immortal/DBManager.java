@@ -4,11 +4,13 @@ import com.example.combattraps.Game.UnitDirect.UnitValue;
 import com.example.combattraps.NetConnect;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by 경민 on 2015-04-19.
  */
 public class DBManager {
+    public static ArrayList<String> EventStack;
     public NetConnect connection;
     private static DBManager s_instance;
     private String response;
@@ -28,13 +30,18 @@ public class DBManager {
     public boolean nextlobby=false;
     public String m_StringMap;
     public String m_server_getMap;
-    public static float FrameCount=0;
+    public static int FrameCount=0;
+    public static int stackCount=30;
     public static boolean nextFrame=true;
+    public static boolean b_create=false;
+    public static String n_UnitString=null;
+
     public static DBManager getInstance()
     {
         if(s_instance==null)
         {
             s_instance =new DBManager();
+            EventStack=new ArrayList<String>();
         }
         return s_instance;
     }
@@ -83,6 +90,7 @@ public class DBManager {
                 this.victory=Integer.parseInt(result[4]);
                 this.sum_number=Integer.parseInt(result[5]);
                 this.guild=result[6];
+                go_robby=3;
 
                 break;
             case 2: //뭐지?!!!
@@ -92,6 +100,7 @@ public class DBManager {
                 String[] result2=a.split(":");
                 this.enemy=result2[0];
                 this.enemysum= Integer.parseInt(result2[1]);
+                go_robby=5;
 
                 break;
             case 4: //싱글게임 시작시 맵정보를 불러오는 부분이다.
@@ -100,10 +109,22 @@ public class DBManager {
 
                 break;
             case 5:
-                if(a.equals("nextFrame"))
+                String[] gamepacket =a.split(":");
+                if(gamepacket[0].equals("nextFrame"))
                 {
                     nextFrame=true;
+                    if(!gamepacket[1].equals("null"))
+                    {
+                        n_UnitString=gamepacket[1];
+                        b_create=true;
+                    }
+                    else
+                    {
+                        n_UnitString="null";
+                        b_create=false;
+                    }
                 }
+
 
 
                 break;

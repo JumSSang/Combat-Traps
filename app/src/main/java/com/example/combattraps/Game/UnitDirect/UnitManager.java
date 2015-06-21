@@ -39,6 +39,7 @@ public class UnitManager {
     private ArrayList<MissleManager> BulletList;
   //  public SpriteControl TestSprite;
 
+
     public ArrayList<Unit_Imfor> UnitList;
     public boolean attack = false;
 
@@ -303,14 +304,30 @@ public class UnitManager {
         unitSort();//유닛의 출력순서 정렬 부분
 
         if(DBManager.getInstance().go_robby==5) {
-            if(DBManager.nextFrame==true)
-                DBManager.FrameCount += 1;
 
-            try {
-                DBManager.getInstance().sendMessage(""+DBManager.FrameCount);
-                DBManager.nextFrame=false;
-            } catch (IOException e) {
-                e.printStackTrace();
+            DBManager.getInstance().stackCount+=1;
+            if( DBManager.getInstance().stackCount>=30) {
+                if (DBManager.nextFrame == true) {
+                    DBManager.FrameCount += 1;
+
+                }
+                try {
+                    String sendString=null;
+                    if(DBManager.EventStack.size()>0)
+                    {
+                        sendString="";
+                    }
+                    for(int i=0;i<DBManager.EventStack.size();i++)
+                    {
+                        sendString+=DBManager.EventStack.get(i);
+                    }
+                    DBManager.getInstance().sendMessage("true:" + DBManager.FrameCount +":"+sendString);
+                    DBManager.EventStack.clear();
+                    DBManager.nextFrame = false;
+                    DBManager.getInstance().stackCount=0;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -433,8 +450,8 @@ public class UnitManager {
             }
 
         }
-        if (type == UnitValue.F_ELSATOWER) {
-
+        if (type == UnitValue.F_ELSATOWER)
+        {
         }
     }
 
@@ -485,12 +502,14 @@ public class UnitManager {
             }
 
             for (int i = 0; i < MyUnits.size(); i++) {
-                if (Bounding.UnitAABB(a.m_BoundingSpear.m_position, MyUnits.get(i).m_battleBounding.m_position, a.m_battleBounding.GetRadius(), MyUnits.get(i).m_battleBounding.GetRadius()) ) {
-                    a.boom_start=true;
-                    return;
+                if (MyUnits.get(i) != null &&a!=null) {
+                    if (Bounding.UnitAABB(a.m_BoundingSpear.m_position, MyUnits.get(i).m_battleBounding.m_position, a.m_battleBounding.GetRadius(), MyUnits.get(i).m_battleBounding.GetRadius())) {
+                        a.boom_start = true;
+                        return;
                     }
 
                 }
+            }
         }
     }
 

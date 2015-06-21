@@ -36,8 +36,6 @@ public class NetConnect extends AsyncTask<Void, Void, Void> {
 
             while (true) {
 
-                int a=0;
-                a+=1;
                 DBManager.getInstance().SetResponse(ois.readUTF());
 
 

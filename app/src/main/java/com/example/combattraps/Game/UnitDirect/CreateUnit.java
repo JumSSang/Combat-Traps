@@ -41,7 +41,7 @@ public class CreateUnit {
         {
                 //적군군
                 temp.Anna(1);
-                EnemyUnits.add(new Unit_Imfor(temp, 100, 1, UnitValue.F_ANNA,false));
+                EnemyUnits.add(new Unit_Imfor(temp, 10, 1, UnitValue.F_ANNA,false));
                 EnemyUnits.get(EnemyUnits.size() - 1).InitEffect(UnitValue.F_ANNA);
                 EnemyUnits.get(EnemyUnits.size() - 1).myPath.LoadMap(UnitValue.m_map);
             if (EnemyUnits.size() > 0) {
