@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.Bounding;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -100,7 +101,7 @@ public class TestView implements IState {
 
     @Override
     public void Init() {
-        DBManager.getInstance().go_robby = 5;
+        DBManager.getInstance().setNetState(NetState.SINGLEGAME);
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
         currentTime = System.currentTimeMillis() / 1000;

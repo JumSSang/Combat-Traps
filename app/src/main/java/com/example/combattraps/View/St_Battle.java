@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.Bounding;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -48,7 +49,7 @@ public class St_Battle implements IState {
 
     Matrix matrix = new Matrix();
 
-
+    private UI_Create_Imfor UI_imfor;
     private ArrayList<UnitList> UnitDataList;
     private UI_Create_Bottom UI;
     public int m_UI_Touch_Postion = 0;
@@ -100,7 +101,8 @@ public class St_Battle implements IState {
 
     @Override
     public void Init() {
-        DBManager.getInstance().go_robby = 5;
+
+        DBManager.getInstance().setNetState(NetState.MULTIGAME);
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
         currentTime = System.currentTimeMillis() / 1000;
@@ -125,7 +127,9 @@ public class St_Battle implements IState {
         fade_out.InitFadeOut();
         fade_in.InitFadeIn();
         r = new Rect((int) m_Width / 20 * 18, 0, (int) (m_Width), (int) m_Height / 20);
+        UI_imfor = new UI_Create_Imfor(m_Width, m_Height);
         LoadEnemys();
+
         Units.setRoundState(true);
     }
 
@@ -151,9 +155,18 @@ public class St_Battle implements IState {
                     int hp = Integer.parseInt(unitstring[1]);
                     int x = Integer.parseInt(unitstring[2]);
                     int y = Integer.parseInt(unitstring[3]);
+                    int myunit=Integer.parseInt(unitstring[4]);
                     switch (type) {
+
                         case UnitValue.F_ANNA:
-                            CreateUnit.CreateAnna(x, y, Units.MyUnits, Units.EnemyUnits, false);
+                            if(myunit==DBManager.getInstance().team) {
+                                CreateUnit.CreateAnna(x, y, Units.MyUnits, Units.EnemyUnits, true);
+
+                            }
+                            else
+                            {
+                                CreateUnit.CreateAnna(x, y, Units.MyUnits, Units.EnemyUnits, false);
+                            }
 
                             break;
                     }
@@ -177,7 +190,6 @@ public class St_Battle implements IState {
             m_time += timeDelta;
             m_thread_tiem += timeDelta;
             Units.Update(timeDelta);
-
             realityCreate();
 
 
@@ -239,7 +251,7 @@ public class St_Battle implements IState {
         // talkUnit(canvas);
         //클릭 위치마다 사각형을 그려준다 오브젝트에 사각형
         canvas.drawRect((m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12, m_Height - m_Height / 6, (m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12 + m_Width / 12, m_Height - m_Height / 18, paint);
-
+        UI_imfor.Draw(canvas);
     }
 
     @Override
@@ -426,14 +438,25 @@ public class St_Battle implements IState {
     }
 
     public void LoadEnemys() {
-        Unit temp, temp1, temp2;
+       /* Unit temp, temp1, temp2;
         temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
         CreateUnit.CreateHall(10, 10, Units.MyUnits, true);
         CreateUnit.CreateHall(30, 30, Units.EnemyUnits, false);
         temp = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
         CreateUnit.CreateMagicTower(15, 15, temp, Units.MyUnits, Units.EnemyUnits, false);
         CreateUnit.CreateBoom(25, 25, Units.EnemyUnits);
-        CreateUnit.CreateBoom(21, 21, Units.EnemyUnits);
+        CreateUnit.CreateBoom(21, 21, Units.EnemyUnits);*/
+
+        if(DBManager.getInstance().team==1)
+        {
+            CreateUnit.CreateHall(5, 5, Units.MyUnits, true);
+            CreateUnit.CreateHall(45, 45, Units.EnemyUnits, false);
+        }
+        else
+        {
+            CreateUnit.CreateHall(5, 5, Units.EnemyUnits, false);
+            CreateUnit.CreateHall(45, 45, Units.MyUnits, true);
+        }
     }
     //타운홀 생성 부분
 
@@ -454,9 +477,9 @@ public class St_Battle implements IState {
                     if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
                         switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
                             case UnitValue.F_ANNA:
-                                CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                //CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
 
-                                String anna = "6," + "10," + i + "," + j + "a";
+                                String anna = "6," + "10," + i + "," + j +","+DBManager.getInstance().team+"a";   //안나 타입 , 안나의 체력, x좌표 , y좌표, 클라이언트 번호
                                 DBManager.getInstance().EventStack.add(anna);
                                 break;
                             case UnitValue.F_ROCK1:

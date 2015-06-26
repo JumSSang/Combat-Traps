@@ -7,6 +7,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.View.LoadingView;
 
 import com.example.combattraps.immortal.AppManager;
@@ -24,7 +25,7 @@ public class GameActiviry extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        DBManager.getInstance().go_robby=1;
+        DBManager.getInstance().setNetState(NetState.USERLOAD);
         try {
             DBManager.getInstance().connection.oos.writeObject("uid_request");
         } catch (IOException e) {

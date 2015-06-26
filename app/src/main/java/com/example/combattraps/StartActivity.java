@@ -14,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.immortal.DBManager;
 
 import java.io.IOException;
@@ -93,14 +94,11 @@ public class StartActivity extends Activity implements View.OnClickListener {
                     DBManager.getInstance().connection.oos.flush();
                     while (connect) {
                         if (DBManager.getInstance().getResponse().equals("접속성공")) {
-                            DBManager.getInstance().go_robby=1;
-
+                            DBManager.getInstance().setNetState(NetState.USERLOAD);
                             connect = false;
                             final Intent i = new Intent(this, GameActiviry.class);
                             AlertDialog.Builder alert_confirm = new AlertDialog.Builder(StartActivity.this);
-
-
-                                                    startActivity(i);
+                            startActivity(i);
 
 
                             AlertDialog alert = alert_confirm.create();

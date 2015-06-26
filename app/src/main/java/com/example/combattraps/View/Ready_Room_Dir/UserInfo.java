@@ -59,8 +59,8 @@ public class UserInfo {
         canvas.drawText("길드 :    " +DBManager.getInstance().getGuild(),m_Width/100*15,logoRect.top+100,goldPaint);
 
 
-        canvas.drawText(" "+DBManager.getInstance().GetEnemy(),(int) GraphicManager.getInstance().m_Width/20*4,(int)GraphicManager.getInstance().m_Height/40*10,whitePaint); //적군아이디 출력
-        canvas.drawText(" "+(int)DBManager.readyroomtime,(int) GraphicManager.getInstance().m_Width/20*4,(int)GraphicManager.getInstance().m_Height/40*15,whitePaint); //적군아이디 출력
+        canvas.drawText("나의적은 : "+DBManager.getInstance().GetEnemy(),(int) GraphicManager.getInstance().m_Width/20*4,(int)GraphicManager.getInstance().m_Height/40*10,whitePaint); //적군아이디 출력
+       // canvas.drawText(" "+(int)DBManager.readyroomtime,(int) GraphicManager.getInstance().m_Width/20*4,(int)GraphicManager.getInstance().m_Height/40*15,whitePaint); //적군아이디 출력
 
 
         canvas.drawText(""+DBManager.getInstance().GetGold(),m_Width/100*30,m_Height/100*7,teduriPaint); //골드 정보

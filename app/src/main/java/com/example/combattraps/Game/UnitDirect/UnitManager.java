@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.R;
 import com.example.combattraps.immortal.AppManager;
 import com.example.combattraps.immortal.DBManager;
@@ -294,6 +295,51 @@ public class UnitManager {
     }
 
     //유닛에 관환 업데이트 부분
+
+    public void UnitUpdates(double dt)
+    {
+        for (int i = 0; i < MyUnits.size(); i++) {
+            add();//아군 유닛 추가 상태 체크 부분
+            //unitSort(MyUnits);//유닛의 출력순서 정렬 부분
+            animationUpdate(MyUnits.get(i)); //유닛 애니메이션 업데이트 구현부분
+            if(!DBManager.b_wiatFrame) {
+                if (m_roundStart == true) {
+                    if (EnemyUnits.size() != 0)
+                        UnitMonitor(MyUnits.get(i), dt, true);
+
+                }
+                remove(MyUnits, MyUnits.get(i));//유닛 제거 체크 부분
+            }
+        }
+        for (int i = 0; i < EnemyUnits.size(); i++) {
+
+            add();//적 유닛 추가 상태 체크  부분
+            // unitSort(EnemyUnits);//적유닛의 출력순서 정렬 부분
+
+            animationUpdate(EnemyUnits.get(i));//적 에니메이션 구현 부분
+            if(!DBManager.b_wiatFrame) {
+                if (m_roundStart == true) {
+                    if (MyUnits.size() != 0) {
+                        UnitMonitor(EnemyUnits.get(i), dt, false);
+                    }
+                }
+                remove(EnemyUnits, EnemyUnits.get(i));//적 유닛 제거 체크 부분
+            }
+        }
+        //if(UnitValue.getInstance().getGameStart()==true)
+        if(!DBManager.b_wiatFrame) {
+            if (m_roundStart == true) {
+                MoveUpdate(dt);
+                MissleUpdate(dt);
+                MissleErase();
+                for (int i = 0; i < ExplosiveList.size(); i++) {
+                    if (ExplosiveList.get(i).life == false) {
+                        ExplosiveList.remove(i);
+                    }
+                }
+            }
+        }
+    }
     public void Update(double dt) {
 
 
@@ -302,14 +348,23 @@ public class UnitManager {
         UnitList.addAll(EnemyUnits);
         UnitList.addAll(Enviroment);
         unitSort();//유닛의 출력순서 정렬 부분
+        if(DBManager.getInstance().getNetState()==NetState.SINGLEGAME)
+        {
+            UnitUpdates(dt);
+        }
+        else if(DBManager.getInstance().getNetState()== NetState.MULTIGAME) {
 
-        if(DBManager.getInstance().go_robby==5) {
-
+            UnitUpdates(dt);
             DBManager.getInstance().stackCount+=1;
-            if( DBManager.getInstance().stackCount>=30) {
+            if( DBManager.getInstance().stackCount>=1) {
+
                 if (DBManager.nextFrame == true) {
                     DBManager.FrameCount += 1;
-
+                    DBManager.b_wiatFrame=false;
+                }
+                else
+                {
+                    DBManager.b_wiatFrame=true;
                 }
                 try {
                     String sendString=null;
@@ -321,7 +376,7 @@ public class UnitManager {
                     {
                         sendString+=DBManager.EventStack.get(i);
                     }
-                    DBManager.getInstance().sendMessage("true:" + DBManager.FrameCount +":"+sendString);
+                    DBManager.getInstance().sendMessage("true:" + DBManager.FrameCount+":"+sendString+":"+DBManager.getInstance().team);
                     DBManager.EventStack.clear();
                     DBManager.nextFrame = false;
                     DBManager.getInstance().stackCount=0;
@@ -331,45 +386,7 @@ public class UnitManager {
             }
         }
 
-        for (int i = 0; i < MyUnits.size(); i++) {
-            add();//아군 유닛 추가 상태 체크 부분
-            //unitSort(MyUnits);//유닛의 출력순서 정렬 부분
-            animationUpdate(MyUnits.get(i)); //유닛 애니메이션 업데이트 구현부분
-            if (m_roundStart == true) {
-                if (EnemyUnits.size() != 0)
 
-
-                UnitMonitor(MyUnits.get(i), dt, true);
-
-            }
-            remove(MyUnits, MyUnits.get(i));//유닛 제거 체크 부분
-        }
-        for (int i = 0; i < EnemyUnits.size(); i++) {
-            add();//적 유닛 추가 상태 체크  부분
-            // unitSort(EnemyUnits);//적유닛의 출력순서 정렬 부분
-
-            animationUpdate(EnemyUnits.get(i));//적 에니메이션 구현 부분
-            if (m_roundStart == true) {
-                if (MyUnits.size() != 0) {
-                    UnitMonitor(EnemyUnits.get(i), dt, false);
-                }
-            }
-            remove(EnemyUnits, EnemyUnits.get(i));//적 유닛 제거 체크 부분
-        }
-        //if(UnitValue.getInstance().getGameStart()==true)
-
-        if (m_roundStart == true) {
-            MoveUpdate(dt);
-            MissleUpdate(dt);
-            MissleErase();
-            for(int i=0;i<ExplosiveList.size();i++)
-            {
-                if(ExplosiveList.get(i).life==false)
-                {
-                    ExplosiveList.remove(i);
-                }
-            }
-        }
 
 
 

@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 
 import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -112,7 +113,7 @@ public class MapCreate_View implements IState {
 
     @Override
     public void Init() {
-        DBManager.getInstance().go_robby = 4;
+        DBManager.getInstance().setNetState(NetState.SINGLEGAME);
         try {
             sendMessage("1");
         } catch (IOException e) {

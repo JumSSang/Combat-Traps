@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.Bounding;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.GraphicManager;
@@ -113,7 +114,7 @@ public class StoryView implements IState {
 
     @Override
     public void Init() {
-        DBManager.getInstance().go_robby = 4;
+        DBManager.getInstance().setNetState(NetState.SINGLEGAME);;
         try {
             sendMessage("1");
         } catch (IOException e) {
@@ -504,7 +505,7 @@ public class StoryView implements IState {
                 if (m_WhoWIn == 1) {
                     m_airtextVic.FadeOutText(canvas, m_Width, m_Height, timeDelta);
                     if (m_airtextVic.getState() == true) {
-                        DBManager.getInstance().go_robby = 2;
+                        DBManager.getInstance().setNetState(NetState.ROBBY);
                         m_plot = 7;
                     }
                     //아군 승리

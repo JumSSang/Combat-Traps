@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import com.example.combattraps.Game_NetWork.NetState;
 import com.example.combattraps.View.CreateMap_View.MapCreate_View;
 
 import com.example.combattraps.View.Story_room.StoryView;
@@ -106,6 +107,9 @@ public class Ready_Room implements IState {
 
 
 
+
+
+
     }
 
     @Override
@@ -121,9 +125,11 @@ public class Ready_Room implements IState {
         double dt=timeDelta;
         //GraphicManager.getInstance().m_anna_punch.Update(30);
         m_fadein.fadeInUpdate(timeDelta);
-        if(!DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") && !DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") &&!DBManager.getInstance().GetEnemy().equals("검색취소"))
+
+        if(!DBManager.getInstance().GetEnemy().equals("매칭을 시작하기전입니다..") && !DBManager.getInstance().GetEnemy().equals("대전 상대 검색중입니다..") &&!DBManager.getInstance().GetEnemy().equals("검색취소") )
         {
-            DBManager.getInstance().go_robby=3;
+            DBManager.getInstance().setNetState(NetState.MULTIGAMESTART);
+            DBManager.getInstance().setImforDB(DBManager.getInstance().getResponse());
             GraphicManager.getInstance().btn_start.state_click=false;
             AppManager.getInstance().getGameView().ChangeGameState(new St_Battle());
         }

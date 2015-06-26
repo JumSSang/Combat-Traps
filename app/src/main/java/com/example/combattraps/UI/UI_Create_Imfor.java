@@ -36,7 +36,8 @@ public class UI_Create_Imfor {
     {
         ScreenHeight=y;
         ScreenWidth=x;
-        sumLogo=new SumInfo((int)ScreenWidth,(int)ScreenHeight);
+        sumLogo=new SumInfo((int)ScreenWidth,(int)(ScreenHeight));
+
 
 
     }
@@ -56,14 +57,15 @@ public class UI_Create_Imfor {
         6. 적군 골드인데 생략 예정
          */
         m_myGold=1000;
-        canvas.drawText(""+ DBManager.getInstance().GetID(), (int) ScreenWidth / 30, (int) (ScreenHeight / 20), paint); //나의 아이디
-        canvas.drawText(""+DBManager.getInstance().getGuild(),(int)ScreenWidth/30,(int)(ScreenHeight/20)*2,paint);  //나의 소속길드
+        canvas.drawText("I  D :"+ DBManager.getInstance().GetID(), (int) ScreenWidth / 30*3, (int) (ScreenHeight / 40)*1, paint); //나의 아이디
+        canvas.drawText("GUILD:"+DBManager.getInstance().getGuild(),(int)ScreenWidth/30*3,(int)(ScreenHeight/40)*3,paint);  //나의 소속길드
+        canvas.drawText("GOLD :"+DBManager.getInstance().GetGold(),(int)ScreenWidth/30*3,(int)(ScreenHeight/40)*5,paint);
 
 
-        canvas.drawText(""+DBManager.getInstance().GetEnemy(), (int) ScreenWidth-ScreenWidth/6, (int) (ScreenHeight / 20), paint);//적의 아이디
-        canvas.drawText("?????????",(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*2,paint); //적의 길드
+
+
         paint.setColor(Color.BLACK);
-        canvas.drawText(""+DBManager.getInstance().GetGold(),(int)ScreenWidth/30,(int)(ScreenHeight/20)*3,paint);
+
         canvas.drawText("???????"+m_enemyGold,(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*3,paint);
 
     }
