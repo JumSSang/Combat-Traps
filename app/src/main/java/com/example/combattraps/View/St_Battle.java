@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.Bounding;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
 import com.example.combattraps.Game_NetWork.NetState;
+import com.example.combattraps.Values.MapState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -102,7 +104,8 @@ public class St_Battle implements IState {
     @Override
     public void Init() {
 
-        DBManager.getInstance().setNetState(NetState.MULTIGAME);
+        DBManager.getInstance().setNetState(NetState.MUTI_TRUN);
+
         AppManager.getInstance().state = AppManager.S_STORY1;
         GraphicManager.getInstance().Init();
         currentTime = System.currentTimeMillis() / 1000;
@@ -169,6 +172,15 @@ public class St_Battle implements IState {
                             }
 
                             break;
+                        case UnitValue.F_BOOM:
+                            CreateUnit.CreateBoom(x, y, Units.EnemyUnits);
+                            break;
+                        case UnitValue.F_ELSATOWER:
+
+                            break;
+                        case UnitValue.F_TREE1:
+                            CreateUnit.CreateTree1(x,y, Units.Enviroment);
+                            break;
                     }
                 }
                 DBManager.n_UnitString="null";
@@ -181,6 +193,13 @@ public class St_Battle implements IState {
     @Override
     public void Update() {
 
+        if(DBManager.getInstance().m_batch_time>900 && DBManager.getInstance().getNetState()!= NetState.MUTI_TRUN_READY) {
+            try {
+                sendMessage("START");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         if (AppManager.getInstance().state != AppManager.S_LOADING) {
             // long frameEndTime = System.currentTimeMillis();
             //long delta = frameEndTime - frameStartTime;
@@ -189,8 +208,38 @@ public class St_Battle implements IState {
             currentTime = newTime;
             m_time += timeDelta;
             m_thread_tiem += timeDelta;
+
+
+
+
+            if(DBManager.getInstance().m_batch_time>=0 && DBManager.getInstance().m_batch_time!=1000)
+            {
+                DBManager.getInstance().m_batch_time-= timeDelta;
+            }
+            else if(DBManager.getInstance().m_batch_time<0 &&!DBManager.getInstance().m_turn_game_start )
+            {
+                String sendString=null;
+                if(DBManager.EventStack.size()>0)
+                {
+                    sendString="";
+                }
+                for(int i=0;i<DBManager.EventStack.size();i++)
+                {
+                    sendString+=DBManager.EventStack.get(i);
+                }
+                try {
+                    sendMessage("ok:"+sendString);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(DBManager.getInstance().m_turn_game_start)
+            {
+                realityCreate();
+            }
+
             Units.Update(timeDelta);
-            realityCreate();
+
 
 
         }
@@ -207,18 +256,20 @@ public class St_Battle implements IState {
         canvas.save();
         canvas.setMatrix(matrix);
         canvas.translate(m_diffX, m_diffY);
+
+
         //타일 한번 깔아준다.
         GraphicManager.getInstance().background.Draw(canvas, -750, -450);
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 1) {
+                if (UnitValue.m_dmap[i][j] == 1) {
                     GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
 
-                } else if (UnitValue.m_map[i][j] == 2) {
+                } else if (UnitValue.m_dmap[i][j] == 2) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (UnitValue.m_map[i][j] == 3) {
+                } else if (UnitValue.m_dmap[i][j] == 3) {
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (UnitValue.m_map[i][j] == UnitValue.M_NOTMOVE) {
+                } else if (UnitValue.m_dmap[i][j] == UnitValue.M_NOTMOVE) {
                     GraphicManager.getInstance().temptile5.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 }
 
@@ -228,7 +279,7 @@ public class St_Battle implements IState {
         //나무가 타일에 겹쳐지지 않게 그려주기 위해 한번더 연산해 주었다.
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 4) {
+                if (UnitValue.m_dmap[i][j] == 4) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i) - 25);
                 }
@@ -252,6 +303,25 @@ public class St_Battle implements IState {
         //클릭 위치마다 사각형을 그려준다 오브젝트에 사각형
         canvas.drawRect((m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12, m_Height - m_Height / 6, (m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12 + m_Width / 12, m_Height - m_Height / 18, paint);
         UI_imfor.Draw(canvas);
+        Paint drText=new Paint();
+        drText.setColor(Color.WHITE);
+        drText.setTextSize(30);
+        canvas.drawText(""+(int)DBManager.getInstance().m_batch_time,m_Width/20*10,50,drText);
+        Paint vpaint=new Paint();
+        vpaint.setColor(Color.argb(255,255,255,0));
+        vpaint.setTextSize(50);
+        if(DBManager.getInstance().victory==2)
+        {
+            canvas.drawText("승       리",m_Width/2-100,m_Height/2-100,vpaint);
+            canvas.drawText("골드 +200",m_Width/2-100,m_Height/2-200,vpaint);
+            canvas.drawText("터치하면 로비로 돌아갑니다.",m_Width/2-100,m_Height/2+100,vpaint);
+        }
+        else if(DBManager.getInstance().victory==1)
+        {
+            canvas.drawText("패      배",m_Width/2-100,m_Height/2-100,vpaint);
+            canvas.drawText("골드 +50",m_Width/2-100,m_Height/2,vpaint);
+            canvas.drawText("터치하면 로비로 돌아갑니다.",m_Width/2-100,m_Height/2+100,vpaint);
+        }
     }
 
     @Override
@@ -449,13 +519,13 @@ public class St_Battle implements IState {
 
         if(DBManager.getInstance().team==1)
         {
-            CreateUnit.CreateHall(5, 5, Units.MyUnits, true);
-            CreateUnit.CreateHall(45, 45, Units.EnemyUnits, false);
+            CreateUnit.CreateHall(5, 45, Units.MyUnits, true);
+            CreateUnit.CreateHall(45, 5, Units.EnemyUnits, false);
         }
         else
         {
-            CreateUnit.CreateHall(5, 5, Units.EnemyUnits, false);
-            CreateUnit.CreateHall(45, 45, Units.MyUnits, true);
+            CreateUnit.CreateHall(5, 45, Units.EnemyUnits, false);
+            CreateUnit.CreateHall(45, 5, Units.MyUnits, true);
         }
     }
     //타운홀 생성 부분
@@ -471,43 +541,49 @@ public class St_Battle implements IState {
             }
         } else {
 
-            for (int i = 0; i < 50; i++) {
-                for (int j = 0; j < 50; j++) {
+            if (DBManager.getInstance().m_batch_time >= 0) {
+                for (int i = 0; i < 50; i++) {
+                    for (int j = 0; j < 50; j++) {
 
-                    if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
-                        switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
-                            case UnitValue.F_ANNA:
-                                //CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                        if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_bmap[i][j] != MapState.NotMove) {
+                            switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
+                                case UnitValue.F_ANNA:
+                                    CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                    String anna = "6," + "10," + i + "," + j + "," + DBManager.getInstance().team + "a";   //안나 타입 , 안나의 체력, x좌표 , y좌표, 클라이언트 번호
+                                    DBManager.getInstance().EventStack.add(anna);
 
-                                String anna = "6," + "10," + i + "," + j +","+DBManager.getInstance().team+"a";   //안나 타입 , 안나의 체력, x좌표 , y좌표, 클라이언트 번호
-                                DBManager.getInstance().EventStack.add(anna);
-                                break;
-                            case UnitValue.F_ROCK1:
-                                CreateUnit.CreateRock2(i, j, Units.Enviroment);
-                                break;
-                            case UnitValue.F_TREE1:
-                                CreateUnit.CreateTree1(i, j, Units.Enviroment);
-                                break;
-                            case UnitValue.F_TOWER:
-                                CreateUnit.CreateArchorTower(i, j, Units.MyUnits, Units.EnemyUnits, true);
-                                break;
-                            case UnitValue.F_BOOM:
-                                CreateUnit.CreateBoom(i, j, Units.MyUnits);
-                                break;
-                            case UnitValue.F_ELSATOWER:
-                                Unit temped = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
-                                CreateUnit.CreateMagicTower(15, 15, temped, Units.MyUnits, Units.EnemyUnits, false);
-                                break;
+                                    break;
+                                case UnitValue.F_ROCK1:
+                                    CreateUnit.CreateRock2(i, j, Units.Enviroment);
+                                    break;
+                                case UnitValue.F_TREE1:
+                                    CreateUnit.CreateTree1(i, j, Units.Enviroment);
+                                    String tree = UnitValue.F_TREE1+"," + "10," + i + "," + j + "," + DBManager.getInstance().team + "a";   //안나 타입 , 안나의 체력, x좌표 , y좌표, 클라이언트 번호
+                                    DBManager.getInstance().EventStack.add(tree);
+                                    break;
+                                case UnitValue.F_TOWER:
+                                    CreateUnit.CreateArchorTower(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                    break;
+                                case UnitValue.F_BOOM:
+                                    CreateUnit.CreateBoom(i, j, Units.MyUnits);
+                                    String boom= UnitValue.F_BOOM+"," + "10," + i + "," + j + "," + DBManager.getInstance().team + "a";   //안나 타입 , 안나의 체력, x좌표 , y좌표, 클라이언트 번호
+                                    DBManager.getInstance().EventStack.add(boom);
+                                    break;
+                                case UnitValue.F_ELSATOWER:
+                                    Unit temped = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
+                                    CreateUnit.CreateMagicTower(15, 15, temped, Units.MyUnits, Units.EnemyUnits, false);
+                                    break;
 
 
+                            }
                         }
+                        count++;
                     }
-                    count++;
                 }
+
             }
 
         }
-
 
     }
 
@@ -551,12 +627,12 @@ public class St_Battle implements IState {
                 Bounding.tileColl.add(temp);
 
                 if ((i + j) % 2 == 0) {
-                    UnitValue.m_map[i][j] = 1;
+                    UnitValue.m_dmap[i][j] = 1;
                 } else {
-                    UnitValue.m_map[i][j] = 2;
+                    UnitValue.m_dmap[i][j] = 2;
                 }
                 if (i == 0 || i == 49 || j == 0 || j == 49) {
-                    UnitValue.m_map[i][j] = 4;
+                    UnitValue.m_dmap[i][j] = 4;
                 }
 
             }

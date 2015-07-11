@@ -22,4 +22,7 @@ public interface NetState
     final int STORY3=7;
     final int MULTIGAMESTART=8;
     final int USERLOAD=9;
+    final int MUTI_TRUN=10;
+    final int MUTI_TRUN_READY=11;
+
 }

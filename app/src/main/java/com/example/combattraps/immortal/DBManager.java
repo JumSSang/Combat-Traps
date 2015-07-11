@@ -19,13 +19,15 @@ public class DBManager {
     private String response;
     public boolean netstate=false;
 
+    public float m_batch_time=1000;
+    public boolean m_turn_game_start=false;
     public static double readyroomtime=0;
     private String enemy="매칭을 시작하기전입니다.."; //잠시 적군의 아이디 보내줄 곳
     private String id="로딩중..";//유저의 닉네임
     private int cash; //유저의 캐시정보
     private int level; //유저의 렙레정보
     private int gold; //유저의 골드 정보
-    private int victory; //유저의 승리 정보
+    public int victory=0; //유저의 승리 정보
     private int sum_number; //유저의 썸네일 정보
     private String guild="로딩중.."; //유저의 길드 정보
     private int enemysum;
@@ -41,6 +43,7 @@ public class DBManager {
     public static boolean b_create=false;
     public static String n_UnitString=null;
     public int team=0;
+
 
 
 
@@ -143,11 +146,22 @@ public class DBManager {
                     //setImforDB(a);
                      response=a;
                     sendMessage("Commit");
+            break;
+            case NetState.MUTI_TRUN:
+                m_batch_time=Integer.parseInt(a);
+                if(m_batch_time<500)
+                {
+                    DBManager.getInstance().setNetState(NetState.MUTI_TRUN_READY);
+                }
 
-
-                    //go_robby= NetState.MULTIGAME;
 
                 break;
+            case NetState.MUTI_TRUN_READY:
+                n_UnitString=a;
+                DBManager.getInstance().m_turn_game_start=true;
+                DBManager.b_create=true;
+                break;
+
             case NetState.SINGLEGAME: //싱글게임 시작시 맵정보를 불러오는 부분이다.
                 m_StringMap=a;
                 //go_robby=6;

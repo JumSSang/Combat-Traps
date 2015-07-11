@@ -15,6 +15,9 @@ public class UnitValue {
     public static final int F_TREE1 = 9;
     public static final int F_ROCKE2 = 10;
     public static final int F_BOOM=11;
+    public static final int F_ARCHER=12;
+    public static final int F_WORRIOR=13;
+    public static final int F_MAGICAIN=14;
 
     public static final int M_GRASS1 = 1;
     public static final int M_GRASS2 = 2;
@@ -27,8 +30,9 @@ public class UnitValue {
 
     private boolean m_GameStart = false;
     private static UnitValue s_instance;
-    public static int[][] m_map = new int[50][50];
+   // public static int[][] m_map = new int[50][50];
     public static int[][] m_bmap = new int[50][50];
+    public static int[][] m_dmap=new int[50][50];
     public static int[][] m_testmap = new int[50][50];
     public static final int S_MOVE = 1;
     public static final int S_BATTLE = 2;

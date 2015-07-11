@@ -59,10 +59,10 @@ public class Unit_Imfor {
     public double myTime;
     public int mType=0;
 
+    public float enemyRadius=0; //적의 각도
     public Rect originHP;
     public Rect destHP;
     public Vec2F DrawPosition;
-
     public Unit_Imfor my_enemy; //적정보
     public boolean b_myUnit=false;
     public double myAttackDelayTime=0;
@@ -130,6 +130,12 @@ public class Unit_Imfor {
                 DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)-25));
                 myAttackDelayTime=5;
                 break;
+            case UnitValue.F_ARCHER:
+                DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)-50));
+                myAttackDelayTime=2;
+
+
+                break;
             default:
                 DrawPosition = new Vec2F((float) (750 + 50 / 2 * (myUnitObject.Postion.y - myUnitObject.Postion.x)), (float) (-300 + 25 / 2 * (myUnitObject.Postion.y + myUnitObject.Postion.x)));
                 break;
@@ -163,6 +169,18 @@ public class Unit_Imfor {
             case UnitValue.F_BOOM:
                 this.m_battleBounding = new BoundingSpear(x + 20, y+25, 0.2f); //안나의 바운딩 영역 위치 생성
                 this.m_BoundingSpear = new BoundingSpear(x + 20, y+25 , 2);
+                break;
+            case UnitValue.F_ARCHER:
+                this.m_battleBounding = new BoundingSpear(x + 32, y+60, 0.2f); //안나의 바운딩 영역 위치 생성
+                this.m_BoundingSpear = new BoundingSpear(x + 32, y+60 , 2);
+                break;
+            case UnitValue.F_WORRIOR:
+                this.m_battleBounding = new BoundingSpear(x + 32, y+60, 0.2f); //안나의 바운딩 영역 위치 생성
+                this.m_BoundingSpear = new BoundingSpear(x + 32, y+60 , 2);
+                break;
+            case UnitValue.F_MAGICAIN:
+                this.m_battleBounding = new BoundingSpear(x + 32, y+60, 0.2f); //안나의 바운딩 영역 위치 생성
+                this.m_BoundingSpear = new BoundingSpear(x + 32, y+60 , 2);
                 break;
             default:
                 this.m_battleBounding=new BoundingSpear(x+10,y,0.2f);

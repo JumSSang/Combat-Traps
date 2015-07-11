@@ -64,9 +64,9 @@ public class UI_Create_Imfor {
 
 
 
-        paint.setColor(Color.BLACK);
+      //  paint.setColor(Color.BLACK);
 
-        canvas.drawText("???????"+m_enemyGold,(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*3,paint);
+      //  canvas.drawText("???????"+m_enemyGold,(int)ScreenWidth-ScreenWidth/6,(int)(ScreenHeight/20)*3,paint);
 
     }
     public int GetGold()

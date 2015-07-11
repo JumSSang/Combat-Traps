@@ -4,6 +4,7 @@ import android.accounts.AccountManager;
 import android.util.Log;
 
 import com.example.combattraps.Game.UnitDirect.Unit;
+import com.example.combattraps.Values.MapState;
 import com.example.combattraps.immortal.Vec2;
 
 import java.util.ArrayList;
@@ -56,10 +57,17 @@ public class PathFinder {
         int minWeight = Integer.MAX_VALUE;
         int minNodeId = -1;
         for (int i = 0; i < openNodeList.size(); i++) {
-            int fast = openNodeList.get(i).fast;
-            if (fast >= minWeight) continue;
-            minWeight = fast;
-            minNodeId = i;
+
+            try {
+                int fast = openNodeList.get(i).fast;
+                if (fast >= minWeight) continue;
+                minWeight = fast;
+                minNodeId = i;
+            }
+            catch(NullPointerException e)
+            {
+
+            }
         }
         if (minNodeId == -1) throw new AssertionError("최소 노드를 못찾았다?");
         return openNodeList.remove(minNodeId);
@@ -80,10 +88,14 @@ public class PathFinder {
                 // 가중치 구하기
                 int g;
                 switch (map[pos.x][pos.y]) {
-                    case 0: // 초원
-                    case 1: // 초원
-                    case 2: // 초원
-                        g = 10;
+                    case MapState.Move: // 이동
+                        g=10;
+                        break;
+                    case MapState.NotMove: // 이동불가
+                        g=50000;
+                        break;
+                    case MapState.ElseMove:
+                        g = 1000;
                         break;
                     case 3: // 이거
                         g = 5000;

@@ -16,6 +16,8 @@ import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.Bounding;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
 import com.example.combattraps.Game_NetWork.NetState;
+import com.example.combattraps.Values.MapState;
+import com.example.combattraps.Values.UnitState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -147,6 +149,7 @@ public class TestView implements IState {
             m_time += timeDelta;
             m_thread_tiem += timeDelta;
             Units.Update(timeDelta);
+            GraphicManager.getInstance().m_ArcherUnit.Update(System.currentTimeMillis());
 
         }
 
@@ -166,14 +169,14 @@ public class TestView implements IState {
         GraphicManager.getInstance().background.Draw(canvas, -750, -450);
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 1) {
+                if (UnitValue.m_dmap[i][j] == 1) {
                     GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
 
-                } else if (UnitValue.m_map[i][j] == 2) {
+                } else if (UnitValue.m_dmap[i][j] == 2) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (UnitValue.m_map[i][j] == 3) {
+                } else if (UnitValue.m_dmap[i][j] == 3) {
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (UnitValue.m_map[i][j] == UnitValue.M_NOTMOVE) {
+                } else if (UnitValue.m_dmap[i][j] == UnitValue.M_NOTMOVE) {
                     GraphicManager.getInstance().temptile5.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 }
 
@@ -183,13 +186,14 @@ public class TestView implements IState {
         //나무가 타일에 겹쳐지지 않게 그려주기 위해 한번더 연산해 주었다.
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 4) {
+                if (UnitValue.m_dmap[i][j] == 4) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i) - 25);
                 }
             }
         }
         Units.RenderUnit(canvas);
+
         canvas.restore();
 
         GraphicManager.getInstance().ButtonView_Image.Draw(canvas, 0, (int) m_Height - (int) m_Height / 6);
@@ -207,6 +211,7 @@ public class TestView implements IState {
         //클릭 위치마다 사각형을 그려준다 오브젝트에 사각형
         canvas.drawRect((m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12, m_Height - m_Height / 6, (m_UI_Touch_Postion * 5) + m_UI_Touch_Postion * m_Width / 12 + m_Width / 12, m_Height - m_Height / 18, paint);
 
+//        GraphicManager.getInstance().m_ArcherUnit.WorkUnitDraw(canvas, UnitState.MOVE,0,0);
     }
 
     @Override
@@ -334,6 +339,12 @@ public class TestView implements IState {
         UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_TOWER,1,0);
         UnitDataList.add(new UnitList());
         UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_BOOM,1,0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_ARCHER,1,0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_WORRIOR,1,0);
+        UnitDataList.add(new UnitList());
+        UnitDataList.get(UnitDataList.size()-1).set(UnitValue.F_MAGICAIN,1,0);
     }
 
     //줌인 줌 아웃을 위한 터치 이벤트 계산 함수
@@ -386,6 +397,7 @@ public class TestView implements IState {
                 case UnitValue.F_ROCKE2:
                     CreateUnit.CreateRock2(x, y, Units.Enviroment);
                     break;
+
             }
 
         }
@@ -417,7 +429,7 @@ public class TestView implements IState {
             for (int i = 0; i < 50; i++) {
                 for (int j = 0; j < 50; j++) {
 
-                    if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
+                    if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_bmap[i][j] != 3) {
                         switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
                             case UnitValue.F_ANNA:
                                 CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
@@ -438,6 +450,17 @@ public class TestView implements IState {
                                 Unit temped = new Unit(GraphicManager.getInstance().mElsa_Tower.m_bitmap);
                                 CreateUnit.CreateMagicTower(15, 15, temped, Units.MyUnits, Units.EnemyUnits, false);
                                 break;
+                            case UnitValue.F_ARCHER:
+                                CreateUnit.CreateArcher(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                break;
+                            case UnitValue.F_WORRIOR:
+                                CreateUnit.CreateWorrior(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                break;
+                            case UnitValue.F_MAGICAIN:
+                                CreateUnit.CreateMagican(i, j, Units.MyUnits, Units.EnemyUnits, true);
+                                break;
+
+
 
 
                         }
@@ -447,9 +470,6 @@ public class TestView implements IState {
             }
 
         }
-
-
-
     }
 
     public void saveMap()
@@ -496,12 +516,15 @@ public class TestView implements IState {
                 Bounding.tileColl.add(temp);
 
                 if ((i + j) % 2 == 0) {
-                    UnitValue.m_map[i][j] = 1;
+                    UnitValue.m_dmap[i][j] = 1;
+                    UnitValue.m_bmap[i][j]= MapState.Move;
                 } else {
-                    UnitValue.m_map[i][j] = 2;
+                    UnitValue.m_dmap[i][j] = 2;
+                    UnitValue.m_bmap[i][j]= MapState.Move;
                 }
                 if (i == 0 || i == 49 || j == 0 || j == 49) {
-                    UnitValue.m_map[i][j] = 4;
+                    UnitValue.m_dmap[i][j] = 4;
+                    UnitValue.m_bmap[i][j]= MapState.NotMove;
                 }
 
             }

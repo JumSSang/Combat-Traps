@@ -60,6 +60,10 @@ public class GraphicManager {
     public SpriteControl m_newClearSprite;
     public SpriteControl m_ArchorTower;
     public SpriteControl m_Boom;
+    public SpriteControl m_ArcherUnit;//워크2 아처
+    public SpriteControl m_WorriorUnit; //워크2 전사
+    public SpriteControl m_Magician; //워크2 법사
+
     /*
      로비 관련 리소스
      */
@@ -247,6 +251,14 @@ public class GraphicManager {
             m_newClearSprite=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.explosion));
             m_newClearSprite.resizebitmap(300,400);
             m_newClearSprite.SetExplosion(10);
+
+            m_ArcherUnit=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.archer2));
+            m_ArcherUnit.resizebitmap(350,630);
+            m_WorriorUnit=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.footman_sprite));
+            m_WorriorUnit.resizebitmap(350,1025);
+            m_Magician=new SpriteControl(AppManager.getInstance().getBitmap(R.drawable.mage2));
+            m_Magician.resizebitmap(350,810);
+
             GameList.add(background);
             GameList.add(m_effect);
             GameList.add(m_elsatower);
@@ -273,24 +285,12 @@ public class GraphicManager {
             background1 = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.background_lobby));
             background1.resizebitmap((int) m_Width, (int) m_Height);
         }
-
-
-
-
-
-
-
-
-
-
-
      /*   m_effect=new Sprite(AppManager.getInstance().getBitmap(R.drawable.buble_paritcle));
         m_effect.ResizeBitmapRate(3,3);
         m_effect.InitSpriteData(0,390/3,700/3,1,10);
         m_effect.SetPosition((750 + 50 / 2 * (33 - 15))-30, (-300 + 30 / 2 * (33 + 15)+15)+40);
 */
         // m_elsatower.SetPosition(750 + 50 / 2 * (15 - 15), -300 + 30 / 2 * (15 + 15)+15);
-
 
 
     }

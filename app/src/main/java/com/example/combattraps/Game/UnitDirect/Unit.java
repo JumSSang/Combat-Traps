@@ -2,6 +2,7 @@ package com.example.combattraps.Game.UnitDirect;
 
 import android.graphics.Bitmap;
 
+import com.example.combattraps.Values.DirState;
 import com.example.combattraps.immortal.SpriteControl;
 import com.example.combattraps.immortal.Vec2;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class Unit extends SpriteControl {
 
     //public Vec2 Postion;
+    public boolean unitMirror=true; //true 면 오른쪽 부분 스프라이트 이미지를 반전시키지 않은 부분이다.
 
     ArrayList<Vec2>unitPosition;
 

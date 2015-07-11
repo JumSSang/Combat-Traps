@@ -40,8 +40,8 @@ public class SumInfo {
         sum[6] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_6));
         sum[7] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_7));
         sum[8] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_8));
-        sum[9] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_9));
-        sum[10] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_9));
+        sum[9] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_11));
+        sum[10] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_11));
         sum[11] = new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.sum_11));
 
         if(DBManager.getInstance().getNetState()!= NetState.ROBBY)

@@ -80,8 +80,15 @@ public class UI_Create_Bottom
                 case UnitValue.F_BOOM:
                     temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.trap_bommer));
                     break;
-
-
+                case UnitValue.F_ARCHER:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.archer_icon));
+                    break;
+                case UnitValue.F_WORRIOR:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.worrior_icon));
+                    break;
+                case UnitValue.F_MAGICAIN:
+                    temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.magic_icon));
+                    break;
 
                 default:
                     temp=new Graphic_image(AppManager.getInstance().getBitmap(R.drawable.towersum));

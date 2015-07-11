@@ -59,10 +59,14 @@ public class Explosive {
         {
             if(enemy.get(i).mHp>0 &&enemy.get(i)!=null)
             {
-                if(middlePosition!=null &&enemy.get(i)!=null)
-                if(Bounding.ExplosionAABB(middlePosition,enemy.get(i).m_battleBounding.m_position,m_range,enemy.get(i).m_battleBounding.GetRadius()))
+                try {
+                    if (Bounding.ExplosionAABB(middlePosition, enemy.get(i).m_battleBounding.m_position, m_range, enemy.get(i).m_battleBounding.GetRadius())) {
+                        enemy.get(i).mHp -= m_damage;
+                    }
+                }
+                catch(NullPointerException e)
                 {
-                    enemy.get(i).mHp-=m_damage;
+
                 }
             }
         }

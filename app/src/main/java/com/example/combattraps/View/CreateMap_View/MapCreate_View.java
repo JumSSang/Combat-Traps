@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
 import com.example.combattraps.Game_NetWork.NetState;
+import com.example.combattraps.Values.MapState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.View.Story_room.Story_String;
 import com.example.combattraps.immortal.DBManager;
@@ -206,7 +207,7 @@ public class MapCreate_View implements IState {
         GraphicManager.getInstance().background.Draw(canvas, -750, -450);
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                switch (UnitValue.m_map[i][j]) {
+                switch (UnitValue.m_dmap[i][j]) {
                     case UnitValue.M_GRASS1:
                         GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                         break;
@@ -229,7 +230,7 @@ public class MapCreate_View implements IState {
         //나무가 타일에 겹쳐지지 않게 그려주기 위해 한번더 연산해 주었다.
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 4) {
+                if (UnitValue.m_dmap[i][j] == 4) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i) - 25);
                 }
@@ -454,20 +455,20 @@ public class MapCreate_View implements IState {
             for (int i = 0; i < 50; i++) {
                 for (int j = 0; j < 50; j++) {
                     Unit temp;
-                    if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
+                    if (tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_bmap[i][j] != MapState.NotMove) {
                         //  UnitValue.m_map[i][j]=3;
                         //점핑 트랩 생산
                         switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
                             case UnitValue.F_ROCK1:
-                                CreateRock(i, j);
+                                //CreateRock(i, j);
 
                                 break;
                             case UnitValue.F_ROCKE2:
-                                CreateRock2(i, j);
+                               // CreateRock2(i, j);
 
                                 break;
                             case UnitValue.F_TREE1:
-                                CreateTree1(i, j);
+                              //  CreateTree1(i, j);
 
                                 break;
                             case UnitValue.F_TOWER:
@@ -526,6 +527,7 @@ public class MapCreate_View implements IState {
         }
 
     }
+/*
 
     public void CreateRock(int i, int j) {
         if (UnitValue.m_map[i][j] != UnitValue.M_NOTMOVE) {
@@ -560,6 +562,7 @@ public class MapCreate_View implements IState {
         }
 
     }
+*/
 
     public void InitMap() {
         for (int i = 0; i < 50; i++) {
@@ -573,12 +576,12 @@ public class MapCreate_View implements IState {
                 tileColl.add(temp);
 
                 if ((i + j) % 2 == 0) {
-                    UnitValue.m_map[i][j] = 1;
+                    UnitValue.m_dmap[i][j] = 1;
                 } else {
-                    UnitValue.m_map[i][j] = 2;
+                    UnitValue.m_dmap[i][j] = 2;
                 }
                 if (i == 0 || i == 49 || j == 0 || j == 49) {
-                    UnitValue.m_map[i][j] = 4;
+                    UnitValue.m_dmap[i][j] = 4;
                 }
 
             }

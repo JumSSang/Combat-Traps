@@ -15,6 +15,7 @@ import com.example.combattraps.Game.ActiveCollusion;
 import com.example.combattraps.Game.UnitDirect.Bounding;
 import com.example.combattraps.Game.UnitDirect.CreateUnit;
 import com.example.combattraps.Game_NetWork.NetState;
+import com.example.combattraps.Values.MapState;
 import com.example.combattraps.View.Ready_Room_Dir.Ready_Room;
 import com.example.combattraps.immortal.DBManager;
 import com.example.combattraps.immortal.GraphicManager;
@@ -175,12 +176,12 @@ public class StoryView implements IState {
                 Bounding.tileColl.add(temp);
 
                 if ((i + j) % 2 == 0) {
-                    UnitValue.m_map[i][j] = 1;
+                    UnitValue.m_dmap[i][j] = 1;
                 } else {
-                    UnitValue.m_map[i][j] = 2;
+                    UnitValue.m_dmap[i][j] = 2;
                 }
                 if (i == 0 || i == 49 || j == 0 || j == 49) {
-                    UnitValue.m_map[i][j] = 4;
+                    UnitValue.m_dmap[i][j] = 4;
                 }
 
             }
@@ -330,7 +331,7 @@ public class StoryView implements IState {
                 my_view = GAMESTART;
                 my_view = GAMESTART;
                 Sound.getInstance().backgroundRelease();
-               Sound.getInstance().backgroundPlay(R.raw.battle_bgm);
+              // Sound.getInstance().backgroundPlay(R.raw.battle_bgm);
                 m_SaraSay = 0;
                 return;
             }
@@ -363,14 +364,14 @@ public class StoryView implements IState {
         GraphicManager.getInstance().background.Draw(canvas, -750, -450);
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 1) {
+                if (UnitValue.m_dmap[i][j] == 1) {
                     GraphicManager.getInstance().temptile1.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
 
-                } else if (UnitValue.m_map[i][j] == 2) {
+                } else if (UnitValue.m_dmap[i][j] == 2) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (UnitValue.m_map[i][j] == 3) {
+                } else if (UnitValue.m_dmap[i][j] == 3) {
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
-                } else if (UnitValue.m_map[i][j] == UnitValue.M_NOTMOVE) {
+                } else if (UnitValue.m_dmap[i][j] == UnitValue.M_NOTMOVE) {
                     GraphicManager.getInstance().temptile5.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                 }
 
@@ -380,7 +381,7 @@ public class StoryView implements IState {
         //나무가 타일에 겹쳐지지 않게 그려주기 위해 한번더 연산해 주었다.
         for (int i = 0; i < 50; i++) {
             for (int j = 0; j < 50; j++) {
-                if (UnitValue.m_map[i][j] == 4) {
+                if (UnitValue.m_dmap[i][j] == 4) {
                     GraphicManager.getInstance().temptile2.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i));
                     GraphicManager.getInstance().temptitle4.Draw(canvas, 750 + 50 / 2 * (j - i), -300 + 25 / 2 * (j + i) - 25);
                 }
@@ -578,7 +579,7 @@ public class StoryView implements IState {
             for (int i = 0; i < 50; i++) {
                 for (int j = 0; j < 50; j++) {
 
-                        if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_map[i][j] != 3) {
+                        if (Bounding.tileColl.get(count).resultCal(m_click_x / m_matrix_x - m_diffX, m_click_y / m_matrix_y - m_diffY) == true && UnitValue.m_bmap[i][j] != MapState.NotMove) {
                             switch (UI.CheckTable.get(m_UI_Touch_Postion).retruncode()) {
                                 case UnitValue.F_ANNA:
                                     CreateUnit.CreateAnna(i, j, Units.MyUnits, Units.EnemyUnits, true);
